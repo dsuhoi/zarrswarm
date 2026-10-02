@@ -318,6 +318,7 @@ def main():
                             break
                     rows.append(best)
                     print("EHET", json.dumps(best), flush=True)
+                    json.dump({"args": vars(a), "rows": rows}, open(a.out, "w"), indent=1)  # a killed run keeps its rows
             finally:
                 sw.stop()
     json.dump({"args": vars(a), "rows": rows}, open(a.out, "w"), indent=1)

@@ -65,7 +65,9 @@ class ProcSwarm:
         if kw.get("relay_server"):
             args += ["--relay-server"]
         env = dict(os.environ, **self.env, ZT_EMU_LATENCY_MS=str(kw.get("latency", 0) * 1e3),
-                   ZT_EMU_STRATEGY=kw.get("strategy", self.strategy), PYTHONPATH=str(Path(__file__).resolve().parents[1]))
+                   ZT_EMU_STRATEGY=kw.get("strategy", self.strategy),
+                   PYTHONPATH=os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[1]),
+                                                            os.environ.get("PYTHONPATH")])))
         log = open(self.root / f"{name}.log", "w")
         proc = subprocess.Popen(args, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         self.nodes[name] = _P(proc, kw["port"], cp)
