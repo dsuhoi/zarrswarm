@@ -120,7 +120,7 @@ class EmuSwarm:
         proc.stdin.close()
         self.nodes[name] = _P(proc, port, cp, ip)
         self.meta[name] = {"rate": kw.get("rate"), "nat": bool(kw.get("relay")), "alive": True, "latency": delay}
-        for _ in range(300):
+        for _ in range(3000):  # up to 5 min: a loaded host imports slowly
             try:
                 http(self.ctl(name), "GET", "/api/status", None, 2)
                 return
