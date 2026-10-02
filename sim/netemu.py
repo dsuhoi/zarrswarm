@@ -56,8 +56,9 @@ class EmuSwarm:
         self.root.mkdir(parents=True, exist_ok=True)
         self.nodes, self.meta, self.env, self.strategy = {}, {}, dict(env or {}), strategy
         self._next = 0
-        sh("ip link set lo up")
-        Path("/proc/sys/net/ipv4/ip_forward").write_text("1")
+        # an L2 switch (as in Mininet): every access link is a veth whose far end is a bridge port; no routing,
+        # so no writable /proc/sys is needed (container sandboxes mount it read-only)
+        sh("ip link set lo up && ip link add br0 type bridge && ip link set br0 up && ip addr add 10.0.255.254/16 dev br0")
         boots = []
         for i in range(n_boot):
             p = 7000
@@ -80,8 +81,7 @@ class EmuSwarm:
     def _start(self, name, kw):
         self._next += 1
         k = self._next
-        net = f"10.{1 + k // 250}.{k % 250}"
-        ip, gw = f"{net}.2", f"{net}.1"
+        ip = f"10.0.{k // 250}.{k % 250 + 1}"
         port, cp = kw["port"], 7001
         args = [sys.executable, "-m", "zarr_torrent.cli", "node", "--home", str(self.root / f"h_{name}"),
                 "--host", ip, "--port", str(port), "--ctl-port", str(cp)]
@@ -92,7 +92,8 @@ class EmuSwarm:
         if kw.get("relay_server"):
             args += ["--relay-server"]
         env = dict(os.environ, **self.env, ZT_CTL_HOST=ip, ZT_EMU_STRATEGY=kw.get("strategy", self.strategy),
-                   PYTHONPATH=str(Path(__file__).resolve().parents[1]))
+                   PYTHONPATH=os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[1]),
+                                                            os.environ.get("PYTHONPATH")])))
         env.pop("ZT_EMU_LATENCY_MS", None)  # the kernel delays packets; the node adds nothing
         log = open(self.root / f"{name}.log", "w")
         # the child waits on stdin until its interface exists, then becomes the node
@@ -106,13 +107,13 @@ class EmuSwarm:
         loss = f" loss {self.loss * 100:.2f}%" if self.loss else ""
         sh(f"ip link add {r} type veth peer name {n}")
         sh(f"ip link set {n} netns {proc.pid}")
-        sh(f"ip addr add {gw}/24 dev {r} && ip link set {r} up")
+        sh(f"ip link set {r} master br0 && ip link set {r} up")
         shape = lambda dev, rate: (f"tc qdisc add dev {dev} root handle 1: netem delay {delay:.1f}ms{loss} && "
                                    f"tc qdisc add dev {dev} parent 1: handle 2: tbf rate {int(rate * 8)}bit "
                                    f"burst {max(32768, int(rate / 50))} latency 2s")
         sh(shape(r, down))
-        sh(f"nsenter -t {proc.pid} -n sh -c 'ip link set lo up && ip addr add {ip}/24 dev {n} && ip link set {n} up "
-           f"&& ip route add default via {gw} && {shape(n, up)}'")
+        sh(f"nsenter -t {proc.pid} -n sh -c 'ip link set lo up && ip addr add {ip}/16 dev {n} && ip link set {n} up "
+           f"&& {shape(n, up)}'")
         proc.stdin.write(b"go\n")
         proc.stdin.close()
         self.nodes[name] = _P(proc, port, cp, ip)
@@ -165,7 +166,6 @@ def selftest():
     root = Path("~/.cache/zt_netemu_selftest").expanduser()
     shutil.rmtree(root, ignore_errors=True)
     sw = EmuSwarm(root, 2, 1, 0.0, seed=1, relay_rate=25e6, rate_median=1e6, rate_range=(1e6, 1e6))
-    sw.meta["p00"]["latency"]
     vals = np.random.default_rng(0).random((48, 64, 64)).astype("f4")
     p = root / "d.zarr"
     xr.Dataset({"v": (("time", "y", "x"), vals)}, coords={"time": pd.date_range("2021-01-01", periods=48, freq="h"),
