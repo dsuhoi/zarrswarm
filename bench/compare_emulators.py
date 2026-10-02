@@ -18,7 +18,8 @@ QUERIES = ("map_day_1h", "series_point_1h", "period_6h")
 def table(path):
     t = {}
     for r in json.load(open(path))["rows"]:
-        t[(r["query"], CONF[(r["mode"], r["select"])], r["rep"])] = r["seconds"]
+        if r.get("seconds") is not None:
+            t[(r["query"], CONF[(r["mode"], r["select"])], r["rep"])] = r["seconds"]
     return t
 
 

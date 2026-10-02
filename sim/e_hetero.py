@@ -179,20 +179,23 @@ def obtained_samples(view: dict, keys: list[str], S: int) -> set[int]:
     return got
 
 
-def run_query(sw, tag, link, region, cover="jlps", tries=3):
-    """run_query_once with a fresh client per attempt: a client that stalls is replaced, and the attempt is counted."""
+def run_query(sw, tag, link, region, cover="jlps", tries=3, deadline=1800):
+    """run_query_once with a fresh client per attempt: a client that fails to start or to answer is replaced, and
+    the attempt is counted. A job that outlives `deadline` is not retried: it is reported as censored (TimeoutError)."""
     for attempt in range(tries):
         try:
-            job, secs, cov = run_query_once(sw, f"{tag}a{attempt}", link, region, cover)
+            job, secs, cov = run_query_once(sw, f"{tag}a{attempt}", link, region, cover, deadline)
             job["attempts"] = attempt + 1
             return job, secs, cov
+        except TimeoutError:
+            raise
         except Exception as e:
             print(f"query {tag} attempt {attempt}: {type(e).__name__} {e}", flush=True)
             if attempt == tries - 1:
                 raise
 
 
-def run_query_once(sw, tag, link, region, cover="jlps"):
+def run_query_once(sw, tag, link, region, cover="jlps", deadline=1800):
     """Fresh client (empty cache) -> one download job; seconds, job, completeness of the answer."""
     client = S.fresh_client(sw, tag, "maxflow")
     time.sleep(1.0)
@@ -204,7 +207,7 @@ def run_query_once(sw, tag, link, region, cover="jlps"):
     try:
         jid = http(ctl, "POST", "/api/download", {"grid": grid, "region": dict(region, var=VAR),
                                                    "cover": cover, "label": "q"}, timeout=400)["job"]
-        wait_job(ctl, jid, deadline=1800)
+        wait_job(ctl, jid, deadline=deadline)
     except Exception:
         sw.kill(client)
         raise
@@ -284,7 +287,18 @@ def main():
                     cands = sorted(links, key=lambda g: -len(links[g]))
                     best = None
                     for i, g in enumerate(cands):
-                        job, secs, cov = run_query(sw, f"{mode}{qn[:3]}{cover[:2]}{i}", "zt://" + g, reg, cover)
+                        # the oracle needs the best byte swarm, not how slow the others are: once one result exists,
+                        # a later candidate gets three times its time (at least 2 min) and is otherwise just worse
+                        dl = 1800 if best is None else max(120.0, 3 * best["seconds"])
+                        try:
+                            job, secs, cov = run_query(sw, f"{mode}{qn[:3]}{cover[:2]}{i}", "zt://" + g, reg, cover,
+                                                       deadline=dl)
+                        except Exception as e:
+                            print(f"candidate {g[:8]} of {qn}: {type(e).__name__} {e}", flush=True)
+                            if best is None and i == len(cands) - 1:
+                                best = {"mode": mode, "select": cover, "rep": rep, "query": qn, "failed": str(e)[:200],
+                                        "seconds": None, "swarms": len(links)}
+                            continue
                         cand = {"mode": mode, "select": cover, "rep": rep, "query": qn, "swarm_holders": len(links[g]),
                                 "swarms": len(links), "seconds": round(secs, 2), "bytes": job["bytes"],
                                 "chunks": job["done"], "total": job["total"], "missing": job["missing"],

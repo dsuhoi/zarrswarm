@@ -18,7 +18,12 @@ def main():
     a = ap.parse_args()
     rows = json.load(open(a.results))["rows"]
     out = {}
+    failed = [r for r in rows if r.get("seconds") is None]
+    if failed:
+        print(f"{len(failed)} failed queries (no answer within the deadline):", [(r["query"], r["mode"], r["rep"]) for r in failed])
     for r in rows:
+        if r.get("seconds") is None:
+            continue
         c = CONF.get((r["mode"], r.get("select", "jlps")))
         if c:
             out.setdefault((r["query"], c), []).append(r)
