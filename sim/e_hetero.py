@@ -179,7 +179,20 @@ def obtained_samples(view: dict, keys: list[str], S: int) -> set[int]:
     return got
 
 
-def run_query(sw, tag, link, region, cover="jlps"):
+def run_query(sw, tag, link, region, cover="jlps", tries=3):
+    """run_query_once with a fresh client per attempt: a client that stalls is replaced, and the attempt is counted."""
+    for attempt in range(tries):
+        try:
+            job, secs, cov = run_query_once(sw, f"{tag}a{attempt}", link, region, cover)
+            job["attempts"] = attempt + 1
+            return job, secs, cov
+        except Exception as e:
+            print(f"query {tag} attempt {attempt}: {type(e).__name__} {e}", flush=True)
+            if attempt == tries - 1:
+                raise
+
+
+def run_query_once(sw, tag, link, region, cover="jlps"):
     """Fresh client (empty cache) -> one download job; seconds, job, completeness of the answer."""
     client = S.fresh_client(sw, tag, "maxflow")
     time.sleep(1.0)
@@ -188,9 +201,13 @@ def run_query(sw, tag, link, region, cover="jlps"):
     grid = next(g for g in grids if VAR in http(ctl, "GET", f"/api/view/{g}?refresh=1")["arrays"])
     view = http(ctl, "GET", f"/api/view/{grid}")
     t = time.time()
-    jid = http(ctl, "POST", "/api/download", {"grid": grid, "region": dict(region, var=VAR),
-                                               "cover": cover, "label": "q"})["job"]
-    wait_job(ctl, jid)
+    try:
+        jid = http(ctl, "POST", "/api/download", {"grid": grid, "region": dict(region, var=VAR),
+                                                   "cover": cover, "label": "q"}, timeout=400)["job"]
+        wait_job(ctl, jid, deadline=1800)
+    except Exception:
+        sw.kill(client)
+        raise
     secs = time.time() - t
     job = http(ctl, "GET", f"/api/job/{jid}")
     full_view = http(ctl, "GET", f"/api/view/{grid}")  # layouts incl. stride info
@@ -273,6 +290,7 @@ def main():
                                 "chunks": job["done"], "total": job["total"], "missing": job["missing"],
                                 "coverage": round(cov, 3), "peers_used": len(job["per_peer"]),
                                 "plan_T": job.get("plan_T"), "est_T": (job.get("cover") or {}).get("est_T"),
+                                "attempts": job.get("attempts", 1),
                                 "phases": job.get("phases"),
                                 "peer_detail": {p[:8]: {"pred_MB": round((job.get("pred") or {}).get(p, {}).get("bytes", 0) / 1e6, 2),
                                                         "bw_MBps": round((job.get("pred") or {}).get(p, {}).get("bw", 0) / 1e6, 2),

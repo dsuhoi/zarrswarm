@@ -61,6 +61,7 @@ STALL_FIRST = 30.0  # s: read timeout for a peer we have not measured yet
 HINT_EFF = 0.8  # announced link rates vs achieved goodput (measured ~0.77 in the simulator): calibrate first contact
 FOLLOW_EVERY = float(os.environ.get("ZT_FOLLOW_EVERY", "300"))  # s between subscription catch-ups
 ANNOUNCE_BW = float(os.environ.get("ZT_ANNOUNCE_MBPS", 0)) * 1e6 or None  # uplink hint without app-level shaping (the link is shaped elsewhere, e.g. by the kernel)
+COVER_DEADLINE = float(os.environ.get("ZT_COVER_DEADLINE", "300"))  # s for choosing a cover (view + JLPS + probes)
 NET_SKEW = 120  # s: tolerated clock difference for closed-network request MACs
 RESCAN_EVERY = float(os.environ.get("ZT_RESCAN_EVERY", "60"))  # s between checks of seeded datasets for appends
 STALL_MIN = float(os.environ.get("ZT_STALL_MIN", "5.0"))  # s without a byte before a batch counts as stalled
@@ -208,7 +209,8 @@ class Node:
             data.add_routes([web.get("/relay/attach", self.h_relay_attach),
                              web.route("*", "/r/{nid}/{tail:.*}", self.h_relay_forward)])
         ctl = web.Application(client_max_size=64 << 20, middlewares=[_ctl_guard])
-        ctl.add_routes([web.get("/api/status", self.a_status), web.post("/api/seed", self.a_seed),
+        ctl.add_routes([web.get("/api/status", self.a_status), web.get("/api/debug/tasks", self.a_tasks),
+                        web.post("/api/seed", self.a_seed),
                         web.post("/api/unseed", self.a_unseed), web.get("/api/resolve", self.a_resolve),
                         web.get("/api/view/{grid}", self.a_view), web.post("/api/fetch", self.a_fetch),
                         web.post("/api/read", self.a_read),
@@ -2485,6 +2487,16 @@ class Node:
                                  {"nchunks": len(v["best"]), "npeers": len(v["addrs"]),
                                   "local": len(self.local.get(v["grid_id"], {}).get("chunks", {}))})
 
+    async def a_tasks(self, req):
+        """Where is every coroutine of this node waiting? (local control API only; for hangs in the field)"""
+        import io
+        out = []
+        for t in asyncio.all_tasks():
+            buf = io.StringIO()
+            t.print_stack(limit=8, file=buf)
+            out.append(buf.getvalue())
+        return web.Response(text="\n".join(out))
+
     async def a_fetch(self, req):
         d = await req.json()
         return web.json_response(await self.fetch(d["grid"], d["keys"], expect=d.get("expect")))
@@ -2510,7 +2522,16 @@ class Node:
         """Download job: explicit `keys`, or a `region` {var, t0, t1, isel} resolved by cover selection."""
         info, rview = {}, None
         if "region" in d:  # server-side cover selection (JLPS by default)
-            d["keys"], info = await self.region_keys(d["grid"], d["region"], d.get("cover", "jlps"))
+            try:  # bounded: a cover that waits forever on a peer must fail loudly, with every coroutine's stack logged
+                d["keys"], info = await asyncio.wait_for(
+                    self.region_keys(d["grid"], d["region"], d.get("cover", "jlps")), COVER_DEADLINE)
+            except asyncio.TimeoutError:
+                import io
+                for t in asyncio.all_tasks():
+                    buf = io.StringIO()
+                    t.print_stack(limit=8, file=buf)
+                    print("[zt] cover stalled; task:", buf.getvalue(), flush=True)
+                raise
             rview = info.pop("_view", None)
             if d.get("cover", "jlps") == "jlps" and self.strategy == "maxflow":
                 # JLPS chooses layouts and holders by rate: peers it knows nothing about are measured first, on

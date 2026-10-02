@@ -772,9 +772,12 @@ def prefetch(obj, wait: bool = True, label: str = "", progress=None) -> list[str
     return [j for _, j in jobs]
 
 
-def wait_job(ctl: str, jid: str, progress=None, every: float = 0.3) -> dict:
+def wait_job(ctl: str, jid: str, progress=None, every: float = 0.3, deadline: float | None = None) -> dict:
+    t0 = time.time()
     while True:
-        job = http(ctl, "GET", f"/api/job/{jid}?since=1000000000")
+        if deadline and time.time() - t0 > deadline:
+            raise TimeoutError(f"job {jid} still running after {deadline:.0f} s")
+        job = http(ctl, "GET", f"/api/job/{jid}?since=1000000000", timeout=60)
         if progress:
             progress(job)
         if job["state"] != "running":
