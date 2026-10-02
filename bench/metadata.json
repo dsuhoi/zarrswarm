@@ -1,0 +1,47 @@
+[
+ {
+  "chunks": 1000,
+  "data_MB": 0.7,
+  "scan_s": 2.8,
+  "scan_ms_per_chunk": 2.82,
+  "seed_s": 3.4,
+  "manifest_MB": 0.06,
+  "manifest_B_per_chunk": 58.1,
+  "pages": 22,
+  "hash_cache_B_per_chunk": 158.6,
+  "node_idle_MB": 108.6,
+  "node_holding_MB": 114.9,
+  "node_B_per_chunk": 6606.8,
+  "dht_records": 2
+ },
+ {
+  "chunks": 10000,
+  "data_MB": 6.9,
+  "scan_s": 30.5,
+  "scan_ms_per_chunk": 3.05,
+  "seed_s": 27.1,
+  "manifest_MB": 0.58,
+  "manifest_B_per_chunk": 57.6,
+  "pages": 183,
+  "hash_cache_B_per_chunk": 159.4,
+  "node_idle_MB": 108.1,
+  "node_holding_MB": 103.0,
+  "node_B_per_chunk": -538.2,
+  "dht_records": 2
+ },
+ {
+  "chunks": 100000,
+  "data_MB": 69.3,
+  "scan_s": 255.1,
+  "scan_ms_per_chunk": 2.55,
+  "seed_s": 199.4,
+  "manifest_MB": 5.74,
+  "manifest_B_per_chunk": 57.4,
+  "pages": 1646,
+  "hash_cache_B_per_chunk": 160.3,
+  "node_idle_MB": 108.4,
+  "node_holding_MB": 260.7,
+  "node_B_per_chunk": 1596.0,
+  "dht_records": 2
+ }
+]

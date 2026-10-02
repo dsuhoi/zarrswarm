@@ -1,0 +1,21 @@
+[project]
+name = "zarr-torrent"
+version = "0.1.0"
+description = "Decentralized (Kademlia DHT) peer-to-peer distribution of Zarr arrays with coordinate-aware chunk addressing"
+requires-python = ">=3.11"
+dependencies = ["zarr>=3", "xarray", "numpy", "aiohttp>=3.9", "textual", "cryptography"]
+
+[project.optional-dependencies]
+test = ["pytest", "dask"]
+netcdf = ["h5netcdf", "h5py"]
+
+[project.scripts]
+zt = "zarr_torrent.cli:main"
+zt-tui = "zarr_torrent.tui:main"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["zarr_torrent"]

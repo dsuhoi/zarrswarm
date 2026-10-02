@@ -1,0 +1,110 @@
+{
+ "config": {
+  "peers": 24,
+  "boot": 3,
+  "nat": 0.3,
+  "days": 30,
+  "replica_frac": 0.8,
+  "reps": 2,
+  "only": "e6",
+  "out": "sim/results_e6_v5.json"
+ },
+ "e6": [
+  {
+   "loss": 0.0,
+   "rep": 0,
+   "state": "done",
+   "done": 30,
+   "total": 30,
+   "failed": 0,
+   "missing": 0,
+   "seconds": 5.3,
+   "phases": {
+    "view": 0.0,
+    "round0": 5.27
+   },
+   "values_ok": true
+  },
+  {
+   "loss": 0.0,
+   "rep": 1,
+   "state": "done",
+   "done": 49,
+   "total": 49,
+   "failed": 0,
+   "missing": 0,
+   "seconds": 4.1,
+   "phases": {
+    "view": 0.0,
+    "round0": 3.94
+   },
+   "values_ok": true
+  },
+  {
+   "loss": 0.2,
+   "rep": 0,
+   "state": "done",
+   "done": 30,
+   "total": 30,
+   "failed": 0,
+   "missing": 0,
+   "seconds": 36.2,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.73,
+    "round1": 24.36
+   },
+   "values_ok": true
+  },
+  {
+   "loss": 0.2,
+   "rep": 1,
+   "state": "done",
+   "done": 51,
+   "total": 51,
+   "failed": 0,
+   "missing": 0,
+   "seconds": 69.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 30.68,
+    "round1": 38.23
+   },
+   "values_ok": true
+  },
+  {
+   "loss": 0.4,
+   "rep": 0,
+   "state": "partial",
+   "done": 19,
+   "total": 22,
+   "failed": 1,
+   "missing": 0,
+   "seconds": 167.3,
+   "phases": {
+    "view": 0.0,
+    "round0": 15.2,
+    "round1": 70.58,
+    "round2": 40.24,
+    "round3": 41.19
+   },
+   "values_ok": true
+  },
+  {
+   "loss": 0.4,
+   "rep": 1,
+   "state": "done",
+   "done": 42,
+   "total": 43,
+   "failed": 0,
+   "missing": 0,
+   "seconds": 74.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 32.15,
+    "round1": 41.77
+   },
+   "values_ok": true
+  }
+ ]
+}

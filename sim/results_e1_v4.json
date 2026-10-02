@@ -1,0 +1,295 @@
+{
+ "config": {
+  "peers": 24,
+  "boot": 3,
+  "nat": 0.3,
+  "days": 60,
+  "replica_frac": 0.8,
+  "reps": 3,
+  "only": "e1",
+  "e9_budget": 2,
+  "e1_strategies": [
+   "maxflow",
+   "rarest",
+   "random",
+   "single"
+  ],
+  "e9_kills": [
+   0.4,
+   0.6
+  ],
+  "e9_modes": [
+   "none",
+   "replicas",
+   "rs_consecutive",
+   "rs_interleaved"
+  ],
+  "out": "sim/results_e1_v4.json"
+ },
+ "e1": [
+  {
+   "strategy": "maxflow",
+   "rep": 0,
+   "seconds": 7.76,
+   "chunks": 66,
+   "bw_ratio_direct": 0.9,
+   "bw_ratio_relay": 0.29,
+   "T_err": 0.58,
+   "phases": {
+    "view": 0.0,
+    "round0": 7.66
+   },
+   "missing": 0,
+   "MB": 33.7,
+   "MBps": 4.35,
+   "plan_T": 13.2,
+   "gini_upload": 0.689,
+   "max_share": 0.204,
+   "contributors": 11,
+   "seeders": 18,
+   "values_ok": true
+  },
+  {
+   "strategy": "maxflow",
+   "rep": 1,
+   "seconds": 4.72,
+   "chunks": 66,
+   "bw_ratio_direct": 0.84,
+   "bw_ratio_relay": null,
+   "T_err": 0.55,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.51
+   },
+   "missing": 0,
+   "MB": 30.5,
+   "MBps": 6.45,
+   "plan_T": 8.19,
+   "gini_upload": 0.697,
+   "max_share": 0.174,
+   "contributors": 9,
+   "seeders": 16,
+   "values_ok": true
+  },
+  {
+   "strategy": "maxflow",
+   "rep": 2,
+   "seconds": 21.53,
+   "chunks": 57,
+   "bw_ratio_direct": 0.91,
+   "bw_ratio_relay": 0.63,
+   "T_err": 1.65,
+   "phases": {
+    "view": 0.0,
+    "round0": 21.43
+   },
+   "missing": 0,
+   "MB": 31.0,
+   "MBps": 1.44,
+   "plan_T": 13.02,
+   "gini_upload": 0.762,
+   "max_share": 0.228,
+   "contributors": 9,
+   "seeders": 17,
+   "values_ok": true
+  },
+  {
+   "strategy": "rarest",
+   "rep": 0,
+   "seconds": 8.6,
+   "chunks": 66,
+   "bw_ratio_direct": null,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 8.59
+   },
+   "missing": 0,
+   "MB": 31.9,
+   "MBps": 3.71,
+   "plan_T": 0.0,
+   "gini_upload": 0.779,
+   "max_share": 0.209,
+   "contributors": 7,
+   "seeders": 18,
+   "values_ok": true
+  },
+  {
+   "strategy": "rarest",
+   "rep": 1,
+   "seconds": 4.69,
+   "chunks": 66,
+   "bw_ratio_direct": null,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.68
+   },
+   "missing": 0,
+   "MB": 31.6,
+   "MBps": 6.73,
+   "plan_T": 0.0,
+   "gini_upload": 0.801,
+   "max_share": 0.292,
+   "contributors": 7,
+   "seeders": 16,
+   "values_ok": true
+  },
+  {
+   "strategy": "rarest",
+   "rep": 2,
+   "seconds": 12.5,
+   "chunks": 57,
+   "bw_ratio_direct": null,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 12.48
+   },
+   "missing": 0,
+   "MB": 31.6,
+   "MBps": 2.53,
+   "plan_T": 0.0,
+   "gini_upload": 0.831,
+   "max_share": 0.321,
+   "contributors": 6,
+   "seeders": 17,
+   "values_ok": true
+  },
+  {
+   "strategy": "random",
+   "rep": 0,
+   "seconds": 9.64,
+   "chunks": 66,
+   "bw_ratio_direct": 1.04,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 9.53
+   },
+   "missing": 0,
+   "MB": 32.6,
+   "MBps": 3.38,
+   "plan_T": 0.0,
+   "gini_upload": 0.722,
+   "max_share": 0.212,
+   "contributors": 11,
+   "seeders": 18,
+   "values_ok": true
+  },
+  {
+   "strategy": "random",
+   "rep": 1,
+   "seconds": 4.49,
+   "chunks": 66,
+   "bw_ratio_direct": 1.0,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.47
+   },
+   "missing": 0,
+   "MB": 31.4,
+   "MBps": 6.99,
+   "plan_T": 0.0,
+   "gini_upload": 0.741,
+   "max_share": 0.279,
+   "contributors": 9,
+   "seeders": 16,
+   "values_ok": true
+  },
+  {
+   "strategy": "random",
+   "rep": 2,
+   "seconds": 14.17,
+   "chunks": 57,
+   "bw_ratio_direct": 0.48,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 14.14
+   },
+   "missing": 0,
+   "MB": 32.4,
+   "MBps": 2.28,
+   "plan_T": 0.0,
+   "gini_upload": 0.79,
+   "max_share": 0.313,
+   "contributors": 10,
+   "seeders": 17,
+   "values_ok": true
+  },
+  {
+   "strategy": "single",
+   "rep": 0,
+   "seconds": 14.51,
+   "chunks": 66,
+   "bw_ratio_direct": 0.67,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 14.34
+   },
+   "missing": 0,
+   "MB": 32.4,
+   "MBps": 2.23,
+   "plan_T": 0.0,
+   "gini_upload": 0.768,
+   "max_share": 0.313,
+   "contributors": 9,
+   "seeders": 18,
+   "values_ok": true
+  },
+  {
+   "strategy": "single",
+   "rep": 1,
+   "seconds": 4.54,
+   "chunks": 66,
+   "bw_ratio_direct": 0.92,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.46
+   },
+   "missing": 0,
+   "MB": 30.5,
+   "MBps": 6.71,
+   "plan_T": 0.0,
+   "gini_upload": 0.772,
+   "max_share": 0.348,
+   "contributors": 9,
+   "seeders": 16,
+   "values_ok": true
+  },
+  {
+   "strategy": "single",
+   "rep": 2,
+   "seconds": 11.47,
+   "chunks": 57,
+   "bw_ratio_direct": 0.98,
+   "bw_ratio_relay": null,
+   "T_err": null,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.3
+   },
+   "missing": 0,
+   "MB": 31.8,
+   "MBps": 2.77,
+   "plan_T": 0.0,
+   "gini_upload": 0.865,
+   "max_share": 0.333,
+   "contributors": 5,
+   "seeders": 17,
+   "values_ok": true
+  }
+ ]
+}

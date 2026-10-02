@@ -1,0 +1,86 @@
+{
+ "config": {
+  "peers": 64,
+  "boot": 4,
+  "nat": 0.3,
+  "days": 20,
+  "replica_frac": 0.8,
+  "reps": 1,
+  "only": "e4,e2",
+  "out": "sim/results_scale64.json"
+ },
+ "e4": [
+  {
+   "nodes": 64,
+   "dht_values_gini": 0.552,
+   "dht_values_max": 96,
+   "dht_values_median": 4.0,
+   "dht_rpc_gini": 0.577,
+   "dht_rpc_max_share": 0.072,
+   "lookup_success": "64/64",
+   "contacts_median": 24.0
+  }
+ ],
+ "e2": [
+  {
+   "kill_frac": 0.0,
+   "rep": 0,
+   "killed": 0,
+   "bootstraps_alive": 4,
+   "seeders_alive": 48,
+   "seeders": 48,
+   "dht_lookup_ok": true,
+   "lookup_s": 0.33,
+   "peers_found": 48,
+   "chunk_availability": 1.0,
+   "downloaded": 19,
+   "download_state": "done",
+   "seconds": 1.64
+  },
+  {
+   "kill_frac": 0.2,
+   "rep": 0,
+   "killed": 12,
+   "bootstraps_alive": 4,
+   "seeders_alive": 38,
+   "seeders": 48,
+   "dht_lookup_ok": true,
+   "lookup_s": 0.26,
+   "peers_found": 48,
+   "chunk_availability": 0.956,
+   "downloaded": 19,
+   "download_state": "done",
+   "seconds": 1.83
+  },
+  {
+   "kill_frac": 0.4,
+   "rep": 0,
+   "killed": 25,
+   "bootstraps_alive": 4,
+   "seeders_alive": 26,
+   "seeders": 48,
+   "dht_lookup_ok": true,
+   "lookup_s": 0.24,
+   "peers_found": 48,
+   "chunk_availability": 0.802,
+   "downloaded": 25,
+   "download_state": "done",
+   "seconds": 1.43
+  },
+  {
+   "kill_frac": 0.6,
+   "rep": 0,
+   "killed": 38,
+   "bootstraps_alive": 3,
+   "seeders_alive": 17,
+   "seeders": 48,
+   "dht_lookup_ok": true,
+   "lookup_s": 0.16,
+   "peers_found": 48,
+   "chunk_availability": 0.593,
+   "downloaded": 26,
+   "download_state": "done",
+   "seconds": 2.05
+  }
+ ]
+}

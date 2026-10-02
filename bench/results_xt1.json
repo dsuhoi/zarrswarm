@@ -1,0 +1,16 @@
+{
+ "rate_MBps": 2.0,
+ "plain": {
+  "s": 62.4,
+  "wire_MB": 123.8,
+  "exact": true,
+  "xt1_chunks_served": 0
+ },
+ "xt1": {
+  "s": 50.7,
+  "wire_MB": 99.5,
+  "exact": true,
+  "xt1_chunks_served": 136
+ },
+ "speedup": 1.23
+}

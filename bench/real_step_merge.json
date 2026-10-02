@@ -1,0 +1,24 @@
+{
+ "same_link": true,
+ "grid_ids_arco": [
+  "d6d8b5f4a157659ea60cc61795ba097678f39926"
+ ],
+ "grid_ids_wb2": [
+  "d6d8b5f4a157659ea60cc61795ba097678f39926"
+ ],
+ "layouts_arco": [
+  "1x721x1440+0"
+ ],
+ "layouts_wb2": [
+  "1x721x1440+0s6o0"
+ ],
+ "view_steps": 20,
+ "day1_from_hourly_replica": 4,
+ "values_exact_vs_cloud": true,
+ "fetch_s": 15.6,
+ "swarm_read_s": 0.83,
+ "per_peer": {
+  "debc5b0f": 2203045,
+  "6ba2f006": 2200914
+ }
+}

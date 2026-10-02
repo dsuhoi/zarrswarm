@@ -1,0 +1,94 @@
+{
+ "config": {
+  "peers": 30,
+  "boot": 3,
+  "nat": 0.3,
+  "days": 30,
+  "replica_frac": 0.8,
+  "reps": 3,
+  "only": "e9",
+  "e9_budget": 1,
+  "e9_kills": [
+   0.2,
+   0.4
+  ],
+  "e9_modes": [
+   "none"
+  ],
+  "out": "sim/results_e9_sweep_none.json"
+ },
+ "e9": [
+  {
+   "mode": "none",
+   "kill": 0.2,
+   "rep": 0,
+   "stored_MB": 50.3,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 600,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 0.76
+  },
+  {
+   "mode": "none",
+   "kill": 0.2,
+   "rep": 1,
+   "stored_MB": 49.6,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 648,
+   "steps_got": 576,
+   "restored": 0,
+   "availability": 0.889
+  },
+  {
+   "mode": "none",
+   "kill": 0.2,
+   "rep": 2,
+   "stored_MB": 37.9,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 456,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 1.0
+  },
+  {
+   "mode": "none",
+   "kill": 0.4,
+   "rep": 0,
+   "stored_MB": 50.3,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 600,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 0.76
+  },
+  {
+   "mode": "none",
+   "kill": 0.4,
+   "rep": 1,
+   "stored_MB": 49.6,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 648,
+   "steps_got": 552,
+   "restored": 0,
+   "availability": 0.852
+  },
+  {
+   "mode": "none",
+   "kill": 0.4,
+   "rep": 2,
+   "stored_MB": 37.9,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 456,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 1.0
+  }
+ ]
+}

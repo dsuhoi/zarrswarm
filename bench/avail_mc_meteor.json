@@ -1,0 +1,68 @@
+{
+ "redundancy": {
+  "sites": 52,
+  "byte_swarms": {
+   "lz4maps": 24,
+   "tiles": 20,
+   "ts": 8
+  },
+  "holders_per_hour_value": {
+   "median": 19.0,
+   "min": 6
+  },
+  "holders_per_hour_best_byte_swarm": {
+   "median": 9.0,
+   "min": 3
+  }
+ },
+ "independent": {
+  "0.5": {
+   "value": 0.9999,
+   "byte_best": 0.9938,
+   "value+rs": 1.0,
+   "byte_best+rs": 0.9996
+  },
+  "0.7": {
+   "value": 0.9961,
+   "byte_best": 0.9579,
+   "value+rs": 0.9989,
+   "byte_best+rs": 0.9815
+  },
+  "0.8": {
+   "value": 0.9772,
+   "byte_best": 0.8957,
+   "value+rs": 0.9876,
+   "byte_best+rs": 0.927
+  },
+  "0.9": {
+   "value": 0.8448,
+   "byte_best": 0.7159,
+   "value+rs": 0.8568,
+   "byte_best+rs": 0.7275
+  },
+  "0.95": {
+   "value": 0.609,
+   "byte_best": 0.512,
+   "value+rs": 0.6129,
+   "byte_best+rs": 0.5149
+  }
+ },
+ "regional": {
+  "30": {
+   "value": 1.0,
+   "byte_best": 1.0
+  },
+  "60": {
+   "value": 1.0,
+   "byte_best": 1.0
+  },
+  "90": {
+   "value": 1.0,
+   "byte_best": 0.9998
+  },
+  "120": {
+   "value": 1.0,
+   "byte_best": 0.9979
+  }
+ }
+}

@@ -1,0 +1,6 @@
+.venv
+sim
+bench
+tests
+**/__pycache__
+*.zarr

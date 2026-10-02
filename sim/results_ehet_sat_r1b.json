@@ -1,0 +1,120 @@
+{
+ "args": {
+  "variants": "/home/dsuhoi/.cache/zt_variants_month",
+  "peers": 39,
+  "boot": 3,
+  "nat": 0.3,
+  "reps": 1,
+  "modes": "values,bytes",
+  "out": "sim/results_ehet_sat_r1b.json",
+  "placement": "sat",
+  "traces": "bench/sat_traces.json",
+  "stations": 24
+ },
+ "rows": [
+  {
+   "mode": "values",
+   "rep": 0,
+   "query": "map_day_1h",
+   "swarm_holders": 36,
+   "swarms": 1,
+   "seconds": 4.36,
+   "bytes": 53372685,
+   "chunks": 69,
+   "total": 69,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 12,
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "rep": 0,
+   "query": "series_point_1h",
+   "swarm_holders": 36,
+   "swarms": 1,
+   "seconds": 3.49,
+   "bytes": 25778944,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 3,
+   "cover": [
+    "168x91x180+144"
+   ]
+  },
+  {
+   "mode": "values",
+   "rep": 0,
+   "query": "period_6h",
+   "swarm_holders": 36,
+   "swarms": 1,
+   "seconds": 65.84,
+   "bytes": 1655236894,
+   "chunks": 2115,
+   "total": 2115,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 30,
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "rep": 0,
+   "query": "map_day_1h",
+   "swarm_holders": 12,
+   "swarms": 3,
+   "seconds": 4.79,
+   "bytes": 53473640,
+   "chunks": 96,
+   "total": 96,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 8,
+   "cover": [
+    "1x361x720+0"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "rep": 0,
+   "query": "series_point_1h",
+   "swarm_holders": 6,
+   "swarms": 3,
+   "seconds": 2.47,
+   "bytes": 25778944,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 3,
+   "cover": [
+    "168x91x180+144"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "rep": 0,
+   "query": "period_6h",
+   "swarm_holders": 18,
+   "swarms": 3,
+   "seconds": 45.2,
+   "bytes": 1635930874,
+   "chunks": 744,
+   "total": 744,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 20,
+   "cover": [
+    "1x721x1440+0"
+   ]
+  }
+ ]
+}

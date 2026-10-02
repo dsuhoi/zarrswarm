@@ -1,0 +1,322 @@
+{
+ "arco_vs_ncar": {
+  "2m_temperature@2020-01-03T18": {
+   "exact_equal": 0.0178,
+   "unique": [
+    41946,
+    41946
+   ],
+   "log2_step": [
+    -9,
+    -9
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "2m_temperature@2020-01-15T06": {
+   "exact_equal": 0.0195,
+   "unique": [
+    43962,
+    43962
+   ],
+   "log2_step": [
+    -9,
+    -9
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "2m_temperature@2020-01-28T00": {
+   "exact_equal": 0.0174,
+   "unique": [
+    41246,
+    41246
+   ],
+   "log2_step": [
+    -9,
+    -9
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "mean_sea_level_pressure@2020-01-03T18": {
+   "exact_equal": 0.0503,
+   "unique": [
+    30143,
+    30143
+   ],
+   "log2_step": [
+    -2,
+    -2
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "mean_sea_level_pressure@2020-01-15T06": {
+   "exact_equal": 0.0487,
+   "unique": [
+    31418,
+    31418
+   ],
+   "log2_step": [
+    -2,
+    -2
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "mean_sea_level_pressure@2020-01-28T00": {
+   "exact_equal": 0.048,
+   "unique": [
+    29460,
+    29460
+   ],
+   "log2_step": [
+    -2,
+    -2
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "10m_u_component_of_wind@2020-01-03T18": {
+   "exact_equal": 0.0004,
+   "unique": [
+    32261,
+    32261
+   ],
+   "log2_step": [
+    -10,
+    -10
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "10m_u_component_of_wind@2020-01-15T06": {
+   "exact_equal": 0.0006,
+   "unique": [
+    31679,
+    31679
+   ],
+   "log2_step": [
+    -10,
+    -10
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "10m_u_component_of_wind@2020-01-28T00": {
+   "exact_equal": 0.0005,
+   "unique": [
+    36560,
+    36560
+   ],
+   "log2_step": [
+    -10,
+    -10
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "total_column_water_vapour@2020-01-03T18": {
+   "exact_equal": 0.0016,
+   "unique": [
+    34415,
+    34415
+   ],
+   "log2_step": [
+    -9,
+    -9
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "total_column_water_vapour@2020-01-15T06": {
+   "exact_equal": 0.0012,
+   "unique": [
+    36193,
+    36193
+   ],
+   "log2_step": [
+    -9,
+    -9
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  },
+  "total_column_water_vapour@2020-01-28T00": {
+   "exact_equal": 0.0008,
+   "unique": [
+    34403,
+    34403
+   ],
+   "log2_step": [
+    -9,
+    -9
+   ],
+   "codes_equal": 1.0,
+   "tiles_identical_own_lattice": "64/64",
+   "tiles_identical_field_lattice": "64/64"
+  }
+ },
+ "negative_wb2_1p5deg": {
+  "2020-03-03T06": {
+   "exact_equal": 0.713,
+   "unique": [
+    28786,
+    28801
+   ],
+   "log2_step": [
+    -16,
+    -16
+   ],
+   "codes_equal": 0.713017,
+   "tiles_identical_own_lattice": "0/8",
+   "tiles_identical_field_lattice": "0/8"
+  },
+  "2010-07-01T00": {
+   "exact_equal": 0.713,
+   "unique": [
+    28710,
+    28700
+   ],
+   "log2_step": [
+    -16,
+    -16
+   ],
+   "codes_equal": 0.713017,
+   "tiles_identical_own_lattice": "0/8",
+   "tiles_identical_field_lattice": "0/8"
+  }
+ },
+ "names": {
+  "2m_temperature": {
+   "ncar_name": "VAR_2T",
+   "ncar_attrs": {
+    "long_name": "2 metre temperature",
+    "short_name": "2t",
+    "units": "K",
+    "original_format": "WMO GRIB 1 with ECMWF local table",
+    "ecmwf_local_table": "128",
+    "ecmwf_parameter": "167",
+    "minimum_value": "213.06902",
+    "maximum_value": "321.83313",
+    "grid_specification": "0.25 degree x 0.25 degree from 90N to 90S and 0E to 359.75E (721 x 1440 Latitude/Longitude)",
+    "rda_dataset": "ds633.0",
+    "rda_dataset_url": "https:/rda.ucar.edu/datasets/ds633.0/",
+    "rda_dataset_doi": "DOI: 10.5065/BH6N-5N20",
+    "rda_dataset_group": "ERA5 atmospheric surface analysis [netCDF4]",
+    "number_of_significant_digits": "7"
+   },
+   "arco_attrs": {
+    "long_name": "2 metre temperature",
+    "short_name": "t2m",
+    "units": "K"
+   },
+   "coord_dtypes": [
+    "float64",
+    "float32"
+   ],
+   "coords_equal": true
+  },
+  "mean_sea_level_pressure": {
+   "ncar_name": "MSL",
+   "ncar_attrs": {
+    "long_name": "Mean sea level pressure",
+    "short_name": "msl",
+    "units": "Pa",
+    "original_format": "WMO GRIB 1 with ECMWF local table",
+    "ecmwf_local_table": "128",
+    "ecmwf_parameter": "151",
+    "minimum_value": "92322.94",
+    "maximum_value": "106034.875",
+    "grid_specification": "0.25 degree x 0.25 degree from 90N to 90S and 0E to 359.75E (721 x 1440 Latitude/Longitude)",
+    "rda_dataset": "ds633.0",
+    "rda_dataset_url": "https:/rda.ucar.edu/datasets/ds633.0/",
+    "rda_dataset_doi": "DOI: 10.5065/BH6N-5N20",
+    "rda_dataset_group": "ERA5 atmospheric surface analysis [netCDF4]",
+    "number_of_significant_digits": "7"
+   },
+   "arco_attrs": {
+    "long_name": "Mean sea level pressure",
+    "short_name": "msl",
+    "standard_name": "air_pressure_at_mean_sea_level",
+    "units": "Pa"
+   },
+   "coord_dtypes": [
+    "float64",
+    "float32"
+   ],
+   "coords_equal": true
+  },
+  "10m_u_component_of_wind": {
+   "ncar_name": "VAR_10U",
+   "ncar_attrs": {
+    "long_name": "10 metre U wind component",
+    "short_name": "10u",
+    "units": "m s**-1",
+    "original_format": "WMO GRIB 1 with ECMWF local table",
+    "ecmwf_local_table": "128",
+    "ecmwf_parameter": "165",
+    "minimum_value": "-29.056122",
+    "maximum_value": "37.162247",
+    "grid_specification": "0.25 degree x 0.25 degree from 90N to 90S and 0E to 359.75E (721 x 1440 Latitude/Longitude)",
+    "rda_dataset": "ds633.0",
+    "rda_dataset_url": "https:/rda.ucar.edu/datasets/ds633.0/",
+    "rda_dataset_doi": "DOI: 10.5065/BH6N-5N20",
+    "rda_dataset_group": "ERA5 atmospheric surface analysis [netCDF4]",
+    "number_of_significant_digits": "7"
+   },
+   "arco_attrs": {
+    "long_name": "10 metre U wind component",
+    "short_name": "u10",
+    "units": "m s**-1"
+   },
+   "coord_dtypes": [
+    "float64",
+    "float32"
+   ],
+   "coords_equal": true
+  },
+  "total_column_water_vapour": {
+   "ncar_name": "TCWV",
+   "ncar_attrs": {
+    "long_name": "Total column water vapour",
+    "short_name": "tcwv",
+    "units": "kg m**-2",
+    "original_format": "WMO GRIB 1 with ECMWF local table",
+    "ecmwf_local_table": "128",
+    "ecmwf_parameter": "137",
+    "minimum_value": "0.07757199",
+    "maximum_value": "86.35221",
+    "grid_specification": "0.25 degree x 0.25 degree from 90N to 90S and 0E to 359.75E (721 x 1440 Latitude/Longitude)",
+    "rda_dataset": "ds633.0",
+    "rda_dataset_url": "https:/rda.ucar.edu/datasets/ds633.0/",
+    "rda_dataset_doi": "DOI: 10.5065/BH6N-5N20",
+    "rda_dataset_group": "ERA5 atmospheric surface analysis [netCDF4]",
+    "number_of_significant_digits": "7"
+   },
+   "arco_attrs": {
+    "long_name": "Total column vertically-integrated water vapour",
+    "short_name": "tcwv",
+    "standard_name": "lwe_thickness_of_atmosphere_mass_content_of_water_vapor",
+    "units": "kg m**-2"
+   },
+   "coord_dtypes": [
+    "float64",
+    "float32"
+   ],
+   "coords_equal": true
+  }
+ }
+}

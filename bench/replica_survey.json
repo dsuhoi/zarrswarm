@@ -1,0 +1,280 @@
+{
+ "rows": [
+  {
+   "copy": "gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    1323648,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 1.0,
+   "t0": "1900-01-01T00",
+   "t1": "2050-12-31T23",
+   "lat0": 90.0,
+   "nvars": 273,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "gcp-public-data-arco-era5/ar/1959-2022-full_37-1h-0p25deg-chunk-1.zarr-v2",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    552264,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 1.0,
+   "t0": "1959-01-01T00",
+   "t1": "2021-12-31T23",
+   "lat0": 90.0,
+   "nvars": 31,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "gcp-public-data-arco-era5/ar/1959-2022-full_37-6h-0p25deg-chunk-1.zarr-v2",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    92044,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 6.0,
+   "t0": "1959-01-01T00",
+   "t1": "2021-12-31T18",
+   "lat0": 90.0,
+   "nvars": 32,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "gcp-public-data-arco-era5/ar/1959-2022-wb13-6h-0p25deg-chunk-1.zarr-v2",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    92044,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 6.0,
+   "t0": "1959-01-01T00",
+   "t1": "2021-12-31T18",
+   "lat0": 90.0,
+   "nvars": 36,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "gcp-public-data-arco-era5/ar/1959-2022-6h-1440x721.zarr",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    92044,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 6.0,
+   "t0": "1959-01-01T00",
+   "t1": "2021-12-31T18",
+   "lat0": 90.0,
+   "nvars": 38,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "gcp-public-data-arco-era5/ar/1959-2023_01_10-full_37-1h-1440x721.zarr",
+   "error": "GroupNotFoundError(\"No group found in store 'https://storage.googleapis.com/gcp-public-data-arco-era5/ar/1959-2023_01_10-full_37-1h-1440x721.zarr' at path ''\")"
+  },
+  {
+   "copy": "weatherbench2/datasets/era5/1959-2023_01_10-wb13-6h-1440x721_with_derived_variables.zarr",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    93544,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 6.0,
+   "t0": "1959-01-01T00",
+   "t1": "2023-01-10T18",
+   "lat0": 90.0,
+   "nvars": 62,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "weatherbench2/datasets/era5/1959-2023_01_10-wb13-6h-1440x721.zarr",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    93544,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 6.0,
+   "t0": "1959-01-01T00",
+   "t1": "2023-01-10T18",
+   "lat0": 90.0,
+   "nvars": 50,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "weatherbench2/datasets/era5/1959-2022-6h-1440x721.zarr",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    92044,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 6.0,
+   "t0": "1959-01-01T00",
+   "t1": "2021-12-31T18",
+   "lat0": 90.0,
+   "nvars": 38,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  },
+  {
+   "copy": "weatherbench2/datasets/era5/1959-2023_01_10-full_37-1h-0p25deg-chunk-1.zarr",
+   "format": 2,
+   "dims": [
+    "time",
+    "latitude",
+    "longitude"
+   ],
+   "shape": [
+    561264,
+    721,
+    1440
+   ],
+   "chunks": [
+    1,
+    721,
+    1440
+   ],
+   "codec": "(Blosc(cname='lz4', clevel=5, shuffle=SHUFFLE, blocksize=0),)",
+   "dtype": "float32",
+   "dt_h": 1.0,
+   "t0": "1959-01-01T00",
+   "t1": "2023-01-10T23",
+   "lat0": 90.0,
+   "nvars": 48,
+   "value_sha": "a5e0b610f2ccf8bc",
+   "chunk_bytes": 2346292,
+   "chunk_sha": "d216874265344fc0"
+  }
+ ],
+ "summary": {
+  "time": "2010-03-03T06",
+  "copies_with_instant": 9,
+  "distinct_values": 1,
+  "distinct_chunk_bytes": 1,
+  "distinct_layouts": 1,
+  "distinct_time_steps_h": [
+   1.0,
+   6.0
+  ]
+ }
+}

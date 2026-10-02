@@ -1,0 +1,27 @@
+{
+ "idle_node_MB": 112.6,
+ "seed_s": 44.3,
+ "seeded_chunks": 746,
+ "replica_GB": 1.74,
+ "seeder_after_seed_MB": 140.5,
+ "client_idle_MB": 112.6,
+ "day_of_maps": {
+  "MB": 52.8,
+  "s": 28.4,
+  "state": "done",
+  "client_rss_MB": 153.5,
+  "client_peak_MB": 173.2,
+  "seeder_peak_MB": 238.3
+ },
+ "month_6h": {
+  "MB": 263.9,
+  "s": 140.0,
+  "state": "done",
+  "client_rss_MB": 155.0,
+  "client_peak_MB": 174.8,
+  "seeder_peak_MB": 270.3
+ },
+ "seeder_state_on_disk_MB": 0.12,
+ "client_state_on_disk_MB": 0.02,
+ "client_cache_MB": 337.6
+}

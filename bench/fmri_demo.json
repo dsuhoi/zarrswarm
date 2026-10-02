@@ -1,0 +1,45 @@
+{
+ "one_link": true,
+ "layouts": [
+  "146x8x16x16+34s2o0",
+  "1x40x64x64+0"
+ ],
+ "queries": {
+  "one volume (t=120, only in R2/R3)": {
+   "seconds": 2.68,
+   "chunks": 1,
+   "missing": 0,
+   "MB": 0.19,
+   "layouts": [
+    "1x40x64x64+0"
+   ],
+   "exact": true
+  },
+  "ROI time series 8x16x16, all 146 volumes": {
+   "seconds": 9.57,
+   "chunks": 1,
+   "missing": 0,
+   "MB": 0.4,
+   "layouts": [
+    "146x8x16x16+34s2o0"
+   ],
+   "exact": true
+  },
+  "whole run at TR 4 s": {
+   "seconds": 2.42,
+   "chunks": 73,
+   "missing": 0,
+   "MB": 13.92,
+   "layouts": [
+    "1x40x64x64+0"
+   ],
+   "exact": true
+  }
+ },
+ "emulated_scaled_decode": {
+  "bit_identical_values": 0.9686,
+  "volumes_equivalent_lattice": 146,
+  "volumes_exact_equal": 0,
+  "one_step_shift_kept_apart": true
+ }
+}

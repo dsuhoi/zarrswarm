@@ -1,0 +1,174 @@
+{
+ "config": {
+  "peers": 30,
+  "boot": 3,
+  "nat": 0.3,
+  "days": 30,
+  "replica_frac": 0.8,
+  "reps": 2,
+  "only": "e9",
+  "out": "sim/results_e9c.json"
+ },
+ "e9": [
+  {
+   "mode": "none",
+   "kill": 0.4,
+   "rep": 0,
+   "stored_MB": 74.3,
+   "steps_total": 600,
+   "steps_got": 432,
+   "restored": 0,
+   "availability": 0.72
+  },
+  {
+   "mode": "none",
+   "kill": 0.4,
+   "rep": 1,
+   "stored_MB": 72.4,
+   "steps_total": 648,
+   "steps_got": 504,
+   "restored": 0,
+   "availability": 0.778
+  },
+  {
+   "mode": "none",
+   "kill": 0.6,
+   "rep": 0,
+   "stored_MB": 74.3,
+   "steps_total": 600,
+   "steps_got": 432,
+   "restored": 0,
+   "availability": 0.72
+  },
+  {
+   "mode": "none",
+   "kill": 0.6,
+   "rep": 1,
+   "stored_MB": 72.4,
+   "steps_total": 648,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 0.704
+  },
+  {
+   "mode": "replicas",
+   "kill": 0.4,
+   "rep": 0,
+   "stored_MB": 127.8,
+   "steps_total": 600,
+   "steps_got": 576,
+   "restored": 0,
+   "availability": 0.96
+  },
+  {
+   "mode": "replicas",
+   "kill": 0.4,
+   "rep": 1,
+   "stored_MB": 121.2,
+   "steps_total": 648,
+   "steps_got": 600,
+   "restored": 0,
+   "availability": 0.926
+  },
+  {
+   "mode": "replicas",
+   "kill": 0.6,
+   "rep": 0,
+   "stored_MB": 127.8,
+   "steps_total": 600,
+   "steps_got": 576,
+   "restored": 0,
+   "availability": 0.96
+  },
+  {
+   "mode": "replicas",
+   "kill": 0.6,
+   "rep": 1,
+   "stored_MB": 122.3,
+   "steps_total": 648,
+   "steps_got": 600,
+   "restored": 0,
+   "availability": 0.926
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.4,
+   "rep": 0,
+   "stored_MB": 145.3,
+   "steps_total": 600,
+   "steps_got": 456,
+   "restored": 4,
+   "availability": 0.76
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.4,
+   "rep": 1,
+   "stored_MB": 154.8,
+   "steps_total": 648,
+   "steps_got": 504,
+   "restored": 0,
+   "availability": 0.778
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.6,
+   "rep": 0,
+   "stored_MB": 145.3,
+   "steps_total": 600,
+   "steps_got": 456,
+   "restored": 4,
+   "availability": 0.76
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.6,
+   "rep": 1,
+   "stored_MB": 154.8,
+   "steps_total": 648,
+   "steps_got": 456,
+   "restored": 16,
+   "availability": 0.704
+  },
+  {
+   "mode": "rs_interleaved",
+   "kill": 0.4,
+   "rep": 0,
+   "stored_MB": 216.2,
+   "steps_total": 600,
+   "steps_got": 456,
+   "restored": 4,
+   "availability": 0.76
+  },
+  {
+   "mode": "rs_interleaved",
+   "kill": 0.4,
+   "rep": 1,
+   "stored_MB": 204.2,
+   "steps_total": 648,
+   "steps_got": 504,
+   "restored": 0,
+   "availability": 0.778
+  },
+  {
+   "mode": "rs_interleaved",
+   "kill": 0.6,
+   "rep": 0,
+   "stored_MB": 216.2,
+   "steps_total": 600,
+   "steps_got": 456,
+   "restored": 4,
+   "availability": 0.76
+  },
+  {
+   "mode": "rs_interleaved",
+   "kill": 0.6,
+   "rep": 1,
+   "stored_MB": 204.2,
+   "steps_total": 648,
+   "steps_got": 456,
+   "restored": 16,
+   "availability": 0.704
+  }
+ ]
+}

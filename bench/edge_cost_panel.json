@@ -1,0 +1,77 @@
+{
+ "host": "dserver1",
+ "machine": "x86_64",
+ "python": "3.12.3",
+ "variants": {
+  "V1-arco-1h": {
+   "chunks": 6,
+   "stored_MB": 14.02,
+   "decoded_MB": 24.92,
+   "decode_ms_per_chunk": 6.94,
+   "decode_s_per_GB": 1.67,
+   "vcid_ms_per_chunk": 10.42,
+   "vcid_s_per_GB": 2.51,
+   "cid_ms_per_chunk": 4.74,
+   "cid_s_per_GB": 1.14,
+   "xt1_encode_ms_per_chunk": 52.1,
+   "xt1_encode_s_per_GB": 12.54,
+   "verify_s_per_GB": 4.18
+  },
+  "V2-wb2-6h": {
+   "chunks": 6,
+   "stored_MB": 14.05,
+   "decoded_MB": 24.92,
+   "decode_ms_per_chunk": 5.72,
+   "decode_s_per_GB": 1.38,
+   "vcid_ms_per_chunk": 10.7,
+   "vcid_s_per_GB": 2.58,
+   "cid_ms_per_chunk": 5.03,
+   "cid_s_per_GB": 1.21,
+   "xt1_encode_ms_per_chunk": 45.61,
+   "xt1_encode_s_per_GB": 10.98,
+   "verify_s_per_GB": 3.96
+  },
+  "V3-ts-1h": {
+   "chunks": 6,
+   "stored_MB": 36.72,
+   "decoded_MB": 66.04,
+   "decode_ms_per_chunk": 41.81,
+   "decode_s_per_GB": 3.8,
+   "vcid_ms_per_chunk": 25.42,
+   "vcid_s_per_GB": 2.31,
+   "cid_ms_per_chunk": 13.5,
+   "cid_s_per_GB": 1.23,
+   "xt1_encode_ms_per_chunk": 163.09,
+   "xt1_encode_s_per_GB": 14.82,
+   "verify_s_per_GB": 6.11
+  },
+  "V4-tile-6h": {
+   "chunks": 6,
+   "stored_MB": 14.79,
+   "decoded_MB": 24.95,
+   "decode_ms_per_chunk": 34.5,
+   "decode_s_per_GB": 8.3,
+   "vcid_ms_per_chunk": 11.27,
+   "vcid_s_per_GB": 2.71,
+   "cid_ms_per_chunk": 5.09,
+   "cid_s_per_GB": 1.22,
+   "xt1_encode_ms_per_chunk": 41.38,
+   "xt1_encode_s_per_GB": 9.95,
+   "verify_s_per_GB": 11.01
+  },
+  "V5-tiles-1h": {
+   "chunks": 6,
+   "stored_MB": 3.6,
+   "decoded_MB": 6.24,
+   "decode_ms_per_chunk": 3.36,
+   "decode_s_per_GB": 3.23,
+   "vcid_ms_per_chunk": 2.29,
+   "vcid_s_per_GB": 2.2,
+   "cid_ms_per_chunk": 1.33,
+   "cid_s_per_GB": 1.28,
+   "xt1_encode_ms_per_chunk": 11.93,
+   "xt1_encode_s_per_GB": 11.47,
+   "verify_s_per_GB": 5.43
+  }
+ }
+}

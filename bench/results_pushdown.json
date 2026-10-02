@@ -1,0 +1,59 @@
+{
+ "days": 60,
+ "chunk_MB_raw": 1.57,
+ "seed_uplink_MBps": 5.0,
+ "point/whole_chunks": {
+  "s": 9.16,
+  "MB_in": 74.39,
+  "audits": 0,
+  "exact": true
+ },
+ "point/pushdown": {
+  "s": 2.74,
+  "MB_in": 6.21,
+  "audits": 5,
+  "exact": true
+ },
+ "point/pushdown_trusted": {
+  "s": 0.96,
+  "MB_in": 0.01,
+  "audits": 0,
+  "exact": true
+ },
+ "box10x10/whole_chunks": {
+  "s": 29.33,
+  "MB_in": 74.39,
+  "audits": 0,
+  "exact": true
+ },
+ "box10x10/pushdown": {
+  "s": 3.29,
+  "MB_in": 8.02,
+  "audits": 6,
+  "exact": true
+ },
+ "box10x10/pushdown_trusted": {
+  "s": 1.21,
+  "MB_in": 0.58,
+  "audits": 0,
+  "exact": true
+ },
+ "full_map_1day/whole_chunks": {
+  "s": 0.38,
+  "MB_in": 1.24,
+  "audits": 0,
+  "exact": true
+ },
+ "full_map_1day/pushdown": {
+  "s": 0.38,
+  "MB_in": 1.24,
+  "audits": 0,
+  "exact": true
+ },
+ "full_map_1day/pushdown_trusted": {
+  "s": 0.38,
+  "MB_in": 1.24,
+  "audits": 0,
+  "exact": true
+ }
+}

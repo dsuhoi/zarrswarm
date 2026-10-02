@@ -1,0 +1,94 @@
+{
+ "config": {
+  "peers": 30,
+  "boot": 3,
+  "nat": 0.3,
+  "days": 30,
+  "replica_frac": 0.8,
+  "reps": 3,
+  "only": "e9",
+  "e9_budget": 1,
+  "e9_kills": [
+   0.2,
+   0.4
+  ],
+  "e9_modes": [
+   "rs_consecutive"
+  ],
+  "out": "sim/results_e9_sweep_rs_consecutive.json"
+ },
+ "e9": [
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.2,
+   "rep": 0,
+   "stored_MB": 71.5,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 600,
+   "steps_got": 600,
+   "restored": 6,
+   "availability": 1.0
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.2,
+   "rep": 1,
+   "stored_MB": 76.4,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 648,
+   "steps_got": 648,
+   "restored": 3,
+   "availability": 1.0
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.2,
+   "rep": 2,
+   "stored_MB": 54.2,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 456,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 1.0
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.4,
+   "rep": 0,
+   "stored_MB": 71.5,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 600,
+   "steps_got": 600,
+   "restored": 6,
+   "availability": 1.0
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.4,
+   "rep": 1,
+   "stored_MB": 76.4,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 648,
+   "steps_got": 648,
+   "restored": 4,
+   "availability": 1.0
+  },
+  {
+   "mode": "rs_consecutive",
+   "kill": 0.4,
+   "rep": 2,
+   "stored_MB": 54.2,
+   "restore_fail": null,
+   "loss_hist": null,
+   "steps_total": 456,
+   "steps_got": 456,
+   "restored": 0,
+   "availability": 1.0
+  }
+ ]
+}

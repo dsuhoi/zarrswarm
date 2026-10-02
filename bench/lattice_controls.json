@@ -1,0 +1,13 @@
+{
+ "tiles": 1536,
+ "providers_equivalent": 1536,
+ "mean_bit_equal": 0.0164,
+ "tile_step_equals_field_step": 1536,
+ "false_merges": {
+  "1 cell +-1 step": 0,
+  "10 cells": 0,
+  "100 cells": 0,
+  "shift one step": 0,
+  "next hour": 0
+ }
+}

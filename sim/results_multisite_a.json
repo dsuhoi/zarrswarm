@@ -1,0 +1,375 @@
+{
+ "config": {
+  "truth": "~/.cache/zt_variants_month/V1-arco-1h.zarr",
+  "sites": {
+   "fib": {
+    "host": "fibonacci",
+    "python": "~/zt_venv/bin/python",
+    "work": "~/zt_ms"
+   },
+   "panel": {
+    "host": "panel",
+    "python": "~/zt_venv/bin/python",
+    "work": "~/zt_ms",
+    "nice": "nice -n 19"
+   }
+  },
+  "holders": [
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V1-arco-1h.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V3-ts-1h.zarr"
+   },
+   {
+    "site": "panel",
+    "data": "~/zt_ms/V5_d1-2.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/rep/V5_d1-4.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/rep/V5_d4-7.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V2-wb2-6h.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V4-tile-6h.zarr"
+   }
+  ],
+  "queries": {
+   "map_day_1h": {
+    "t0": "2020-01-02",
+    "t1": "2020-01-02",
+    "step": 3600
+   },
+   "series_point_1h": {
+    "t0": "2020-01-01T00:00:00",
+    "t1": "2020-01-07T23:00:00",
+    "step": 3600,
+    "isel": {
+     "latitude": [
+      300,
+      301
+     ],
+     "longitude": [
+      500,
+      501
+     ]
+    }
+   },
+   "week_6h": {
+    "t0": "2020-01-01T00:00:00",
+    "t1": "2020-01-07T23:00:00",
+    "step": 21600
+   }
+  }
+ },
+ "reps": 3,
+ "rows": [
+  {
+   "seconds": 5.55,
+   "open_s": 3.03,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "map_day_1h",
+   "rep": 0
+  },
+  {
+   "seconds": 17.92,
+   "open_s": 1.72,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "series_point_1h",
+   "rep": 0
+  },
+  {
+   "seconds": 4.24,
+   "open_s": 1.73,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "week_6h",
+   "rep": 0
+  },
+  {
+   "seconds": 4.33,
+   "open_s": 1.81,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "map_day_1h",
+   "rep": 1
+  },
+  {
+   "seconds": 17.7,
+   "open_s": 1.58,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "series_point_1h",
+   "rep": 1
+  },
+  {
+   "seconds": 4.93,
+   "open_s": 1.99,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "week_6h",
+   "rep": 1
+  },
+  {
+   "seconds": 4.21,
+   "open_s": 1.62,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "map_day_1h",
+   "rep": 2
+  },
+  {
+   "seconds": 18.01,
+   "open_s": 1.43,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "series_point_1h",
+   "rep": 2
+  },
+  {
+   "seconds": 4.22,
+   "open_s": 1.6,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "week_6h",
+   "rep": 2
+  },
+  {
+   "seconds": 5.78,
+   "MB": 56.22,
+   "chunks": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 2.81,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 5.52
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 56.22
+   },
+   "phase": "mirror",
+   "query": "map_day_1h",
+   "rep": 0,
+   "holders": 1
+  },
+  {
+   "seconds": 19.67,
+   "MB": 393.31,
+   "chunks": 168,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 19.68,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 19.43
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 393.31
+   },
+   "phase": "mirror",
+   "query": "series_point_1h",
+   "rep": 0,
+   "holders": 1
+  },
+  {
+   "seconds": 3.68,
+   "MB": 65.56,
+   "chunks": 28,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 3.28,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 3.41
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 65.56
+   },
+   "phase": "mirror",
+   "query": "week_6h",
+   "rep": 0,
+   "holders": 1
+  },
+  {
+   "seconds": 3.04,
+   "MB": 56.22,
+   "chunks": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 2.81,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 2.95
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 56.22
+   },
+   "phase": "mirror",
+   "query": "map_day_1h",
+   "rep": 1,
+   "holders": 1
+  },
+  {
+   "seconds": 18.79,
+   "MB": 393.31,
+   "chunks": 168,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 19.68,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 18.53
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 393.31
+   },
+   "phase": "mirror",
+   "query": "series_point_1h",
+   "rep": 1,
+   "holders": 1
+  },
+  {
+   "seconds": 5.49,
+   "MB": 65.56,
+   "chunks": 28,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 3.28,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 5.31
+   },
+   "t_view": 0.01,
+   "per_peer_MB": {
+    "c7bed5d4": 65.56
+   },
+   "phase": "mirror",
+   "query": "week_6h",
+   "rep": 1,
+   "holders": 1
+  },
+  {
+   "seconds": 4.25,
+   "MB": 56.22,
+   "chunks": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 2.81,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.13
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 56.22
+   },
+   "phase": "mirror",
+   "query": "map_day_1h",
+   "rep": 2,
+   "holders": 1
+  },
+  {
+   "seconds": 17.57,
+   "MB": 393.31,
+   "chunks": 168,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 19.68,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 17.41
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 393.31
+   },
+   "phase": "mirror",
+   "query": "series_point_1h",
+   "rep": 2,
+   "holders": 1
+  },
+  {
+   "seconds": 3.37,
+   "MB": 65.56,
+   "chunks": 28,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 3.28,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 3.14
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "c7bed5d4": 65.56
+   },
+   "phase": "mirror",
+   "query": "week_6h",
+   "rep": 2,
+   "holders": 1
+  }
+ ]
+}
