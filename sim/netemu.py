@@ -47,6 +47,7 @@ class _P:
 
 
 class EmuSwarm:
+    _seq = 0
     def __init__(self, root: Path, n: int, n_boot: int, nat_frac: float, seed: int, strategy="maxflow",
                  env: dict | None = None, rate_median=4e6, rate_range=(0.5e6, 30e6), relay_rate=25e6,
                  client_rate=30e6, loss=0.0):
@@ -55,10 +56,10 @@ class EmuSwarm:
         self.rate_median, self.rate_range, self.client_rate, self.loss = rate_median, rate_range, client_rate, loss
         self.root.mkdir(parents=True, exist_ok=True)
         self.nodes, self.meta, self.env, self.strategy = {}, {}, dict(env or {}), strategy
-        self._next = 0
         # an L2 switch (as in Mininet): every access link is a veth whose far end is a bridge port; no routing,
         # so no writable /proc/sys is needed (container sandboxes mount it read-only)
-        sh("ip link set lo up && ip link add br0 type bridge && ip link set br0 up && ip addr add 10.0.255.254/16 dev br0")
+        sh("ip link show br0 >/dev/null 2>&1 || (ip link set lo up && ip link add br0 type bridge && ip link set br0 up "
+           "&& ip addr add 10.0.255.254/16 dev br0)")  # one switch per driver; later swarms reuse it
         boots = []
         for i in range(n_boot):
             p = 7000
@@ -79,8 +80,8 @@ class EmuSwarm:
         return self.rng.uniform(0.002, 0.04)
 
     def _start(self, name, kw):
-        self._next += 1
-        k = self._next
+        EmuSwarm._seq += 1  # unique interface names and addresses across the swarms of one driver
+        k = EmuSwarm._seq
         ip = f"10.0.{k // 250}.{k % 250 + 1}"
         port, cp = kw["port"], 7001
         args = [sys.executable, "-m", "zarr_torrent.cli", "node", "--home", str(self.root / f"h_{name}"),
