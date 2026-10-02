@@ -311,7 +311,7 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
 
     chunks, files, newhc = {}, {}, {}
     # one decoding thread per core (was 16): peak memory scales with the threads, a 1-vCPU station gains nothing
-    with ThreadPoolExecutor(workers or min(16, len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 4)) as ex:
+    with ThreadPoolExecutor(workers or int(os.environ.get("ZT_SCAN_WORKERS", 0)) or min(16, len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 4)) as ex:
         for ckey, rel, cid, vc, size, mt, nvalid in ex.map(one, todo):
             chunks[ckey] = [cid, vc, size, nvalid]
             files[ckey] = str(root / rel)
