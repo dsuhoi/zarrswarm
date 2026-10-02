@@ -1,0 +1,108 @@
+{
+ "process": {
+  "map_day_1h": {
+   "median_s": {
+    "lattice+JLPS": 6.01,
+    "lattice+min-bytes": 10.4,
+    "bytes+JLPS": 10.38
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.32,
+    "lattice+min-bytes": 1.07
+   },
+   "rank": [
+    "lattice+JLPS",
+    "bytes+JLPS",
+    "lattice+min-bytes"
+   ],
+   "n": 3
+  },
+  "series_point_1h": {
+   "median_s": {
+    "lattice+JLPS": 13.47,
+    "lattice+min-bytes": 23.81,
+    "bytes+JLPS": 134.02
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.08,
+    "lattice+min-bytes": 1.77
+   },
+   "rank": [
+    "lattice+JLPS",
+    "lattice+min-bytes",
+    "bytes+JLPS"
+   ],
+   "n": 3
+  },
+  "period_6h": {
+   "median_s": {
+    "lattice+JLPS": 17.31,
+    "lattice+min-bytes": 18.74,
+    "bytes+JLPS": 18.83
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.09,
+    "lattice+min-bytes": 1.16
+   },
+   "rank": [
+    "lattice+JLPS",
+    "lattice+min-bytes",
+    "bytes+JLPS"
+   ],
+   "n": 3
+  }
+ },
+ "kernel": {
+  "map_day_1h": {
+   "median_s": {
+    "lattice+JLPS": 5.5,
+    "lattice+min-bytes": 16.74,
+    "bytes+JLPS": 7.44
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.38,
+    "lattice+min-bytes": 2.87
+   },
+   "rank": [
+    "lattice+JLPS",
+    "bytes+JLPS",
+    "lattice+min-bytes"
+   ],
+   "n": 3
+  },
+  "series_point_1h": {
+   "median_s": {
+    "lattice+JLPS": 25.0,
+    "lattice+min-bytes": 24.91,
+    "bytes+JLPS": 41.91
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.68,
+    "lattice+min-bytes": 1.0
+   },
+   "rank": [
+    "lattice+min-bytes",
+    "lattice+JLPS",
+    "bytes+JLPS"
+   ],
+   "n": 3
+  },
+  "period_6h": {
+   "median_s": {
+    "lattice+JLPS": 23.3,
+    "lattice+min-bytes": 42.35,
+    "bytes+JLPS": 34.9
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.5,
+    "lattice+min-bytes": 2.04
+   },
+   "rank": [
+    "lattice+JLPS",
+    "bytes+JLPS",
+    "lattice+min-bytes"
+   ],
+   "n": 3
+  }
+ }
+}
