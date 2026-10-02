@@ -1,0 +1,56 @@
+{
+ "map_day_1h vs bytes": {
+  "median_ratio": 1.64,
+  "ci95": [
+   1.5,
+   2.16
+  ],
+  "jlps_faster": "10/10",
+  "sign_p": 0.001
+ },
+ "map_day_1h vs minbytes": {
+  "median_ratio": 1.64,
+  "ci95": [
+   1.48,
+   2.03
+  ],
+  "jlps_faster": "10/10",
+  "sign_p": 0.001
+ },
+ "series_point_1h vs bytes": {
+  "median_ratio": 1.93,
+  "ci95": [
+   0.99,
+   6.79
+  ],
+  "jlps_faster": "8/10",
+  "sign_p": 0.0547
+ },
+ "series_point_1h vs minbytes": {
+  "median_ratio": 0.99,
+  "ci95": [
+   0.77,
+   1.42
+  ],
+  "jlps_faster": "4/10",
+  "sign_p": 0.8281
+ },
+ "period_6h vs bytes": {
+  "median_ratio": 1.33,
+  "ci95": [
+   1.17,
+   1.47
+  ],
+  "jlps_faster": "10/10",
+  "sign_p": 0.001
+ },
+ "period_6h vs minbytes": {
+  "median_ratio": 1.38,
+  "ci95": [
+   1.2,
+   1.56
+  ],
+  "jlps_faster": "10/10",
+  "sign_p": 0.001
+ }
+}
