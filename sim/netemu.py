@@ -95,6 +95,8 @@ class EmuSwarm:
                    PYTHONPATH=os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[1]),
                                                             os.environ.get("PYTHONPATH")])))
         env.pop("ZT_EMU_LATENCY_MS", None)  # the kernel delays packets; the node adds nothing
+        if kw.get("rate"):  # announce the access-link rate like a station would; the kernel enforces it
+            env["ZT_ANNOUNCE_MBPS"] = str(kw["rate"] / 1e6)
         log = open(self.root / f"{name}.log", "w")
         # the child waits on stdin until its interface exists, then becomes the node
         proc = subprocess.Popen(["unshare", "-n", "sh", "-c", 'read x; exec "$@"', "sh", *args], env=env,

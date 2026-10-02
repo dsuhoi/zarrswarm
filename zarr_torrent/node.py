@@ -60,6 +60,7 @@ VIEW_WAIT = 8.0
 STALL_FIRST = 30.0  # s: read timeout for a peer we have not measured yet
 HINT_EFF = 0.8  # announced link rates vs achieved goodput (measured ~0.77 in the simulator): calibrate first contact
 FOLLOW_EVERY = float(os.environ.get("ZT_FOLLOW_EVERY", "300"))  # s between subscription catch-ups
+ANNOUNCE_BW = float(os.environ.get("ZT_ANNOUNCE_MBPS", 0)) * 1e6 or None  # uplink hint without app-level shaping (the link is shaped elsewhere, e.g. by the kernel)
 NET_SKEW = 120  # s: tolerated clock difference for closed-network request MACs
 RESCAN_EVERY = float(os.environ.get("ZT_RESCAN_EVERY", "60"))  # s between checks of seeded datasets for appends
 STALL_MIN = float(os.environ.get("ZT_STALL_MIN", "5.0"))  # s without a byte before a batch counts as stalled
@@ -430,7 +431,7 @@ class Node:
     async def announce(self, grid: str) -> int:
         now = time.time()
         rec = self.ident.signed({"t": "peer", "grid": grid, "node": self.ident.id, "addr": self.addr, "ts": now,
-                                 "bw": self.rate or self.up_estimate()})
+                                 "bw": self.rate or ANNOUNCE_BW or self.up_estimate()})
         n = await self.dht.store(grid, rec)
         L = self.local.get(grid)
         if L:  # metadata index: one record per tag (variable name, standard_name, long_name)
@@ -1014,7 +1015,7 @@ class Node:
     async def h_whoami(self, req):
         ip = (req.remote or "").strip("[]")  # never trust X-Forwarded-For on a public port
         return web.json_response({"ip": ip, "id": self.ident.id, "relay": self.relay_server,
-                                  "bw": self.rate or self.up_estimate()})
+                                  "bw": self.rate or ANNOUNCE_BW or self.up_estimate()})
 
     async def h_probe(self, req):
         """Connect-back check. Only the requester's own address can be probed (no SSRF): the caller
@@ -1432,8 +1433,10 @@ class Node:
             if s:
                 src[k] = s
         unknown = sorted({p for s_ in src.values() for p in s_ if p not in self.bw and not self.hints.get(p)})
-        if len(unknown) < 2 or len(src) < 3 * len(unknown):
+        if len(unknown) < 2 or len(src) < 3:
             return 0
+        if len(src) < 3 * len(unknown):  # more strangers than the request can measure: those that hold most of it
+            unknown = sorted(unknown, key=lambda p: -sum(p in s_ for s_ in src.values()))[:max(2, len(src) // 3)]
         probe_map: dict[str, str] = {}
         for p in unknown:
             cands = [(s_[p][1], k) for k, s_ in src.items() if p in s_ and k not in probe_map]
