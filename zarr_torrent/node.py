@@ -61,7 +61,7 @@ STALL_FIRST = 30.0  # s: read timeout for a peer we have not measured yet
 HINT_EFF = 0.8  # announced link rates vs achieved goodput (measured ~0.77 in the simulator): calibrate first contact
 FOLLOW_EVERY = float(os.environ.get("ZT_FOLLOW_EVERY", "300"))  # s between subscription catch-ups
 ANNOUNCE_BW = float(os.environ.get("ZT_ANNOUNCE_MBPS", 0)) * 1e6 or None  # uplink hint without app-level shaping (the link is shaped elsewhere, e.g. by the kernel)
-COVER_DEADLINE = float(os.environ.get("ZT_COVER_DEADLINE", "300"))  # s for choosing a cover (view + JLPS + probes)
+COVER_DEADLINE = float(os.environ.get("ZT_COVER_DEADLINE", "300"))  # s for choosing a cover (the first view + JLPS; probes have their own deadline)
 NET_SKEW = 120  # s: tolerated clock difference for closed-network request MACs
 RESCAN_EVERY = float(os.environ.get("ZT_RESCAN_EVERY", "60"))  # s between checks of seeded datasets for appends
 STALL_MIN = float(os.environ.get("ZT_STALL_MIN", "5.0"))  # s without a byte before a batch counts as stalled
@@ -294,7 +294,7 @@ class Node:
 
     async def add_seed(self, path: str, persist=True, announce=True) -> dict:
         res = await asyncio.to_thread(scan, path, self.home / "scan")
-        _trim()  # a scan decodes every chunk on 16 threads; glibc keeps those arenas unless asked to return them
+        _trim()  # a scan decodes every chunk on one thread per core; glibc keeps those arenas unless asked to return them
         for k in [k for k in self.seeds if k[0] == res["path"]]:
             del self.seeds[k]
         for gid, sg in res["subgrids"].items():
