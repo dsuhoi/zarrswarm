@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-import zarr_torrent as zt
-from zarr_torrent.node import Node
-from zarr_torrent.store import http, open_views, wait_job
+import zarrswarm as zt
+from zarrswarm.node import Node
+from zarrswarm.store import http, open_views, wait_job
 _ports = iter(range(10000, 30000))
 
 

@@ -1,53 +1,56 @@
 # ZarrSwarm
 
-ZarrSwarm позволяет раздавать Zarr-массивы между кластерами и открывать совместимые реплики как
-один `xarray.Dataset`. Узлы могут хранить разные периоды, переменные и раскладки чанков в Zarr v2 или v3.
-Система находит держателей, выбирает источники для запроса и проверяет полученные чанки.
+ZarrSwarm shares Zarr arrays between sites and opens compatible replicas as one
+`xarray.Dataset`. Nodes may hold different time ranges, variables, chunk shapes,
+codecs or Zarr versions. The system discovers holders, chooses sources for a
+request and verifies received chunks.
 
-Например, один узел хранит почасовые карты температуры, другой — чанки для временных рядов, а третий
-дополняет архив за следующий месяц. Пользователь обращается к общей ссылке `zt://…` и выбирает данные
-через xarray. Совместимость зависит от координат, временной сетки и проверки значений;
-подробнее — в [описании сети и доверия](network.md).
+For example, one node may store hourly temperature maps, another may store
+chunks suited to time series, and a third may extend the archive into the next
+month. Clients use one `zt://...` link. Coordinates, sample times and value
+verification determine whether copies can be combined; see
+[network access and trust](network.md).
 
-## Проверить локально
+## Try it locally
 
-Клонируйте [репозиторий](https://github.com/dsuhoi/zarrswarm) и выполните команды из его корня,
-с установленным [uv](https://docs.astral.sh/uv/getting-started/installation/):
+Clone the [repository](https://github.com/dsuhoi/zarrswarm), install
+[uv](https://docs.astral.sh/uv/getting-started/installation/), then run from its root:
 
 ```bash
 uv sync --frozen --extra test --extra netcdf --inexact
 .venv/bin/python -m pytest -q tests/test_e2e.py tests/test_scenarios.py tests/test_cli.py
 ```
 
-Тесты создают небольшие данные и узлы на loopback. Они проверяют передачу между процессами,
-объединение реплик, чтение через xarray, локальные Dask-вычисления и экспорт.
-Подробности и проверка на своих данных — в [руководстве пользователя](user.md).
+These tests create small datasets and loopback nodes. They check transfers
+between processes, replica merging, xarray reads, local Dask computation and
+export. The [user guide](user.md) explains how to test your own data.
 
-## Подключить свои данные
+## Share your data
 
-1. [Запустите узел](operator.md) и подключитесь к сети.
-2. Зарегистрируйте хранилище: `zt seed /path/to/data.zarr`.
-3. Передайте полученную ссылку в Python:
+1. [Start a node](operator.md) and join a network.
+2. Register a store with `zarrswarm seed /path/to/data.zarr`.
+3. Pass the resulting link to Python:
 
 ```python
-import zarrswarm as zt
+import zarrswarm as zs
 
-ds = zt.open_dataset("zt://<grid>", pushdown=False)
+ds = zs.open_dataset("zt://<grid>", pushdown=False)
 sample = ds.isel(time=slice(0, 24)).load()
 ```
 
-`open_dataset` требует работающего локального узла. `pushdown=False` включает чтение целых исходных
-чанков с полной проверкой. P2P-представление доступно для чтения; результат можно сохранить отдельно
-через `sample.to_zarr(...)`. Параметры виртуальных чанков, Dask и предварительной загрузки описаны
-в [разделе xarray](user.md#xarray).
+`open_dataset` needs a running local node. `pushdown=False` reads whole source
+chunks and verifies them fully. The P2P view is read-only; save a result
+separately with `sample.to_zarr(...)`. Virtual chunking, Dask and prefetch are
+covered in the [xarray section](user.md#xarray).
 
-## Руководства
+## Guides
 
-| Задача | Документ |
+| Task | Guide |
 |---|---|
-| Найти данные, скачать срез, подключить xarray | [Пользователю](user.md) |
-| Поднять bootstrap, релей и узлы | [Запуск узлов](operator.md) |
-| Настроить доступ и доверенных издателей | [Сеть и доверие](network.md) |
-| Изменить параметры узла и клиента | [Конфигурация](config.md) |
-| Воспроизвести измерения статьи | [Эксперименты](experiments.md) |
-| Обновить сайт и разместить его на GitHub Pages | [Публикация документации](publishing.md) |
+| Find data, download a subset and use xarray | [User guide](user.md) |
+| Run bootstrap nodes, relays and holders | [Operator guide](operator.md) |
+| Control access and configure trusted publishers | [Network and trust](network.md) |
+| Change node and client settings | [Configuration](config.md) |
+| Verify data using source packing parameters | [Source contracts](source-contracts.md) |
+| Reproduce the paper's measurements | [Experiments](experiments.md) |
+| Preview and publish the website | [Documentation publishing](publishing.md) |

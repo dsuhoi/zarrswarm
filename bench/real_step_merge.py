@@ -17,10 +17,10 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarr_torrent as zt  # noqa: E402
-from zarr_torrent.node import Node  # noqa: E402
-from zarr_torrent.scan import scan  # noqa: E402
-from zarr_torrent.store import http  # noqa: E402
+import zarrswarm as zt  # noqa: E402
+from zarrswarm.node import Node  # noqa: E402
+from zarrswarm.scan import scan  # noqa: E402
+from zarrswarm.store import http  # noqa: E402
 
 ARCO = "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3"
 WB2 = "https://storage.googleapis.com/weatherbench2/datasets/era5/1959-2023_01_10-wb13-6h-1440x721_with_derived_variables.zarr"

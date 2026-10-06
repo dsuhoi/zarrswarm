@@ -1,219 +1,174 @@
-# ZTP — Zarr Transfer Protocol (v0.4, черновик спецификации)
+# ZarrSwarm wire protocol
 
-ZTP — протокол децентрализованной раздачи и выборочного чтения N-мерных научных массивов (Zarr v2/v3,
-CF-конвенции) между недоверенными узлами. Он переносит на массивы идеи децентрализованных систем:
-адресацию по содержимому (IPFS/IPLD), Kademlia (BitTorrent mainline DHT), вычисления у данных
-(compute-to-data), оптимистическую проверку с доказательствами обмана (optimistic rollups, Truebit)
-и репутацию (EigenTrust). Всё это адаптировано под координатную структуру массивов.
+This is an implementation reference, not a stable interoperability specification. Wire changes should be
+checked against the existing clients and tests. The package and executable are named `zarrswarm`; link schemes,
+`ZT_*` configuration and existing node state retain their current formats.
 
-## 0. Обзор слоёв
+## Node identity and discovery
 
-| слой | назначение | ключевой объект |
-|---|---|---|
-| L0 идентичность | узлы и подписи | ed25519, `node_id = blake2b160(pk)` |
-| L1 обнаружение | кто держит какие данные, поиск по метаданным | Kademlia: записи `peer`, `idx`, `name` |
-| L2 адресация | однозначное имя любого фрагмента массива | `grid_id`, `var@layout/c…`, `cid`, `vcid` |
-| L3 объявление | что именно есть у пира | подписанный манифест (ETag); далее координатное Merkle-дерево (§6) |
-| L4 перенос | целые чанки из многих источников | JLPS + max-flow по сигнатурам доступности, work stealing, раунды |
-| L5 вычисления у данных | срезы и агрегаты на стороне держателя | optimistic pushdown: квитанции, аудит, fraud-proof, откат, taint |
-| L6 прогрессивные запросы | оценки с гарантией погрешности до окончания загрузки | VAS: стратификация + распределение Неймана |
+Each node has an Ed25519 keypair. Its node identifier is a 160-bit BLAKE2b digest of the public key. The HTTP
+Kademlia DHT uses bucket size 8 and lookup concurrency 3. Its record types announce peers under a grid,
+index metadata tags and publish signed names that point to dataset links.
 
-## 1. Адресация (L2): координатная и значимостная
+A grid describes dimensions, coordinate values and a common time quantum. It is independent of chunk shape,
+codec, Zarr version and local time range. Regular aligned hourly and six-hourly layouts can share a grid.
+Their stride and offset still determine which global samples they contain. A holder record includes its
+address, role and announced upload rate; these are discovery claims, not measured transfer guarantees.
 
-- **Подсетка** `grid_id = H(dims→(size, H(coord values)), time→(q, rphase))` для измерений одной переменной.
-  Датасет — множество подсеток: `zt://g1+g2`.
-- **Квант времени** `q` — наибольший из {1 сут, 1 ч, 1 мин, 1 с}, делящий шаг реплики; хранится в поле `dt`.
-  Реплики с шагом 1 ч, 3 ч, 6 ч получают один `q = 1 ч` и **одну подсетку**: шаг — свойство раскладки, а не данных.
-- **Абсолютное время:** `g = (t − rphase)/q` от 1970-01-01, не зависит от CF-единиц и календаря записи.
-- **Раскладка** `layout = chunk_shape + фаза φ [+ s<stride>o<soff>]`. Реплика с шагом `stride·q` держит отсчёты
-  `m = (g − soff)/stride`; ключ чанка `var@layout/c_0.c_1…`, где `c_T = (m − φ)/c_t`. Чанк из **одного** отсчёта
-  времени индексируется по `g` (stride 1): часовая и 6-часовая копии делят ключи и держателей напрямую.
-  Несколько раскладок сосуществуют в одном рое.
-- **Решётка запроса** `(S, O)`: отсчёты `g ≡ O (mod S)` (`step` в секундах). Раскладка **полна** для запроса, если
-  её `stride` делит `S` и смещения согласованы (6 ч из 1 ч — да, 1 ч из 6 ч — нет); неполные заполняют только свои
-  отсчёты. Проверено на реальных данных: ARCO-ERA5 (1 ч) + WeatherBench2 (6 ч) → одна ссылка, 6-часовой вид
-  совпадает с облачными оригиналами бит в бит (`bench/real_step_merge.py`).
-- **Две идентичности чанка:** `cid = H(stored bytes)` — транспорт, `vcid` — семантика. Для чисел с плавающей
-  точкой `vcid` строится на **решётке квантования** (по умолчанию, `ZT_VALUE_ID=lattice`): для каждого временного
-  среза чанка по самим значениям оценивается решётка `v = φ + k·s` (`codec.lattice_of`, подробно в DESIGN.md).
-  **Линейное** семейство (scale/offset: NIfTI `scl_slope`, NetCDF `scale_factor`, FITS `BSCALE`): единица — средний
-  зазор между соседними различными значениями в один шаг (или его 1/d, d ≤ 8), коды — из соседних зазоров, три
-  уточнения МНК; принимается, если все значения лежат в пределах 5 % шага от решётки. **Двоичное** семейство
-  (GRIB `R + k·2^E`): самый крупный `s = 2^e`, при котором коды `round((v − φ)/s)` различных значений различны
-  (φ — круговое среднее фазы). Двоичная решётка заменяет линейную, только если она крупнее и все значения лежат
-  не дальше 0.45 шага от её узлов. `vcid = "L:" + H(коды − код
-  медианного различного значения, маска пропусков) + ":" + уровень + ":" + шаг`. Два `vcid` эквивалентны
-  (`same_vcid`), если хэши равны, шаги совпадают с точностью 1e-5, а уровни различаются меньше чем на s/4. Независимые декодеры одних и тех
-  же кодов (ERA5 Google/Zarr vs NCAR/NetCDF: 2 % совпадения бит, 100 % совпадения кодов) дают эквивалентные `vcid`;
-  данные, отличающиеся на шаг и больше, — разные. Целые/булевы/константные данные и `ZT_VALUE_ID=exact` —
-  `H(dtype|shape|values)`. Координаты сравниваются по значениям (округление 1e-6: float32 ≡ float64).
-  `fill_value` не входит в идентичность семейства значений (`vfid`): v2 с `fill_value = null` и v3 с обязательным
-  `fill_value = 0` — одни данные; маска пропусков строится только из явного `_FillValue`.
-  Раньше: `vcid = H(dtype|shape|decoded values)` — Эквивалентность по значениям объединяет реплики с разными кодеками и форматами.
-  На приёме чанк проверяется по `cid` отправителя, декодируется и сверяется (эквивалентностью) с `vcid`, у которого
-  держателей больше, чем у любого другого (у доверенных издателей приоритет; при равенстве решает полнота — число
-  валидных шагов; полное равенство → чанк не выдаётся и помечается отсутствующим).
-
-## 2. Обнаружение (L1)
-
-Kademlia (K=8, α=3) поверх HTTP/JSON на порту данных. Записи подписаны, живут TTL, хранятся у K ближайших узлов:
-
-```
-peer: {t:"peer", grid, node, addr, bw?, ts, pk, sig}         key = grid_id
-idx : {t:"idx", tag, grid, node, vars, tr:[t0,t1], dims, ...} key = H("tag:"+tag)   # индекс метаданных
-name: {t:"name", name, target, seq, ...}                     key = H(pk || name)     # изменяемое имя
-```
-
-Узлы без входящих соединений прикрепляются к релею (websocket с проверкой подписи) и публикуют адрес
-`relay/r/<id>`. Релей передаёт ответ потоком (cut-through): кадр-заголовок `{rid, status, stream}`, затем кадры данных
-по 4 МБ `{rid, d}` и завершающий `{rid, end[, err]}`; старые узлы могут отвечать одним кадром. В таблицы маршрутизации такие узлы не попадают (BEP 43). Вход в сеть: `ztnet://<id>@host:port`.
-Адрес узла определяется автоматически: `/whoami` (как STUN) и обратная проверка `/probe` (только адрес
-самого запрашивающего).
-
-## 3. Перенос (L4)
-
-Запрос — область `R = [g0,g1) × Π[lo_i,hi_i)` одной переменной. Выбор выполняет **JLPS**:
-- DP по стыкам раскладок: покрытие минимальной цены, цена = Σ size · min λ_p;
-- мультипликативные веса обновляют цены пиров λ;
-- финальное назначение делает параметрический max-flow с вершинами-релеями (общая полоса).
-
-Выполнение: адаптивные пачки (около 1 с работы), таймаут пачки 4× ожидаемого времени по узкому месту пир/релей,
-work stealing, endgame, до 2 попыток на пару (ключ, пир), пир считается упавшим после 3 ошибок подряд,
-до 4 раундов дозагрузки. Итог честный: `done`, `partial` (с числом `failed`) или `cancelled`;
-недокачанное никогда не заполняется молча.
-
-## 4. Вычисления у данных (L5): optimistic pushdown
-
-```
-Q  = {key, sel=[[lo,hi],…]}                                   запрос среза чанка
-R  = raw little-endian значения гиперпрямоугольника
-ρ  = sign_holder( cjson{g: grid, k: key, cid: cid_holder, sel, h: H(R)} )     квитанция
-```
-
-1. **Агрегация спроса:** если срезы одного чанка в пакете в сумме дают больше 25% чанка, он скачивается целиком (L4).
-2. **Склейка:** срезы одного чанка объединяются в охватывающий прямоугольник, одна квитанция на чанк.
-3. **Оптимистичное принятие** при верной подписи `ρ` и совпадении `cid` с манифестом держателя.
-4. **Аудит:** на каждую пару (пир, чанк) решение принимается один раз: всегда для первых 3 чанков пира,
-   дальше с вероятностью α (по умолчанию 0.05), для доверенных пиров 0. Аудит скачивает целый чанк,
-   проверяет `vcid`, пересчитывает срез и сравнивает.
-5. **Обман** `H(R) ≠ H(R_true)` при верной `ρ`: получается **передаваемое доказательство обмана**
-   `(ρ, sel, cid, H(R), H(R_true))`, которое любой может проверить. Пир попадает в чёрный список,
-   все его результаты в текущем пакете откатываются, ранее принятые квитанции отдаются приложению
-   как taint-список для пересчёта.
-
-**Гарантии.** Лжец, отвечающий неверно на долю f своих чанков, после n проверенных решений обнаруживается
-с вероятностью `1 − (1 − f·α)^{n−3} · (1 − f)^3`. Ущерб до обнаружения ограничен одним пакетом (откат)
-плюс помеченными в taint-списке результатами. Доверенные издатели дают полную защиту без затрат на аудит.
-
-## 5. Прогрессивные запросы (L6): VAS
-
-Страты — блоки по времени, H = clip(N/30, 2, 16). Пилот по 5 чанков, дальше жадный Нейман по
-`W_h² s_h² (1/n_h − 1/(n_h+1))`, t-квантиль со степенями свободы по Саттертуэйту, остановка при
-`t·sd ≤ rel_err·|mean|` и n_h ≥ 5.
-
-## 6. Манифесты CAPT (реализовано) и транспорт по значениям (реализовано)
-
-**CAPT (Coordinate-Addressed Prolly Tree).** Листья — записи `(var, layout, c…) → [cid, vcid, size, nv]`,
-отсортированные по координатам. Страница завершается, когда `H(key) mod 64 = 0` (у внутренних уровней — по первому
-ключу потомка), поэтому границы зависят от содержимого, и локальное изменение переписывает O(1) страниц
-на каждом уровне. Страницы адресуются хэшем.
-- `GET /mh/<grid>` — маленькая подписанная голова `{grid, arrays, gdocs, root, n}`, ETag = root.
-- `GET /mp/<grid>/<hash>` — страница; клиент проверяет её хэш и кэширует.
-- **Инкрементальная синхронизация:** докачиваются только страницы, отсутствующие в кэше.
-- **Чтение по диапазону:** спуск только в поддеревья, пересекающие `[(var,lay,c_lo…), (var,lay,c_hi…)]`.
-  Региональная загрузка на свежем клиенте строит вид только по диапазону (`view="capt-range"`).
-
-**Транспортный кодек `xt1`.** Если оценка полосы < 30 МБ/с, запрос `/cb` несёт `X-Zt-Accept: xt1`.
-Сид может ответить `XT1|hdr|blosc-bitshuffle-zstd(XOR_t(bits))` вместо хранимых байтов, если так короче.
-Получатель декодирует, сверяет `vcid` и кодирует в свою раскладку. Проверка по значениям позволяет менять
-представление на проводе, не ослабляя целостность.
-
-## 6.1 Безопасность заголовков и закрытой сети
-
-- **Закрытая сеть.** Ключ сети никогда не передаётся. Каждый запрос несёт `X-Zt-Net: <ts>:<hex HMAC-SHA256(key,
-  "ts\nМЕТОД\nПУТЬ?query")>` (`ts` — целые секунды Unix; клиент — `_net_sign`, сервер — middleware `_net_guard`);
-  сервер принимает его, если подпись верна и |now − ts| ≤ `NET_SKEW` = 120 с, иначе 403 на любой путь порта данных
-  (чанки, манифесты, DHT, релей, `/probe`). Перехваченный заголовок открывает только свой запрос и только на
-  2 минуты; голый ключ в заголовке больше не принимается. Каждое звено (клиент → релей, релей → узел за NAT)
-  подписывает свой запрос сам. Нужны часы с точностью до минуты (NTP).
-- **Версии манифестов (лёгкий журнал прозрачности).** Подписанный заголовок манифеста (`/mh/<grid>`) содержит
-  `seq` (растёт при каждом новом корне: `max(seq + 1, время в мс)`, так что узел, потерявший состояние, всё равно
-  идёт вперёд) и `prev` (предыдущий корень). Свои заголовки узел хранит в `~/.zt/heads.json` (`_heads`).
-  Клиент помнит в памяти новейший проверенный заголовок каждой пары (узел-держатель, сетка) (`seen_heads`,
-  проверка `_head_ok`): более старый `seq` отвергается (откат), два подписанных заголовка с одним `seq` и разными
-  корнями — переносимое доказательство двуличия (`fraud`, `kind: equivocation`, оба заголовка и обе подписи);
-  держатель попадает в локальный чёрный список и выпадает из всех видов. Заголовки без `seq` (старые узлы)
-  принимаются как раньше.
-- **Ничья по полноте.** Если у двух значений чанка поровну доверенных и прочих держателей и победитель выбран только
-  по полноте (больше валидных шагов), в виде остаётся `rival` — проигравшее значение и его держатели. Приняв чанк,
-  получатель скачивает чанк соперника и проверяет (`_rival_ok`), что победитель совпадает с ним во всех ячейках
-  соперника в пределах половины шага решётки (надмножество). Иначе, или если соперника проверить не удалось,
-  чанк не выдаётся (`contested`): лжец не может победить, дописав ячейки, которых нет у честной копии.
-- **Ожидаемое семейство при чтении.** `ZtStore` передаёт в `/api/fetch` поле `expect = {key: [vfid, fid]}` —
-  семейство значений и кодировку раскладки, которыми он будет декодировать чанк. Локальный файл другого семейства
-  в ответ не отдаётся (`_fits_expect`), чанк докачивается в нужной кодировке.
-
-## 6a. Выбор механизма по сценарию
-
-| сценарий | механизм ZTP |
+| Route | Purpose |
 |---|---|
-| зеркало или полная копия | L4: JLPS + max-flow, `xt1` на медленных каналах |
-| срез по времени, вся карта | CAPT-диапазон + JLPS (смешение раскладок) |
-| регион или точечный ряд из больших чанков | L5 pushdown: склейка по чанку, агрегация спроса, аудит |
-| другая раскладка (временные ряды, карты) | `ZtStore` assembled: цена раскладки = байты / совокупная полоса держателей |
-| подмножество переменных или уровней | подсетки `zt://g1+g2`, по одной на сигнатуру измерений |
-| редкие данные, мало сидов | ZTP-EC: добровольцы хранят 1/k (чётность), восстановление потерь |
-| статистика с гарантией погрешности | L6 VAS (стратификация + Нейман), остановка по погрешности |
-| последовательный проход (обучение ML) | упреждающее чтение k view-чанков вперёд |
-| выдача | xarray (лениво), Zarr, NetCDF4 (`zt get --out x.nc`), пространственный срез `--sel` |
+| `/dht` | DHT messages and record lookup/storage |
+| `/pex` | Peer exchange |
+| `/whoami` | Address discovery |
+| `/probe` | First-contact transfer-rate probe |
+| `/m` | Full signed manifest |
+| `/mh` | Signed paged-manifest head |
+| `/mp` | Hash-addressed manifest pages |
+| `/cb` | Encoded chunk batch |
+| `/qb` | Selected decoded slices with signed receipts |
+| `/relay/attach` | NAT holder's outbound relay attachment |
+| `/r/<node-id>/...` | Request forwarded through a relay |
 
-## 6b. ZTP-EC: страйпы чётности для доступности (реализовано)
+The local `/api/...` control routes are separate from peer transport. They submit queries, read completed
+payloads and manage node state. Keep their listener private; it is not a public user API.
 
-Код — систематический Cauchy Reed–Solomon над GF(256) (MDS): страйп = k чанков одной пары (переменная,
-пространственный тайл); доброволец хранит **одну** строку чётности j (1/k объёма); любые k живых кусков
-(члены-данные + строки разных добровольцев) восстанавливают весь страйп.
+## Coordinates, layouts and chunk keys
 
-**Перемежение.** Реплики держат непрерывные окна времени, поэтому гибель сида стирает «пачку» соседей.
-Член i страйпа (q, s) — чанк `c = o + q·k·D + i·D + s`, D = ⌈N/k⌉; потеря окна короче D задевает ≤ 1 член.
-Смещение `o` = начало экстента в общем виде роя (страйпы полные, без полупустых блоков от абсолютного выравнивания).
+The time quantum `q` is the largest compatible value in `{86400, 3600, 60, 1}` seconds. Global time indices
+are derived from canonical timestamps and the grid phase. A layout records chunk shape and phase, plus a
+time stride `r` and offset `o` on that grid. A request at stride `S` and offset `O` can use the layout when
+`r` divides `S` and the offsets agree, subject to actual coverage.
 
-**Два семейства** (псевдопеременные, вид и индекс их игнорируют):
+A chunk key has the form `variable@layout/c0.c1...`. Chunk coordinates are tied to the global grid rather
+than a replica's first local timestamp. The manifest entry is `[cid, vcid, size, nvalid]`: byte identity,
+value identity, encoded size and valid-prefix information. Array metadata describes dtype, shape, fill
+values, codecs and the Zarr representation. Coordinate documents allow a receiver to reconstruct its view.
 
-| имя | члены | когда |
-|---|---|---|
-| `var#p<k>x<D>o<o>r<j>` | хранимые байты чанков одной раскладки (проверка `cid`) | все реплики в одной раскладке |
-| `var#v<k>x<D>o<o>r<j>` | **значения** на каноническом гриде (тайл собирается из ЛЮБОЙ раскладки; проверка `vcid`) | реплики разбиты по-разному |
+Two arrays with the same variable name are not automatically the same field. Units, dimensions and field
+identity are checked before their chunks become interchangeable.
 
-Заголовок строки чётности содержит `[cid|vcid, len, nvalid]` каждого члена, поэтому восстановленный кусок
-проверяется так же, как скачанный. Семейство `#v` кодирует не байты float, а целочисленные коды решётки
-(int32 относительно медианного кода, `codec.lattice_codes`; режим `mode: "codes"` в заголовке), если коды
-воспроизводят значения всех членов бит в бит; иначе — сырые байты значений (`mode: "bytes"`). Коды одинаковы у любых
-декодеров одних измерений, поэтому ремонт может собрать члены с площадок, чьи float расходятся в битах. `zt parity LINK VAR --k 8 --drop` выбирает `v`, если в рое больше одной
-раскладки, и строку j, которой в рое ещё нет (`--row j` — явно). Вид помечает ключи без живых держателей, но восстановимые (`restore`); загрузчик берёт строки
-и живых членов напрямую (`_fetch_direct`, вне реестра ожиданий — без взаимоблокировки), решает систему
-Гаусса–Жордана, проверяет хэши, сохраняет. Для `#v` восстановленный канонический тайл перекодируется в
-локальную раскладку.
+## Content identities
 
-**Результаты.** Монте-Карло при равном доп. объёме: RS с перемежением лучше репликации при всех p (0.975 против
-0.906 при p = 0.5; 0.903 против 0.822 при p = 0.6); без перемежения не лучше. Симулятор (30 узлов): доступность 1.0
-при +5–8 % хранения. Тест `test_value_parity_spans_heterogeneous_layouts`: реплики 24 ч и 48 ч, единственный
-держатель двух дней погибает — `#v`-чётность восстанавливает их бит-в-бит из чанков другой раскладки.
+`cid` hashes the encoded chunk bytes. A receiver verifies those bytes before accepting a native payload.
+Alternative transport encodings and reconstructed chunks must also pass decoded-content checks.
 
-## 6c. Дальше
+Exact value identity hashes canonical decoded data with shape and dtype. Floating-point fitting mode uses
+an `L3:<hash>:<parameters>` identifier; the current estimator label is `lattice-v5`. Parameters are JSON
+records of fitted level, step and radius for individual time slices, with null entries where appropriate.
+The hash covers canonical relative codes, array shape, time-axis placement and finite/NaN/infinity masks.
+Numeric bytes use little-endian order. Constant and non-floating values have exact fallbacks.
 
-Репутация как вход JLPS, учёт стоимости страт в VAS, Рида–Соломона (m > 1 стираний на страйп),
-итеративное восстановление (восстановленный чанк открывает следующий страйп).
+The receiver compares both hashes and compatible fitting parameters. Matching fits do not prove equality of
+original source counts. Sparse one-count changes can be accepted when both copies infer a coarser lattice.
+The [source-contract controls](docs/source-contracts.md) quantify this boundary.
 
-## 7. Экспериментальное обоснование (кратко; подробности в DESIGN.md)
+## Signed source contracts
 
-| утверждение | эксперимент | результат |
-|---|---|---|
-| адресация объединяет разнородные реплики | ERA5 WeatherBench2: v2 + v3, разные раскладки и периоды | совпадение с эталоном значение в значение |
-| JLPS лучше покрытия по минимуму байт | E5, 24 узла | ×3.4–6.6 |
-| max-flow децентрализует нагрузку | E1 | макс. доля пира 0.18 против 0.28–0.37 |
-| устойчивость к отказам и потерям | E2, E3, E6 | поиск 100% при −60% узлов; полная загрузка при 20–40% потерь |
-| pushdown убирает лишнее чтение | E7: точка / регион из чанков-карт | до ×24 по времени, до ×7000 по трафику; обман ловится, откат работает |
-| VAS экономит загрузку | офлайн, 1000+ испытаний | ×2.6–4.5 меньше чанков при покрытии ≈ 0.95 |
-| CAPT: синхронизация и диапазоны | 1.46e5 чанков | +10 чанков → 96 КБ вместо 6.68 МБ (×69); 1 месяц из 40 лет → 4.5 КБ (×1500) |
-| `xt1` на медленном канале | реальный ERA5, 2 МБ/с | −20% байт, ×1.23 быстрее, значения точные |
-| работа в реальном интернете | публичный узел fibonacci + panel + ноутбук, потери 40–50% | 393 МБ, 0 неверных значений |
+A contract identifies a grid and field, binds its variable name and units, and supplies a source `step`,
+`origin` and `max_error`. Parameters may be constant or a catalogue indexed by canonical integer UTC-second
+strings. The error bound must satisfy `0 < max_error < step / 2`.
+
+The original publisher signs the contract. Mirrors carry that signature with the field metadata. A receiver
+uses it as an authoritative field anchor only when it trusts the signing key. Copies may have different
+floating dtypes if they reconstruct the same absolute source codes within the authenticated bound.
+Conflicting trusted field definitions are left unresolved.
+
+The code hash includes the quantizer, shape and masks. An error budget determines admissible decoding; it
+is not a substitute for the source step or origin. The implementation rejects non-finite parameters, invalid
+bounds, reconstruction failures and integer overflow. This format requires supplied source metadata;
+there is no general automatic provenance recovery for arbitrary Zarr inputs.
+
+## Manifests, pages and version checks
+
+A full manifest is signed by its holder. Paged manifests use a signed head with grid, array metadata,
+coordinate documents, page root and count. Chunk entries are assigned to stable hash-addressed pages;
+receivers retrieve only new pages when a head changes. The current page partition uses 64 key-hash buckets.
+A manifest range request can limit the relevant chunk keys.
+
+A published head includes `seq` and `prev`. The node advances its version beyond both its previous value
+and the current millisecond timestamp, and persists its local versions. Receivers reject observed sequence
+rollback and conflicting heads. Received-head tracking is in memory, and legacy heads without sequence
+metadata remain supported. These limits matter when reasoning about restart or adversarial replay.
+
+Appending data changes metadata and the affected final chunk. `nvalid` prevents uninitialized tail samples
+from counting as coverage. Revisions replace byte identities; decoded caches also key on decoder metadata,
+so new content cannot reuse an old decoded array solely because its chunk location is unchanged.
+
+## Holder selection and verification
+
+The receiver merges compatible field families and evaluates support for each chunk value. Trusted keys or
+an explicitly seeded local source can resolve authority. A received cache does not create new measurement
+authority. If equally supported candidates cannot be resolved, the receiver leaves the chunk unavailable.
+
+The client chooses layouts and holders for the requested samples. It measures first-contact rates and
+updates estimates during transfers. JLPS includes receiver and shared-relay capacities, local cached data
+and the minimum-byte cover among its candidates. It is a heuristic under a transfer-cost model.
+
+A complete response requires verified chunks covering every requested sample. Coverage is kept without
+rounding. A selected cover that proves incomplete triggers one catalogue refresh and replan, included in
+query time. Timeouts and true gaps remain partial responses; elapsed time alone does not establish success.
+
+## Relay framing
+
+A NAT node opens an outbound WebSocket attachment to a reachable relay. The relay forwards a request with
+a request identifier `rid`. The holder returns status and stream metadata followed by frames containing
+`rid` and data, then an end marker. The default frame limit is 4096 KiB.
+
+The relay can forward frames as they arrive. The NAT holder currently buffers its local HTTP response before
+sending frames, so the complete path is not store-level streaming. A relay's shared uplink must be accounted
+for once across attached holders, rather than treating every holder as an independent public link.
+
+## Private-network authentication
+
+When `ZT_NETWORK_KEY` is set, HTTP requests carry HMAC authentication over timestamp, method and path,
+including the query string. The allowed timestamp skew is 120 seconds. Nodes therefore need reasonably
+synchronized clocks. Possession of an invitation key grants access to the network.
+
+HMAC does not encrypt data. Ed25519 signatures authenticate announcements and receipts; neither establishes
+scientific correctness without a valid source and trust policy. Use network isolation or an encrypted tunnel
+when the deployment requires confidential transport.
+
+## Optional temporal transport encoding
+
+For a slow path, a client can request `xt1`: temporal XOR, bitshuffle and Zstd. The current default threshold
+is 30 MB/s. The receiver checks decoded content and writes a compatible local encoding when necessary.
+Byte order is normalized on the wire, and exact round trips preserve signed zero and NaN payloads.
+Stored Zarr codecs and layout identities remain independent of this negotiated transport representation.
+
+## Selected slices and audit receipts
+
+With pushdown enabled, `/qb` replies contain selected values and signed receipts binding the grid, chunk key,
+byte identifier, selection and returned-data hash. The client downloads whole chunks for an initial audit
+(default: three chunks), then samples later replies (default: five percent); explicitly trusted holders can
+skip audits. A receipt attributes a reply to a signer, but does not by itself prove the selection matches a
+scientifically correct source.
+
+If an audit finds a mismatch, the node rolls back the current batch and marks earlier accepted results from
+that holder as tainted. Proof checking needs the relevant signed claim and verified chunk data. Applications
+using optimistic pushed-down results must inspect their verification state. Use whole-chunk reads when every
+accepted result must receive immediate content validation.
+
+## Value-level parity
+
+Parity stripes operate on compatible canonical field tiles using Cauchy Reed–Solomon coding over GF(256).
+Recovery requires `k` independent compatible data/parity members, with distinct parity rows. Several parity
+rows are supported. A stripe keeps one field definition and spatial tile.
+
+For `N` time samples, stripe width `k` and interleave spacing `D = ceil(N / k)`, a member time is
+`c = o + q*k*D + i*D + s`. Interleaving spreads contiguous outages across stripes. Source-contract fields use
+absolute source codes. Other fields use a lossless code representation where available or exact canonical
+value bytes. Reconstructed content is verified before it is exposed to the caller.
+
+## Reference implementation and checks
+
+The protocol is implemented in `zarrswarm/common.py`, `dht.py`, `scan.py`, `codec.py`, `capt.py`, `node.py`,
+`parity.py` and `gf.py`. The local xarray store is in `zarrswarm/store.py`.
+
+```bash
+python -m pytest -q tests/test_identity.py tests/test_security.py tests/test_packing.py tests/test_parity.py
+python -m pytest -q tests/test_e2e.py tests/test_cli.py
+```
+
+These checks use generated inputs and local connections. They do not establish WAN performance or an
+independent station deployment; measured runs and their source versions are listed in the
+[experiment guide](docs/experiments.md).

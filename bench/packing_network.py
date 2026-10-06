@@ -17,11 +17,11 @@ sys.path[:0] = [str(ROOT), str(ROOT / "sim"), str(ROOT / "bench")]
 from gfs_native_precision import native_field
 from procswarm import ProcSwarm
 from simulate import port
-import zarr_torrent as zt
-from zarr_torrent.common import h160, verify
-from zarr_torrent.node import merge_view
-from zarr_torrent.scan import scan
-from zarr_torrent.store import http
+import zarrswarm as zt
+from zarrswarm.common import h160, verify
+from zarrswarm.node import merge_view
+from zarrswarm.scan import scan
+from zarrswarm.store import http
 
 
 def manifest(swarm, name, grid):
@@ -76,7 +76,7 @@ def main():
            "default_shared_value_families": sum(default["publisher"]["arrays"][n]["vfid"] == default["mirror"]["arrays"][n]["vfid"] for n in source),
            "source_sha256": {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in (
                "bench/packing_network.py", "bench/gfs_native_precision.py", "sim/procswarm.py",
-               "zarr_torrent/codec.py", "zarr_torrent/scan.py", "zarr_torrent/node.py", "zarr_torrent/cli.py")}}
+               "zarrswarm/codec.py", "zarrswarm/scan.py", "zarrswarm/node.py", "zarrswarm/cli.py")}}
     def save(): args.out.write_text(json.dumps(out, indent=2) + "\n")
     save()
     swarm = ProcSwarm(args.work / "nodes", 1, 1, 0, 91)

@@ -1,195 +1,198 @@
-# Гайд: сеть, доступ, регистрация датасетов, ограничения
+# Network access and trust
 
-Этот документ — про то, **кто** может подключиться и что он увидит, **как** датасеты попадают в сеть и **какие
-лимиты** есть у узла и у самой системы. Установка и запуск — `docs/operator.md`, скачивание — `docs/user.md`.
+This guide explains who can join a network, how stores become discoverable and
+which limits apply. See the [operator guide](operator.md) for setup and the
+[user guide](user.md) for downloads.
 
-## 1. Модель доступа
+## Access scope
 
-| | открытая сеть | закрытая сеть (`--private`) |
+| Capability | Open network | Private network |
 |---|---|---|
-| кто подключается | любой, кто знает адрес любого узла | только узлы с ключом сети |
-| кто видит индекс датасетов (`zt search`) | все участники | все участники |
-| кто скачивает раздаваемые чанки | любой участник | любой участник |
-| узел/HTTP-клиент без ключа | — | `403` на всё: чанки, манифесты, DHT, релей, `/whoami`, `/probe` |
+| Join | Anyone with a node address | Holders of the network key |
+| Search the metadata index | All participants | All participants |
+| Download seeded chunks | All participants | All participants |
+| Requests without the network key | Accepted subject to normal checks | HTTP 403 on every data-port endpoint |
 
-Единица доступа — **сеть**, а не датасет: внутри сети каждый участник видит метаданные и может скачать всё,
-что в ней раздаётся. Разным группам — разные сети (см. §3.4). Это сознательное упрощение: доступ по датасетам
-требует подписанных запросов через релеи и пока не сделан.
+Access is granted to the whole network. Every participant can see its metadata
+and download its seeded data. Use separate networks for separate access groups.
+Dataset-specific permissions and per-user quotas are not implemented.
 
-Что защищено всегда, в любой сети:
+All networks verify signed announcements and chunk identities. DHT addresses,
+metadata index records and publisher names are signed with Ed25519 keys.
+Only the key owner can update `zt://name@<pubkey>`.
+The control API is local and checks `X-Zt-Client` and `Host`.
 
-* **целостность** — каждый чанк сверяется с хэшем байтов (`cid`) и хэшем значений (`vcid`); расхождение между
-  держателями решается большинством, а голос доверенных издателей (`trust`) важнее большинства;
-* **авторство** — записи в DHT (адрес узла, индекс, имена) подписаны ключом ed25519 узла, чужую запись подменить
-  нельзя; имя `zt://era5@<pubkey>` может перенаправить только владелец ключа;
-* **локальное управление** — управляющий API (`127.0.0.1:7882`) недоступен снаружи и отвергает запросы без
-  заголовка `X-Zt-Client` и с чужим `Host` (защита от CSRF/DNS rebinding из браузера).
+Private-network requests carry timestamped HMAC authentication. HTTP payloads
+and metadata are unencrypted, and anyone who obtains the network key can join.
+Use a VPN when channel confidentiality is required.
 
-Что **не** защищено:
-
-* **конфиденциальность в канале** — данные идут по HTTP без шифрования. Запросы закрытой сети
-  аутентифицируются HMAC с timestamp; сам ключ в запросах не передаётся. Данные и метаданные доступны
-  наблюдателю канала. Для чувствительных данных стройте сеть поверх VPN (WireGuard, корпоративная сеть) — адреса
-  узлов тогда внутренние (`--public-host 10.8.0.1`).
-* **утечка ключа** — ключ сети работает как пароль на предъявителя: у кого он есть, тот участник.
-
-## 2. Создать сеть
+## Create and join a network
 
 ```bash
-# открытая
-zt init --bootstrap-node --public-host data.example.org
-# закрытая: ключ генерируется и попадает в приглашение
-zt init --bootstrap-node --public-host data.example.org --private
-#   network   ztnet://3f9c…@data.example.org:7881?k=Qx7…    <- приглашение: передавайте только участникам
+zarrswarm init --bootstrap-node --public-host data.example.org
+zarrswarm init --bootstrap-node --public-host data.example.org --private
 ```
 
-Приглашение `ztnet://<id>@<host>:<port>[?k=<ключ>]` — единственное, что нужно новому участнику:
+Initialization prints an invitation:
+`ztnet://<id>@<host>:<port>`, with `?k=<network-key>` for a private network.
+Share a private invitation only with its participants.
 
 ```bash
-zt init --join 'ztnet://3f9c…@data.example.org:7881?k=Qx7…'      # кавычки: в строке есть '?'
-zt node
+zarrswarm init --join 'ztnet://<id>@data.example.org:7881?k=<network-key>'
+zarrswarm node
 ```
 
-Ключ сохраняется в `~/.zt/config.toml` (`network_key`, файл создаётся с правами `0600`); можно не хранить его
-в файле, а передавать через `ZT_NETWORK_KEY`. Проверка: `zt status` → `contacts` больше нуля.
+The key is saved as `network_key` in `~/.zt/config.toml`, created with mode
+`0600`. `ZT_NETWORK_KEY` can supply it instead. Check that `zarrswarm status`
+reports DHT contacts.
 
-### Несколько точек входа
+Any reachable public node can provide entry to the DHT. To add one, join with
+`--listen-public`, set `relay_server = true` if it should relay NAT nodes, and
+add its URL to other nodes' `bootstrap = [...]`. The network key stays the same.
 
-Любой публичный узел сети может быть точкой входа. Сделайте 2–3 на разных площадках: запустите узел с
-`--join … --listen-public` на хосте с открытым портом (станет публичным, если порт доступен) и добавьте в
-конфиг `relay_server = true`, если он должен ещё и пересылать трафик узлов за NAT. Остальным допишите его в
-`bootstrap = [...]`. Приглашение можно давать с адресом любого из них — ключ сети у всех один.
+## Node addresses
 
-## 3. Адресация узлов
-
-| что | откуда | пример |
+| Item | Source | Form |
 |---|---|---|
-| id узла | хэш его публичного ключа (`~/.zt/node.key`), создаётся `zt init` | `3f9c…` (40 hex) |
-| публичный ключ | `zt status` → `pubkey` | 64 hex, для `trust` и имён |
-| адрес публичного узла | `--public-host` или автоопределение (`--listen-public`: bootstrap проверяет, виден ли порт) | `http://data.example.org:7881` |
-| адрес узла за NAT | выдаётся релеем | `http://data.example.org:7881/r/<id>` |
+| Node ID | Hash of the public key in `node.key` | 40 hexadecimal characters |
+| Public key | `zarrswarm status` | 64 hexadecimal characters |
+| Public address | `--public-host` or bootstrap reachability check | `http://HOST:7881` |
+| NAT address | Assigned through the relay | `http://RELAY:7881/r/<id>` |
 
-Адреса хостов не нужно никому сообщать: узел сам публикует свою подписанную запись в DHT при старте и каждые
-10 минут; запись живёт час. Переехал хост или сменился IP — перезапустите узел, другие увидят новый адрес.
+Nodes publish their signed address at startup and every ten minutes by default.
+DHT records expire after one hour. Restart a node after its public address
+changes so it announces the new address.
 
-### 3.4. Несколько сетей на одном хосте
+### Multiple networks on one host
 
-Один узел — одна сеть. Чтобы участвовать в двух (например, общая открытая и закрытая для проекта), запустите
-два узла с разными каталогами и портами:
-
-```bash
-ZT_HOME=~/.zt-proj zt init --join 'ztnet://…?k=…' --port 7891
-ZT_HOME=~/.zt-proj zt node &
-ZT_CTL=http://127.0.0.1:7892 zt search t2m          # клиенты выбирают сеть через ZT_CTL
-```
-
-## 4. Регистрация датасетов
-
-**Зарегистрировать = начать раздавать.** Отдельного реестра нет: узел сканирует Zarr-хранилище, вычисляет ссылку
-по его структуре и публикует в DHT.
+Run a separate node with its own state directory and ports for each network:
 
 ```bash
-zt seed /data/era5.zarr        # разово (запоминается в ~/.zt/state.json)
-# или постоянно, в ~/.zt/config.toml:
-#   [[seed]]
-#   path = "/data/era5/*.zarr"
+ZT_HOME="$HOME/.zt-project" zarrswarm init --join 'ztnet://<id>@HOST:7881?k=<network-key>' --port 7891
+ZT_HOME="$HOME/.zt-project" zarrswarm node
 ```
 
-Что происходит и что становится видно участникам сети:
+In another terminal, select it with
+`ZT_CTL=http://127.0.0.1:7892 zarrswarm search t2m`.
 
-| публикуется | где | содержимое |
+## Register stores
+
+Registering a store starts seeding it. The node scans the Zarr store, computes
+its grid links and announces the data through the DHT.
+
+```bash
+zarrswarm seed /data/era5.zarr
+```
+
+To seed on every startup, add `[[seed]]` entries to `config.toml`.
+
+| Published item | Location | Contents |
 |---|---|---|
-| ссылка `zt://<grid>` | вычисляется | хэш структуры: измерения, координаты, шаг времени. **Одинаков у всех реплик** — ваша копия сама попадает в существующую ссылку |
-| запись держателя | DHT, ключ = grid | ваш адрес и скорость отдачи |
-| индекс | DHT, ключ = тег | имена переменных, `standard_name`, `long_name` → grid, период, размеры; по нему работает `zt search` |
-| манифест | с вашего узла по запросу | список чанков с хэшами, атрибуты, кодеки; **пути на диске не раскрываются** |
-| чанки | с вашего узла по запросу | байты, как лежат на диске |
+| Grid link | Computed from coordinates | Dimensions, normalized coordinates and time grid |
+| Holder record | DHT under the grid ID | Address and bandwidth hint |
+| Search index | DHT under metadata tags | Variable names, attributes, time range and dimensions |
+| Manifest | Served by the holder | Chunk identities, sizes, layouts, codecs and signed metadata |
+| Chunks | Served on request | Stored bytes or a supported transfer encoding |
 
-Раздача не копирует данные и не меняет их. Реплики с другим периодом, набором переменных, чанками, кодеками или
-форматом (v2/v3) объединяются в одну ссылку; другая сетка (другие координаты или шаг) — другая ссылка,
-`zt seed` печатает все (`zt://g1+g2`).
+Local filesystem paths are not included in public manifests. Seeding reads
+stores in place without copying or rewriting them.
 
-### Постоянное имя
+Compatible stores can differ in time coverage, variables, chunking, codecs,
+Zarr version and aligned sample strides. Variables on different coordinate
+grids produce multiple links, joined as `zt://g1+g2`.
+
+### Publisher names
 
 ```bash
-zt name era5 zt://<grid>       # -> zt://era5@<ваш pubkey>
-zt name era5 zt://<новый grid> # перенаправить на новую версию (номер версии растёт, старая запись вытесняется)
+zarrswarm name era5 'zt://<grid>'
 ```
 
-Имя подписано вашим ключом, узел переопубликовывает его, пока работает. Разные издатели могут использовать одно
-и то же короткое имя — ссылки различаются ключом.
+The resulting `zt://era5@<pubkey>` name can be updated to another grid.
+The node republishes it while running. Publishers can use the same short name;
+their public keys distinguish the links.
 
-### Доверенные издатели
-
-Если в сети могут быть недобросовестные участники, укажите ключи тех, чьим данным вы доверяете:
+### Trusted publishers
 
 ```toml
-trust = ["9a1f…"]              # pubkey из `zt status` на узле издателя
+trust = ["<publisher-public-key>"]
 ```
 
-При расхождении значений между держателями побеждает доверенный издатель, а не большинство; результаты
-вычислений на стороне держателя (pushdown) от доверенных узлов не перепроверяются.
+Trusted publishers take precedence when holders disagree about values.
+Pushdown responses from trusted holders skip sampled audits, so this setting
+also changes the client's trust assumptions.
 
-### Снять с раздачи
+[Source contracts](source-contracts.md) bind source packing parameters to a
+field, grid and units. Accepting one requires its publisher's trusted key.
+A cached mirror retains the original signature and does not become a new
+authority merely by serving a downloaded copy.
+
+### Stop seeding
 
 ```bash
-zt unseed /data/era5.zarr      # сразу перестаёт отдавать; записи в DHT истекают в течение часа
+zarrswarm unseed /data/era5.zarr
 ```
 
-Путь из `[[seed]]` вернётся при следующем старте — удалите его из конфига. Скачанное другими участниками у них
-остаётся: раздача необратима так же, как отправка файла.
+The node stops serving the registered store. DHT records expire within an hour.
+Remove a matching `[[seed]]` entry too, or startup will register it again.
+Copies already downloaded by other participants remain with them.
 
-## 5. Лимиты использования
+## Resource limits
 
-### Что настраивает владелец узла
-
-| лимит | как | по умолчанию |
+| Owner setting | Control | Default |
 |---|---|---|
-| скорость отдачи | `upload_mbps` в конфиге / `--upload-mbps` | без ограничения |
-| что раздаётся | только пути из `zt seed` и `[[seed]]`; прочие файлы узел не отдаёт никогда | — |
-| кому | закрытая сеть (`--private`) | открытая |
-| быть релеем | `relay_server` | только у bootstrap-узла |
-| объём хранения для чётности | `zt parity … --k K`: 1/K от объёма переменной | не хранится |
+| Upload rate | `upload_mbps` or `--upload-mbps` | Unlimited |
+| Stores to serve | `seed` and `[[seed]]` entries | Explicitly registered stores |
+| Network membership | `--private` and network key | Open |
+| Relay operation | `relay_server` | Enabled for bootstrap nodes |
+| Download cache | `cache_max_gb` | Unlimited |
+| Repair storage | `parity --k K` | No parity retained unless requested |
 
-Квот на пользователя (сколько байт в день) и учёта скачиваний по участникам нет.
+There are no daily per-user byte quotas or per-participant download accounting.
 
-### Встроенные защитные пределы
-
-| предел | значение |
+| Built-in limit | Value |
 |---|---|
-| тело запроса к узлу | 64 МБ |
-| пачка в одном запросе чанков | 64 чанка / 32 МБ |
-| распакованный манифест | 1 ГБ (~2·10⁷ чанков) |
-| релей: узлов за ним | 2000 |
-| релей: одновременных запросов | 32 на узел, 512 всего |
-| DHT: издателей на один ключ | 2000 |
-| DHT: ключей на узле | 100 000 |
-| запись DHT | живёт 1 ч, отметка времени не дальше 5 мин в будущее |
+| Node request body | 64 MB |
+| Chunk request batch | 64 chunks or 32 MB |
+| Uncompressed manifest | 1 GB |
+| NAT nodes per relay | 2,000 |
+| Concurrent relay requests | 32 per attached node, 512 total |
+| DHT publishers per key | 2,000 |
+| DHT keys per node | 100,000 |
+| DHT record lifetime | One hour |
+| Future timestamp allowance for DHT records | Five minutes |
 
-Сработавший предел означает отказ конкретного запроса (клиент повторит у другого держателя), а не остановку узла.
+A rejected request fails independently; clients may retry another holder.
 
-## 6. Ограничения системы
+## Supported inputs and verification limits
 
-* **Доступ — на уровне сети целиком** (§1); доступа по датасетам и по пользователям нет.
-* **Нет шифрования канала** — используйте VPN для чувствительных данных.
-* **Сменить ключ сети можно только вручную**: новый `network_key` в конфиге каждого участника и перезапуск.
-  Так же «исключается» участник — ключ меняется у всех остальных.
-* **Метаданные видны всем участникам** сети: имена переменных, атрибуты, период, размеры сетки, адреса держателей.
-* **Открытая сеть уязвима к Sybil**: множество фальшивых узлов может перевесить большинство. Подмену значений это не
-  позволяет скрыть от доверенного издателя — указывайте `trust` или используйте закрытую сеть.
-* **Только локальная или смонтированная ФС** у раздающего (NFS, Lustre, fuse-монтирования S3 — да; прямой S3 URL — нет).
-* **Только Zarr** v2/v3; NetCDF можно получить на выходе (`zt get --out x.nc`), но не раздавать.
-* **Ссылка зависит от структуры**: реплика с другой сеткой или шагом времени — другая ссылка.
+Holders need local or mounted Zarr v2/v3 stores. NFS, Lustre and mounted object
+storage can work; direct S3 URLs are not seed inputs. NetCDF is an export format,
+not a directly seedable input. Current support uses flat groups, standard
+calendars and regular time axes.
 
+Grid links change when dimensions, coordinates or the time quantum change.
+Aligned layouts with different sample strides can share a grid.
 
-## Обновление сравнения значений
+Independent lattice fitting can merge sparse fields whose source codes differ.
+Use exact mode when bitwise agreement is required, or a trusted source contract
+when its packing parameters and decoder-error bound are valid.
 
-Текущий формат `L3` хранит уровень, шаг и радиус кодов отдельно для каждого временного среза.
-Узел не принимает старые lattice-объявления; их создателям нужно обновиться и пересканировать раздачи.
-При запуске скачанные чанки в старом локальном кэше получают новые идентификаторы без удаления данных.
-Старые parity-объявления снимаются, но их CAS-файлы сохраняются; parity нужно создать заново.
-Проверки и ограничения оценщика: `docs/CORRECTNESS_REVALIDATION.md`.
+Ordinary holder voting is vulnerable to a Sybil majority. Configure an appropriate
+publisher trust anchor when majority voting is insufficient. Signatures establish
+who announced data; they do not validate the science behind it.
 
-Для регионального download статус `done` означает наличие всех запрошенных временных отсчётов во
-всех необходимых пространственных тайлах. `coverage` содержит `requested_samples`, `covered_samples`
-и `missing_samples`; успешная передача выбранных чанков при пробелах в запросе даёт `partial`.
+Network-key rotation is manual: update all remaining participants and restart.
+Metadata is visible to every network participant.
+
+## Cache migration and query coverage
+
+The current lattice identity format stores per-slice levels, steps and code
+radii. Legacy lattice announcements require reseeding. On startup the node
+reindexes cached chunks without deleting their data. Old parity announcements
+are withdrawn, so regenerate parity when its identity format changes.
+
+For a regional download, `done` requires every requested time sample in every
+required spatial tile. Coverage reports `requested_samples`, `covered_samples`
+and `missing_samples`. Successfully transferring a selected but incomplete
+cover yields `partial`, not a complete answer. Missing data raise a read error
+rather than being silently accepted.

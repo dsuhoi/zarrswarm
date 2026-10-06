@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from zarr_torrent.node import Node
-from zarr_torrent.store import http
+from zarrswarm.node import Node
+from zarrswarm.store import http
 
 
 def port():
@@ -54,8 +54,8 @@ def test_capt_incremental_manifest_sync(tmp_path):
     fctl = f"http://127.0.0.1:{fresh.ctl_port}"
     jid = http(fctl, "POST", "/api/download", {"grid": grid, "region": {"var": "c", "t0": "2020-06-01",
                                                                        "t1": "2020-06-07"}})["job"]
-    from zarr_torrent.store import wait_job
-    import zarr_torrent as zt
+    from zarrswarm.store import wait_job
+    import zarrswarm as zt
     job = wait_job(fctl, jid)
     assert job["state"] == "done" and job["done"] == 7 and job["cover"].get("view") == "capt-range", job
     assert http(fctl, "GET", "/api/status")["page_fetched"] < 0.3 * full

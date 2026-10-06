@@ -15,9 +15,9 @@ import pandas as pd
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarr_torrent as zt  # noqa: E402
-from zarr_torrent.node import Node  # noqa: E402
-from zarr_torrent.store import http  # noqa: E402
+import zarrswarm as zt  # noqa: E402
+from zarrswarm.node import Node  # noqa: E402
+from zarrswarm.store import http  # noqa: E402
 
 
 def port():

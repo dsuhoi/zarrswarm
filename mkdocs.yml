@@ -1,5 +1,5 @@
 site_name: ZarrSwarm
-site_description: Проверяемый обмен Zarr-массивами между узлами и чтение через xarray.
+site_description: Verified peer-to-peer sharing of Zarr arrays with xarray integration.
 site_url: !ENV [DOCS_SITE_URL, "https://dsuhoi.github.io/zarrswarm/"]
 repo_url: https://github.com/dsuhoi/zarrswarm
 repo_name: dsuhoi/zarrswarm
@@ -8,7 +8,7 @@ site_dir: site
 
 theme:
   name: material
-  language: ru
+  language: en
   font: false
   palette:
     primary: teal
@@ -20,7 +20,7 @@ theme:
 
 plugins:
   - search:
-      lang: [ru, en]
+      lang: [en]
 
 markdown_extensions:
   - pymdownx.highlight
@@ -30,24 +30,17 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - Начало: index.md
-  - Использование:
-      - Пользователю и xarray: user.md
-      - Запуск узлов: operator.md
-      - Сеть и доверие: network.md
-      - Конфигурация: config.md
-  - Эксперименты: experiments.md
-  - Публикация документации: publishing.md
+  - Home: index.md
+  - Guides:
+      - User guide and xarray: user.md
+      - Running nodes: operator.md
+      - Network and trust: network.md
+      - Configuration: config.md
+      - Source contracts: source-contracts.md
+  - Experiments: experiments.md
+  - Publishing documentation: publishing.md
 
-# Датированные отчёты и исходные результаты доступны в репозитории.
 exclude_docs: |
-  /CODECS_AND_PROVIDER_HOLDOUT.md
-  /CORRECTNESS_REVALIDATION.md
-  /EXTERNAL_COMPARISON.md
-  /LATENCY_AND_NAT_REVALIDATION.md
-  /LIVE_INGEST_REVALIDATION.md
-  /PACKING_IDENTITY_V8.md
-  /SOURCE_CONTRACT_INTEGRATION_V9.md
   /requirements.txt
 
 validation:

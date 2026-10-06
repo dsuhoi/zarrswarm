@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from zarr_torrent import codec, jlps, parity
+from zarrswarm import codec, jlps, parity
 
 
 def test_jlps_cached_bytes_do_not_prune_faster_cover():
@@ -38,7 +38,7 @@ def test_jlps_includes_minimum_byte_candidate_without_price_iterations():
 
 
 def test_assignment_fallback_reports_relay_receiver_and_local_costs():
-    from zarr_torrent.plan import plan
+    from zarrswarm.plan import plan
 
     chunks = {"one": (10, ("p",))}
     _, elapsed = plan(chunks, {"p": 10}, max_groups=0,
@@ -59,7 +59,7 @@ def test_byte_oracle_does_not_censor_complete_candidate_by_partial_time():
 
 
 def test_terminal_job_state_waits_for_coverage():
-    from zarr_torrent.node import Node
+    from zarrswarm.node import Node
 
     async def check():
         entered, release, finished = asyncio.Event(), asyncio.Event(), asyncio.Event()
@@ -96,7 +96,7 @@ def test_terminal_job_state_waits_for_coverage():
 
 @pytest.mark.parametrize("late_manifest", [False, True])
 def test_incomplete_cover_refreshes_catalogue_once(late_manifest):
-    from zarr_torrent.node import Node
+    from zarrswarm.node import Node
 
     async def check():
         layout = {"chunks": [1], "phase": 0, "docs": {".zarray": {"shape": [2]}}}
@@ -190,8 +190,8 @@ def test_transport_roundtrip_preserves_bits_and_byte_order(dtype):
 
 
 def test_decoded_cache_separates_decoder_versions_for_identical_bytes():
-    from zarr_torrent.common import cid_of
-    from zarr_torrent.pushdown import DecodedLRU
+    from zarrswarm.common import cid_of
+    from zarrswarm.pushdown import DecodedLRU
     raw = np.array([1.0], dtype="<f4").tobytes()
     meta = {"zarr_format": 2, "shape": [1], "chunks": [1], "dtype": "<f4",
             "fill_value": 0, "compressor": None, "filters": None, "order": "C"}
@@ -204,8 +204,8 @@ def test_decoded_cache_separates_decoder_versions_for_identical_bytes():
 
 
 def test_growing_integer_chunk_preserves_valid_prefix_not_physical_padding(tmp_path):
-    from zarr_torrent.common import cid_of
-    from zarr_torrent.node import Node
+    from zarrswarm.common import cid_of
+    from zarrswarm.node import Node
     node = Node(tmp_path / "node")
     old = np.zeros((4, 4), dtype="<i4")
     old[:2] = np.arange(8).reshape(2, 4)
@@ -329,7 +329,7 @@ def test_benchmark_checks_only_downloaded_payloads_and_excludes_edge_padding(tmp
     import pandas as pd
     import xarray as xr
     from sim import e_hetero
-    from zarr_torrent.scan import scan
+    from zarrswarm.scan import scan
     path = tmp_path / "truth.zarr"
     values = np.arange(36, dtype="f4").reshape(4, 3, 3)
     xr.Dataset({e_hetero.VAR: (("time", "y", "x"), values)},

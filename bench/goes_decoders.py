@@ -18,7 +18,7 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent.codec import lattice_of, same_vcid, vcid_of  # noqa: E402
+from zarrswarm.codec import lattice_of, same_vcid, vcid_of  # noqa: E402
 
 TILE = 250
 

@@ -1,7 +1,7 @@
 """Transport-codec study on real ERA5 chunks: how many bytes must cross the wire per chunk, and at what CPU cost.
 
 Every candidate is lossless on values, so the receiver can still verify the chunk by its value-level id (vcid)
-after decoding - the property that makes transport re-encoding safe in zarr-torrent.
+after decoding - the property that makes transport re-encoding safe in ZarrSwarm.
 python bench/bench_transport.py [ZARR] [--chunk 100]
 """
 import argparse

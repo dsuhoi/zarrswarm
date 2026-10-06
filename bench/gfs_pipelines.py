@@ -19,7 +19,7 @@ import xarray as xr
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from zarr_torrent import codec
+from zarrswarm import codec
 
 FIELDS = (("TMP", "2 m above ground", "Temperature_height_above_ground", 2, "K"),
           ("UGRD", "10 m above ground", "u-component_of_wind_height_above_ground", 10, "m/s"),
@@ -60,7 +60,7 @@ def main():
                            "unit_alias": "ecCodes m s**-1 and Unidata m/s denote the same unit; values unchanged.",
                            "max_download_bytes_per_payload": 8 * 1024 * 1024},
               "source_sha256": {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
-                                for p in ("bench/gfs_pipelines.py", "zarr_torrent/codec.py")},
+                                for p in ("bench/gfs_pipelines.py", "zarrswarm/codec.py")},
               "versions": {p: importlib.metadata.version(p) for p in ("numpy", "xarray", "eccodes", "h5netcdf")},
               "fields": [], "work": str(args.work.resolve())}
     args.out.write_text(json.dumps(result, indent=2) + "\n")  # before fetching any field

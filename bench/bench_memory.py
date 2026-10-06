@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "sim"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import simulate as S  # noqa: E402
 from procswarm import ProcSwarm  # noqa: E402
-from zarr_torrent.store import http, wait_job  # noqa: E402
+from zarrswarm.store import http, wait_job  # noqa: E402
 
 
 def mem(pid):

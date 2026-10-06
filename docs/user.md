@@ -1,151 +1,179 @@
-# Гайд пользователя: найти, скачать, открыть в xarray
+# User guide
 
-Нужен запущенный локальный узел (`zt node`, см. `docs/operator.md`). Все команды ниже говорят с ним через
-`127.0.0.1:7882` (`ZT_CTL` меняет адрес).
+Start a local node with `zarrswarm node`; see the [operator guide](operator.md).
+Commands and Python clients contact its control API at `127.0.0.1:7882`.
+Set `ZT_CTL` to use another local port.
 
-## Быстрая локальная проверка
+## Local checks
 
-Из корня репозитория:
+From the repository root:
 
 ```bash
 uv sync --frozen --extra test --extra netcdf --inexact
 .venv/bin/python -m pytest -q tests/test_e2e.py tests/test_scenarios.py tests/test_cli.py
 ```
 
-Тесты сами создают небольшие Zarr-данные и узлы на loopback с отдельными каталогами состояния и портами.
-CLI-тест запускает два отдельных процесса в закрытой сети; остальные сценарии используют узлы с реальными
-HTTP-соединениями в одном процессе. Внешняя сеть и большой датасет не нужны. При завершении тестов узлы
-останавливаются.
+The tests generate small Zarr stores and loopback nodes with separate state
+directories and ports. The CLI test runs two separate processes in a private
+network. Other scenarios use real HTTP connections between nodes in one process.
+No large dataset or external service is required, and the tests stop their nodes
+when they finish.
 
-Проверяются объединение реплик, разные чанки и Zarr v2/v3, релей, чтение через xarray, локальные Dask-вычисления,
-prefetch, поиск и экспорт в NetCDF/Zarr. Ожидаемый результат этого набора — `18 passed`.
-Для всех проверок проекта: `.venv/bin/python -m pytest -q tests`.
+The subset covers mixed Zarr v2/v3 layouts, merged replicas, relays, xarray,
+local Dask, prefetch, search and NetCDF/Zarr export. It contains 18 tests.
+Run the full suite with `.venv/bin/python -m pytest -q tests`.
 
-Для своих данных сначала запустите узел по [инструкции администратора](operator.md), затем выполните
-`.venv/bin/zt seed /path/to/data.zarr`. Полученную ссылку `zt://…` передайте в `zt.open_dataset`.
+To try your own store, start a node, run
+`.venv/bin/zarrswarm seed /path/to/data.zarr` and pass its `zt://...` link to
+`zarrswarm.open_dataset`.
 
-## zt-tui — клиент в стиле торрент-клиента
+## Terminal interface
 
 ```bash
-zt-tui                       # к узлу на 127.0.0.1:7882 (или zt-tui http://127.0.0.1:N)
+zarrswarm-tui
+zarrswarm-tui http://127.0.0.1:7892
 ```
 
-* **Список датасетов** — как список торрентов: название (атрибут `title`, путь или переменные), размер у вас и
-  чанков у вас/в рое, прогресс, статус (⇣ загрузка, ⇡ раздача, ✓ скачано · раздаётся, ✗ ошибка), скорость, пиры,
-  оставшееся время. Слева фильтры: все / загружаются / раздаются / скачаны / ошибки. Внизу строка состояния:
-  общая ↓/↑ скорость, контакты DHT, открытая или закрытая сеть, публичный узел или за NAT.
-* **Детали выбранного датасета** (вкладки): *Общее* — ссылка, сетка, период, задачи; *Содержимое* — дерево
-  метаданных как в xarray (измерения, координаты с диапазонами, переменные с атрибутами и раскладками чанков);
-  *Карта частей* — покрытие по времени для каждой переменной: `█` у вас, `▒` у двух и более пиров, `░` только
-  у одного (редкое), `·` ни у кого; *Пиры* — держатели, число их чанков, скорость, напрямую или через релей;
-  *Журнал*.
-* **Клавиши**: `a` — добавить загрузку (ссылка → «Метаданные» → отметьте переменные, как файлы в торренте,
-  задайте время, регион, стратегию, при желании файл для сохранения `.zarr`/`.nc` или окно подписки `7d`); `s` — раздать каталог
-  (с предпросмотром: сетки, переменные, раскладки, объём); `/` — поиск по индексу, Enter на результате открывает
-  добавление; `p` — пауза / продолжение загрузки; `Del` — остановить загрузку / снять с раздачи (с подтверждением); `o` — настройки узла
-  (редактирует `config.toml`, применяются после перезапуска узла); `q` — выход.
+The dataset list shows local and available chunk counts, progress, status,
+transfer rates, peers and estimated time remaining. Filters select all datasets,
+active downloads, seeded datasets, completed downloads or errors. The status bar
+shows aggregate rates, DHT contacts, network access mode and whether the node is
+public or behind NAT.
 
-## Ссылки
+Select a dataset to inspect its metadata, tasks, holder list, log and piece map.
+The piece map marks chunks held locally, by several peers, by one peer or by none.
 
-| вид | пример | что это |
+| Key | Action |
+|---|---|
+| `a` | Add a download; select variables, time, region, strategy and optional export or follow window |
+| `s` | Seed a directory after previewing its grids, variables, layouts and size |
+| `/` | Search the metadata index; Enter opens the selected result |
+| `p` | Pause or resume a download |
+| `Del` | Stop a download or unseed a store, with confirmation |
+| `o` | Edit node settings; restart the node to apply them |
+| `q` | Quit the interface |
+
+## Dataset links
+
+| Kind | Example | Meaning |
 |---|---|---|
-| сетка | `zt://8df9…` | реплики с одинаковыми измерениями, координатами и общей временной сеткой |
-| несколько сеток | `zt://8df9…+41aa…` | датасет с переменными на разных сетках (уровни давления + поверхность) |
-| имя | `zt://era5@<pubkey>` | подписанное изменяемое имя издателя (`zt name era5 zt://…`) |
+| Grid | `zt://8df9...` | Copies with compatible dimensions, coordinates and a common time grid |
+| Multiple grids | `zt://8df9...+41aa...` | Variables on different grids, such as surface and pressure-level fields |
+| Publisher name | `zt://era5@<pubkey>` | A signed, updateable name published with `zarrswarm name` |
 
-Реплики с разными периодами, наборами переменных, чанками, кодеками и форматом (v2/v3) попадают в одну сетку:
-ссылка описывает **данные**, а не файл.
+A grid link identifies compatible array coordinates. Time ranges, variable sets,
+chunk shapes, codecs and Zarr v2/v3 encoding may differ between its holders.
+Availability and agreement of values are checked separately.
 
-## Найти
-
-```bash
-zt search 2m_temperature        # по имени переменной, standard_name или long_name
-# zt://8df9…  seeders=17  vars=t2m,u10,v10  time=2020-01-01 00:00 .. 2020-12-31 23:00  dims={'lat': 721, 'lon': 1440}
-zt peers zt://8df9…             # держатели, число чанков, скорость
-```
-
-## Скачать срез
+## Find data
 
 ```bash
-zt get zt://8df9… --vars t2m --time 2020-01-01:2020-03-01 --out t2m.zarr
-zt get zt://8df9… --vars t2m --sel lat=40:60,lon=0:30 --out eu.nc          # пространственный регион, NetCDF4
-zt get zt://8df9… --vars t2m --chunking time=8760,lat=1,lon=1 --out ts.zarr # своя раскладка чанков (временные ряды)
-zt get zt://8df9… --vars t2m --progressive                                   # грубо-к-точному: сначала равномерная выборка
+zarrswarm search 2m_temperature
+zarrswarm peers 'zt://<grid>'
 ```
 
-Как выбираются источники: для каждого чанка известны все держатели и все раскладки, в которых он есть. JLPS
-сравнивает варианты по оценке времени передачи с учётом скоростей и общих релеев; дробное распределение
-округляется до целых чанков. Для региона он также выбирает раскладки (`--cover jlps`, по умолчанию:
-быстрые пиры с крупными чанками могут выиграть
-у медленных с точными). Медленные и упавшие пиры подменяются на лету; каждый чанк проверяется по хэшу.
-`.nc` требует `pip install -e .[netcdf]`.
-JLPS — эвристика: глобальная оптимальность и выигрыш относительно минимального объёма передачи не гарантируются.
+Search uses variable names, `standard_name` and `long_name`.
+Replace `<grid>` with an actual result or the link printed by `seed`.
 
-## Подписки: держать свежим
+## Download a subset
 
 ```bash
-zt follow zt://era5@<ключ> --vars t2m,tp --last 7d [--sel lat=40:70,lon=20:60]
-zt follows                       # список подписок
-zt unfollow <id>
+zarrswarm get 'zt://<grid>' --vars t2m --time 2020-01-01:2020-03-01 --out t2m.zarr
+zarrswarm get 'zt://<grid>' --vars t2m --sel lat=40:60,lon=0:30 --out eu.nc
+zarrswarm get 'zt://<grid>' --vars t2m --chunking time=8760,lat=1,lon=1 --out ts.zarr
+zarrswarm get 'zt://<grid>' --vars t2m --progressive
 ```
 
-Узел раз в `follow_every_s` (5 мин) догружает последние 7 суток **до самого нового шага, который есть в рое**
-(не по часам на стене — работает и для архивов, и для оперативных лент). Ссылка переразрешается каждый раз:
-подписка на имя идёт за издателем, когда он переводит имя на новую версию. Подписки переживают перезапуск узла.
-Вместе с `cache_max_gb` получается скользящее окно: новое приходит, старое вытесняется.
+Use your store's variable names, coordinates and dates. NetCDF output needs the
+`netcdf` extra, for example `python -m pip install -e '.[netcdf]'`.
 
-## Пауза и продолжение
+The planner compares layouts and holders using estimated transfer time,
+receiver capacity and shared relays. It rounds the assignment to whole chunks
+and replaces failed or slow holders during transfer. JLPS is a heuristic;
+neither global optimality nor a speedup over the minimum-byte cover is guaranteed.
+Received whole chunks are checked against their byte and value identities.
 
-`POST /api/pause/<job>` и `/api/resume/<job>` (в TUI — клавиша `p`): пауза останавливает загрузку после текущих
-пачек, скачанное остаётся; продолжение перезапускает то же задание и не качает уже имеющееся.
+## Follow a stream
+
+```bash
+zarrswarm follow 'zt://era5@<pubkey>' --vars t2m,tp --last 7d --sel lat=40:70,lon=20:60
+zarrswarm follows
+zarrswarm unfollow <id>
+```
+
+Every `follow_every_s` seconds, the node fetches a window ending at the newest
+sample available in the swarm. The default interval is five minutes. This works
+for historical archives as well as live streams. A named link is resolved again
+on each update, so a subscription follows the publisher's new target.
+Subscriptions survive node restarts. Set `cache_max_gb` to limit retained data.
+
+## Pause and resume
+
+The TUI's `p` key uses `POST /api/pause/<job>` and `POST /api/resume/<job>`.
+Pausing stops work after current batches and keeps downloaded chunks.
+Resuming restarts the same job and uses its cached data.
 
 ## xarray
 
 ```python
-import zarrswarm as zt
+import zarrswarm as zs
 
-ds = zt.open_dataset("zt://8df9…")            # ленивый Dataset: объединение всех реплик и сеток
-da = ds.t2m.sel(time=slice("2020-01", "2020-02"), lat=slice(60, 40))
-zt.prefetch(da)                                # общий план загрузки выбранного среза
-da.mean("time").compute()
+ds = zs.open_dataset("zt://<grid>", chunks={}, pushdown=False)
+subset = ds["t2m"].sel(time=slice("2020-01", "2020-02"))
+zs.prefetch(subset)
+result = subset.mean("time").compute()
 
-ts = zt.open_dataset("zt://8df9…", chunking={"time": -1, "lat": 1, "lon": 1})  # любая раскладка, собирается на лету
+series = zs.open_dataset(
+    "zt://<grid>", chunking={"time": -1, "lat": 1, "lon": 1},
+    pushdown=False,
+)
 ```
 
-* `open_dataset` возвращает обычный `xarray.Dataset`. По умолчанию чтение ленивое, без Dask; для локальных
-  Dask-вычислений передайте `chunks={}`. `chunking` задаёт виртуальные чанки представления, а `chunks`
-  управляет Dask. Изменение `chunking` не перезаписывает данные у держателей.
-* При прямом чтении скачивается целый исходный чанк; один `.isel()` сам по себе не гарантирует уменьшения
-  трафика. При сборке виртуального чанка из небольшой части исходного может использоваться pushdown:
-  держатель возвращает подписанный срез, который выборочно перепроверяется. `pushdown=False` включает
-  чтение целых исходных чанков с полной проверкой.
-* `zt.prefetch` сначала делает пробное чтение для определения чанков и может выделить память размером
-  выбранного среза. На больших датасетах вызывайте его для нужного среза, а не для всего массива.
-* Последовательный проход по времени подгружает следующие чанки заранее (`ZT_READAHEAD`).
-* P2P-хранилище доступно для чтения. Результат можно записать отдельно через `ds.to_zarr(...)`.
-  Открытый Dataset содержит снимок метаданных; после обновления источников откройте его заново.
+`open_dataset` returns a normal `xarray.Dataset`. By default, reads are lazy
+without Dask; `chunks={}` enables local Dask computation. `chunking=` sets the
+virtual Zarr chunks exposed to xarray, while `chunks=` controls Dask.
+Virtual rechunking does not rewrite holder stores.
 
-## Приближённые ответы
+Whole-chunk reads transfer the full source chunk. A small `.isel()` or `.sel()`
+alone does not guarantee less network traffic. Optional pushdown requests signed
+slices and checks a sample against whole chunks. Set `pushdown=False` for full
+whole-chunk validation.
+
+`prefetch` performs a dry read to identify chunks and may allocate memory the
+size of its input. Call it on the selected subset. Sequential time reads can
+prefetch upcoming view chunks with `ZT_READAHEAD`.
+
+The view is read-only. Save results separately with `to_zarr` or `to_netcdf`.
+An open Dataset contains a metadata snapshot; reopen it after source metadata
+changes. Use `zs.open_dataset` for these links: a native
+`xr.open_dataset("zt://...")` backend is not registered.
+Multi-machine Dask execution has not been validated.
+
+## Approximate means
 
 ```bash
-zt mean zt://8df9… t2m --time 2020-01-01:2020-12-31 --rel-err 0.001
-# mean=284.995 ±0.034  chunks 10/60  …      (±: 95% ДИ; прочитано 10 чанков из 60)
+zarrswarm mean 'zt://<grid>' t2m --time 2020-01-01:2020-12-31 --rel-err 0.001
 ```
 
 ```python
-zt.progressive_mean_vas(ds, "t2m", rel_err=0.001)   # стратифицированная выборка чанков (Нейман), ДИ Стьюдента
+estimate = zs.progressive_mean_vas(ds, "t2m", rel_err=0.001)
 ```
 
-Скачивает только столько чанков, сколько нужно для заданной точности; `--method vdc` — равномерная
-последовательность ван дер Корпута без стратификации.
+VAS samples time strata and allocates additional chunks using estimated
+variance. It stops when the estimated confidence interval meets the requested
+tolerance. `--method vdc` uses a van der Corput order without stratification.
+These are approximate estimates; the confidence interval relies on the
+sampling assumptions.
 
-## Поделиться своими данными
+## Share data
 
 ```bash
-zt seed /data/my_run.zarr               # -> zt://<grid>; данные не копируются
-zt name my-run zt://<grid>              # постоянное имя, можно перенаправить на новую версию
+zarrswarm seed /data/my_run.zarr
+zarrswarm name my-run 'zt://<grid>'
 ```
 
-Совместимые реплики с общей сеткой, но другими периодами или чанками доступны по той же ссылке и могут
-дополнить покрытие данных. Для разных шагов времени согласуются времена отсчётов; значения и доступность
-нужных чанков проверяются отдельно.
+Seeding reads the original store without copying it. Compatible replicas can
+extend the same grid link with different time ranges or chunk shapes. For
+different time strides, sample alignment is checked before pooling coverage.
+See [source contracts](source-contracts.md) when you have trusted source packing
+parameters.

@@ -1,7 +1,7 @@
 """Summarise sim/e_hetero.py results for the paper: per query and configuration, median / min / max seconds, median
-MB and completeness over repetitions -> CSV (paper/figs/plots/e1e2.csv) + a printed table.
+MB and completeness over repetitions -> CSV (bench/ehet_summary.csv) + a printed table.
 
-python bench/summarize_ehet.py sim/results_ehet_meteor.json [--csv paper/figs/plots/e1e2.csv]
+python bench/summarize_ehet.py sim/results_ehet_meteor.json [--csv bench/ehet_summary.csv]
 """
 import argparse
 import json
@@ -15,7 +15,7 @@ QUERIES = ("map_day_1h", "series_point_1h", "period_6h")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("results")
-    ap.add_argument("--csv", default="paper/figs/plots/e1e2.csv")
+    ap.add_argument("--csv", default="bench/ehet_summary.csv")
     ap.add_argument("--stats", help="paired bootstrap statistics, complete answers only")
     a = ap.parse_args()
     rows = json.load(open(a.results))["rows"]

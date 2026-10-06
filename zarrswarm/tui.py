@@ -442,7 +442,7 @@ class ConfirmDialog(ModalScreen):
 
 # ---------------------------------------------------------------------------------------------------- app
 class ZtTui(App):
-    TITLE = "zarr-torrent"
+    TITLE = "ZarrSwarm"
     CSS = """
     #top { height: 1fr; }
     #filters { width: 22; border-right: solid $primary-darken-2; }

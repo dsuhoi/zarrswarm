@@ -16,9 +16,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-import zarr_torrent as zt
-from zarr_torrent.node import Node
-from zarr_torrent.store import http
+import zarrswarm as zt
+from zarrswarm.node import Node
+from zarrswarm.store import http
 
 
 def port():

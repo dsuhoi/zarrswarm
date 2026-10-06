@@ -30,9 +30,9 @@ from zarr.codecs import ZstdCodec
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from sim import e_hetero
-from zarr_torrent import codec, jlps, node as nodemod
-from zarr_torrent.node import Node
-from zarr_torrent.scan import chunk_extent, split_key, tstride
+from zarrswarm import codec, jlps, node as nodemod
+from zarrswarm.node import Node
+from zarrswarm.scan import chunk_extent, split_key, tstride
 
 VAR = "precipitation_rate"
 BASE = "https://noaa-mrms-pds.s3.amazonaws.com/"
@@ -147,7 +147,7 @@ async def main(args):
         "timing": "Latest-map availability in the subscriber's existing cache; validation never fetches missing source data."},
         "versions": {p: importlib.metadata.version(p) for p in ("numpy", "xarray", "zarr", "gribberish")},
         "source_sha256": {str(p.relative_to(Path(__file__).parents[1])): hashlib.sha256(p.read_bytes()).hexdigest()
-                          for p in list((Path(__file__).parents[1] / "zarr_torrent").glob("*.py")) + [Path(__file__)]}}
+                          for p in list((Path(__file__).parents[1] / "zarrswarm").glob("*.py")) + [Path(__file__)]}}
     save = lambda: (work / "live_mrms_v5.json").write_text(json.dumps(result, indent=2) + "\n")
     save()  # protocol is recorded before listing or fetching fields
     nodes, ports = [], iter(range(14000, 30000))

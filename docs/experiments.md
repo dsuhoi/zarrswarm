@@ -1,206 +1,199 @@
-# Гайд: воспроизвести эксперименты статьи
+# Reproduce the experiments
 
-Каждый эксперимент — скрипт в `bench/` или `sim/`, который пишет JSON с результатами; числа в статье берутся из
-этих файлов (иногда через сводный скрипт). Скрипты запускаются из корня репозитория интерпретатором `.venv`.
-Значение по умолчанию у `--out` — путь, под которым результат лежит в репозитории; чтобы не затереть его, задайте
-свой.
+Drivers in `bench/` and `sim/` write JSON records. Run them from the repository root with the checkout's
+Python environment. Always set a new output path: many defaults point to existing research records.
+Large provider datasets live outside the checkout and are fetched separately.
 
-## Актуальные результаты рукописи
+The current package uses `zarrswarm`. Frozen archives retain the original paths and hashes of the code that
+was actually measured. Running today's driver does not recreate that earlier source version.
 
-| Место | Данные / результат |
+## Results used by the manuscript
+
+The [result inventory](https://github.com/dsuhoi/zarrswarm/blob/main/bench/revalidation/README.md) distinguishes
+completed runs, diagnostic records and measured source snapshots.
+
+| Question | Result files under `bench/revalidation/` |
 |---|---|
-| Таблица 1 | `bench/lattice_probe.json`: binary survey; `bench/revalidation/provider_identity_controls_v5.json`: рабочий L3 на тех же четырёх variables и shared-quantizer controls |
-| Таблица 2 | `bench/revalidation/provider_merge_v5.json`, `decoder_survey_v5.json`, `goes_decoders_v5.json`; контроли в `lattice_controls_v5.json` |
-| Таблица 3 | `bench/revalidation/multisite_v5_final.json`: 54 WAN measurements предыдущего L3 snapshot |
-| Таблица 4 и график ablations | `process_fibonacci_v5.json`, `paired_stats_v5.json`, `kernel_v5.json`, `kernel_stats_v5.json`; source hashes записаны в provenance, kernel comparison содержит два полностью записанных размещения |
-| Таблица 5 | `edge_v5.json`, `metadata_v5.json`; дополнительные identifier lengths в `identifier_size_v5.json` |
-| Joint-cover controls (§3.4) | `planner_cover_oracle_v5.json`: 240 fixed graphs, 120 development и 120 проверочных; полный перебор covers/holders и parameter sensitivity |
-| Assignment correctness | `assignment_controls_v5.json`: существующий exhaustive test, 600 fixed-cover cases |
+| Do independent provider values pool? | `provider_identity_controls_v5.json`, `provider_merge_v5.json`, `decoder_survey_v5.json`, `goes_decoders_v5.json` |
+| Where does fitting accept a changed source count? | `identity_boundary_v9.json`, `gfs_packing_v9.json`; see [source contracts](source-contracts.md) |
+| Does the source contract survive transfer and cache restart? | `packing_network_v9_final.json`, `integration_checks_v9.json` |
+| Does joint layout/holder selection improve query time? | `process_receiver_fixed_v5.json`, `paired_stats_receiver_fixed_v5.json` |
+| Does the comparison hold with kernel TCP and closed holders? | `external_nat_bound_relay_v5.json`, `external_nat_bound_relay_stats_v5.json`, `external_nat_bound_relay_checks_v5.json` |
+| How does Internet access compare with a public bucket and mirrors? | `multisite_v5_final.json` |
+| What does a small exhaustive planner oracle show? | `planner_cover_oracle_v5.json`, `assignment_controls_v5.json` |
+| What happens on disjoint seasonal fields? | `provider_seasonal_v5.json`, `provider_seasonal_stats_v5.json` |
+| Can a cache follow a changing public feed? | `live_mrms_dry_v5.json`, `live_mrms_wet_fixed_v5.json`, `live_mrms_checks_v5.json` |
+| What are the CPU and metadata costs? | `edge_v5.json`, `metadata_v5.json`, `identifier_size_v5.json` |
 
-Ниже сохранены исторические команды и прежние имена файлов. Они не обозначают нынешние номера таблиц и не подменяют результаты L3.
+Network timings precede the source-contract implementation. Their workloads preserve identical decoded
+values across all encodings, so exact-value identity can also pool those copies. Layout-selection benefits
+and tolerance to independent decoders are separate findings. The source-contract controls establish their
+own narrower mechanism and local-transfer results; they are not a new WAN timing experiment.
 
-## 1. Историческая карта экспериментов
-
-| эксп. | что | скрипт | результат |
-|---|---|---|---|
-| Табл. 1 | 9 публичных копий ERA5 | `bench/replica_survey.py [--time 2010-03-03T06]` | `bench/replica_survey.json` |
-| Табл. 2 | ARCO vs NCAR, 4 переменные × 3 момента | `bench/lattice_probe.py` | `bench/lattice_probe.json` |
-| E0 | слияние двух провайдеров в рое | `bench/real_provider_merge.py WORKDIR` | `bench/real_provider_merge.json` |
-| E0, контроли | оценщик системы по тайлам + квантованные негативные контроли | `bench/lattice_controls.py WORKDIR` (WORKDIR с `arco.zarr`/`ncar.zarr` из E0) | `bench/lattice_controls.json` |
-| E1/E2 | 36 узлов по трассам Meteor-M, 3 запроса; lattice+JLPS / lattice+min-bytes / byte identity, 10 повторов | `sim/e_hetero.py`, `bench/summarize_ehet.py` | `sim/results_ehet_v5.json` (части `_a`…`_d`), парная статистика `sim/results_ehet_v5_stats.json` |
-| свип E3 | время против числа узлов 12/24/36/48 | `sim/e_hetero.py --peers N`, `bench/summarize_sweep.py` | `sim/results_sweep5_{12,24,36,48}.json` |
-| E3 | DHT на 24/64/100 узлах | `sim/simulate.py --only e4 [--peers N]` | `sim/results_e234.json`, `sim/results_scale64.json`, `sim/results_scale100.json` |
-| E4 | доступность по окнам видимости (Монте-Карло) | `bench/sat_traces.py`, `bench/avail_mc.py` | `bench/avail_mc_meteor.json`, `paper/figs/plots/avail_vs_p.csv` |
-| E5 | CPU-стоимость проверки на 1 vCPU | `bench/bench_edge_cost.py sample/measure` | `bench/edge_cost_panel_lattice.json` |
-| E6 | GOES-16 ABI L1b, 3 декодера | `bench/goes_decoders.py DIR` | `bench/goes_decoders.json` |
-| E6 | fMRI OpenNeuro ds000102 | `bench/fmri_demo.py WORKDIR` | `bench/fmri_demo.json` |
-| обзор декодеров | MRMS, GFS, GOES-16, ERA5 | `bench/decoder_survey.py GRIB_DIR` | `bench/decoder_survey.json` |
-| E7 | 3 площадки + HTTP-зеркала по каталогу + абляция зондирования | `sim/multisite.py sim/multisite.toml`, `sim/http_mirrors.py`, `bench/summarize_multisite.py` | `sim/results_multisite_final.json` |
-| E8 | E1/E2 на эмуляции уровня ядра | `sim/e_hetero.py --emu` и `--procs`, `bench/compare_emulators.py` | `sim/e8/e8_{emu,procs}_{0,1,2}.json`, `bench/emulators.json` |
-| память | RSS узла, размер метаданных | `bench/bench_memory.py REPLICA.zarr`, `bench/bench_metadata.py` | `bench/memory*.json`, `bench/metadata.json` |
-
-Быстрые проверки без роя:
+## Start with local checks
 
 ```bash
 .venv/bin/python -m pytest -q tests
-.venv/bin/python -m zarr_torrent.plan && .venv/bin/python -m zarr_torrent.jlps && .venv/bin/python -m zarr_torrent.parity
-.venv/bin/python bench/lattice_controls.py ~/.cache/zt_providers   # нужны arco.zarr/ncar.zarr из real_provider_merge
-.venv/bin/python bench/goes_decoders.py ~/.cache/zt_goes           # 3 файла GOES-16 ABI-L1b-RadC C13
+.venv/bin/python -m zarrswarm.plan
+.venv/bin/python -m zarrswarm.jlps
+.venv/bin/python -m zarrswarm.parity
 ```
 
-## 2. Данные для E1/E2/E7/E8
+The tests use generated data and loopback connections. They require no station infrastructure or large
+provider download. Their success checks functionality, not forecast quality or Internet throughput.
 
-```bash
-# пять вариантов хранения ОДНИХ значений (ERA5 2 m temperature из ARCO): V1-arco-1h, V2-wb2-6h, V3-ts-1h,
-# V4-tile-6h, V5-tiles-1h — разные шаг, чанки, кодеки, zarr v2/v3
-.venv/bin/python bench/make_variants.py ~/zt_ms/variants_month --start 2020-01-01 --days 31
-# окна видимости наземных станций SatNOGS для спутников Meteor-M (skyfield, текущие TLE)
-.venv/bin/python bench/sat_traces.py --start 2020-01-01 --days 31 --stations 40 --sats METEOR-M2 \
-    --out bench/sat_traces_meteor.json
-.venv/bin/python bench/avail_mc.py --traces bench/sat_traces_meteor.json --out bench/avail_mc_meteor.json   # E4
-```
+Research drivers need dependencies beyond the minimal package. For example, provider/decoder drivers use
+Requests, NetCDF4, ecCodes, cfgrib or gribberish; satellite traces use Skyfield; the OpenNeuro example uses
+NiBabel. Install the dependencies for the chosen experiment into the same environment. `uv sync --inexact`
+retains separately installed research packages while syncing the locked application dependencies.
 
-## 3. Три стенда
+## Provider and decoder controls
 
-Все три запускают настоящие процессы `zt node` (`python -m zarr_torrent.cli node`), у каждого свои сокеты.
-`ProcSwarm` и `EmuSwarm` имеют один интерфейс (`nodes`, `meta`, `ctl`, `kill`, `stop`), поэтому `sim/e_hetero.py`
-работает на любом из них без изменений. Рой: `--boot` bootstrap+релеев (полоса 25 МБ/с), остальные — держатели;
-доля `--nat` держателей за NAT ходит через случайный релей; полоса отдачи держателя логнормальная вокруг медианы,
-обрезанная до ×0.2…×5; односторонняя задержка 2–40 мс. Номер повтора задаёт размещение (зерно), так что повтор r
-одинаков на всех стендах.
-
-### Уровень процессов: `sim/procswarm.py` (`ProcSwarm`)
-
-Все узлы на `127.0.0.1`. Полоса отдачи — token bucket внутри узла (`--upload-mbps`), задержку добавляет сам узел
-(`ZT_EMU_LATENCY_MS`). TCP, очереди и потери ядра при этом не моделируются. По умолчанию для E1–E4 в статье.
-
-### Уровень ядра: `sim/netemu.py` (`EmuSwarm`)
-
-Как Mininet, но без root: драйвер перезапускает себя внутри `unshare -rn` (пользовательское + сетевое пространство
-имён, внутри он root) и становится «маршрутизатором». В нём L2-мост `br0` (10.0.255.254/16, сеть 10.0.0.0/16); каждый
-узел запускается в своём `unshare -n`, соединяется с мостом парой veth, получает адрес 10.0.x.y/16. На **обоих**
-концах veth стоят `tc netem` (задержка, потери) и под ним `tbf` (скорость): от узла — его полоса отдачи, к узлу —
-max(полоса отдачи, 50 МБ/с); у узла без заданной полосы (клиент) — 30 МБ/с в обе стороны. Так TCP, очереди шейпера и повторные передачи — ядра.
-Узел объявляет полосу в DHT (`ZT_ANNOUNCE_MBPS`), но сам её не ограничивает и задержку не добавляет; управляющий
-API слушает адрес узла (`ZT_CTL_HOST`). Маршрутизация и запись в `/proc/sys` не нужны (подходит для контейнеров).
-
-Один раз на хосте (root):
-
-```bash
-modprobe -a veth sch_netem sch_tbf          # нужны и непривилегированные user namespaces
-.venv/bin/python sim/netemu.py selftest     # 2 узла, 1 МБ/с и 50 мс: значения совпали, время соответствует шейпингу
-```
-
-### Реальные площадки: `sim/multisite.py` + `sim/multisite.toml`
-
-Локально — bootstrap+релей и свежий клиент на каждый запрос; держатели — на удалённых площадках (`[sites.*]`:
-`host` для ssh, `python`, `pythonpath`/`src` с кодом, `work`, `nice`), список `[[holders]]` (первый — «одно
-зеркало»), запросы `[queries.*]`, эталон `truth`. К каждой площадке поднимается обратный ssh-туннель
-`ssh -R BP:127.0.0.1:BP`, где BP — порт локального bootstrap: удалённый порт **равен** локальному, поэтому адрес
-релея `http://127.0.0.1:BP/r/<id>`, который объявляет удалённый узел, верен на обоих концах. Удалённые узлы
-запускаются по ssh (живут, пока жива сессия), прогревают кэш страниц своей реплики и раздают её. Сеть закрытая:
-ключ генерируется на каждый запуск (`ZT_NETWORK_KEY`).
-
-Фазы (`--phases`, по умолчанию `cloud,mirror,swarm,bytes`):
-`cloud` — xarray читает регион прямо из бакета ARCO (GCS); `http` — базовая линия `sim/http_mirrors.py`: клиент по
-каталогу (`[[http_mirrors]]`: площадка, путь, `first_hour`, `hours`) делит файлы чанков между зеркалами
-`python -m http.server` на площадках (через `ssh -L`, 8 запросов в полёте на зеркало) и ничего не проверяет;
-`mirror` — один держатель; `swarm` — все держатели, покрытия `jlps` и `bytes` (min-bytes); `bytes` — byte identity,
-клиент пробует каждый байтовый рой и берёт лучший (оракул).
-
-```bash
-.venv/bin/python sim/multisite.py sim/multisite.toml --phases cloud,http,mirror,swarm,bytes --reps 3 \
-    --out sim/results_multisite_new.json
-.venv/bin/python bench/summarize_multisite.py sim/results_multisite_new.json   # таблица + строки LaTeX
-```
-
-В `sim/results_multisite_final.json` фазы `cloud`/`mirror`/`http` — из первого прогона, `swarm`/`bytes` — с
-зондированием первого контакта; строки без него — в ключе `ablation_without_probing`.
-
-## 4. `sim/e_hetero.py`: E1/E2, свип, E8
-
-```
-python sim/e_hetero.py VARIANTS_DIR [флаги]
-```
-
-| флаг | по умолчанию | смысл |
+| Driver | Input or purpose | Retained original output |
 |---|---|---|
-| `--procs` | выкл. | стенд уровня процессов (`ProcSwarm`) |
-| `--emu` | выкл. | стенд уровня ядра (`EmuSwarm`); без обоих — узлы в одном процессе (`simulate.Swarm`) |
-| `--placement` | `random` | `random` — окна вариантов; `sat` — первые `--stations` узлов — наземные станции с часами из `--traces`, остальные — зеркала |
-| `--peers` | 48 | **всего** узлов, включая `--boot` bootstrap-релеев (держателей = peers − boot) |
-| `--boot`, `--nat` | 3, 0.3 | число bootstrap+релеев, доля держателей за NAT |
-| `--rep-start`, `--reps` | 0, 3 | повторы `range(rep_start, reps)`: **`--reps` — конец диапазона, а не число** |
-| `--modes` | `values,bytes` | идентичность: по значениям (наша) и byte identity (`ZT_IDENTITY=bytes`) |
-| `--covers` | `jlps` | покрытия в режиме values; `jlps,bytes` добавляет min-bytes (E2) |
-| `--queries` | `map_day_1h,series_point_1h,period_6h` | карта за сутки, точечный ряд за весь период, весь период с шагом 6 ч |
-| `--rate-mbps` | 4.0 | медиана полосы отдачи держателя |
-| `--traces`, `--stations` | `bench/sat_traces.json`, 24 | трассы и число станций для `--placement sat` |
-| `--out` | `sim/results_ehet.json` | файл результатов (пишется после каждой строки: прерванный прогон сохраняет сделанное) |
+| `bench/replica_survey.py` | Nine public ERA5 copies | `bench/replica_survey.json` |
+| `bench/lattice_probe.py` | ARCO/NCAR, four variables at three instants | `bench/lattice_probe.json` |
+| `bench/real_provider_merge.py WORKDIR` | Stage and merge provider fields locally | `bench/real_provider_merge.json` |
+| `bench/lattice_controls.py WORKDIR` | Positive, changed-value and multi-slice controls | `bench/lattice_controls.json` |
+| `bench/provider_identity_controls.py` | Current estimator on the original provider fields | `bench/revalidation/provider_identity_controls_v5.json` |
+| `bench/decoder_survey.py GRIB_DIR` | MRMS, GFS and ERA5 decoding | `bench/decoder_survey.json` |
+| `bench/goes_decoders.py DIR` | GOES-16 ABI L1b decoder/precision controls | `bench/goes_decoders.json` |
+| `bench/fmri_demo.py WORKDIR` | OpenNeuro ds000102 integer-data example | `bench/fmri_demo.json` |
+| `bench/identity_boundary.py` | Sparse source-count changes and supplied-quantizer controls | Versioned `identity_boundary_*.json` |
+| `bench/packing_network.py` | Signed contracts through independent local node processes | Versioned `packing_network_*.json` |
 
-Рабочий каталог роёв — `ZT_SIM_ROOT` (по умолчанию `~/.cache/zt_sim`); `ZT_KEEP_LOGS=1` сохраняет логи узлов.
+Consult each driver's `--help` before a new run. Provider controls require the retained raw fields or a
+new download with recorded hashes. Decoder precision and quantizer provenance affect identity results;
+do not silently convert all inputs to a common dtype and then claim native-decoder agreement.
 
-```bash
-V=~/zt_ms/variants_month
-COMMON="--procs --placement sat --traces bench/sat_traces_meteor.json --peers 36 --stations 22 --rate-mbps 1"
-# E1/E2: 10 повторов (в статье повтор 0 последовательно, 1–9 тремя параллельными окнами)
-.venv/bin/python sim/e_hetero.py $V $COMMON --covers jlps,bytes --rep-start 0 --reps 1 --out sim/results_ehet_new_a.json
-.venv/bin/python sim/e_hetero.py $V $COMMON --covers jlps,bytes --rep-start 1 --reps 4 --out sim/results_ehet_new_b.json
-# ... --rep-start 4 --reps 7, --rep-start 7 --reps 10; затем строки `rows` объединяются в один файл
-.venv/bin/python bench/summarize_ehet.py sim/results_ehet_new.json --csv e1e2_new.csv
-# свип: N = 12, 24, 36, 48 (станций 7, 14, 22, 29)
-.venv/bin/python sim/e_hetero.py $V --procs --placement sat --traces bench/sat_traces_meteor.json --rate-mbps 1 \
-    --peers 12 --stations 7 --queries map_day_1h,period_6h --out sim/results_sweep_12.json
-.venv/bin/python bench/summarize_sweep.py sim/results_sweep_{12,24,36,48}.json
-# E8: те же первые три роя на двух стендах одного хоста
-.venv/bin/python sim/e_hetero.py $V $COMMON --covers jlps,bytes --reps 3 --out sim/e8_procs.json
-.venv/bin/python sim/e_hetero.py $V ${COMMON/--procs/--emu} --covers jlps,bytes --reps 3 --out sim/e8_emu.json
-.venv/bin/python bench/compare_emulators.py sim/e8_procs.json sim/e8_emu.json --reps 3 --out bench/emulators.json
-```
-
-Объединить части в один файл (сводные скрипты принимают один файл на конфигурацию):
+## Prepare heterogeneous replicas
 
 ```bash
-.venv/bin/python -c "import json,sys; f=sys.argv[2:]; d=json.load(open(f[0])); \
-d['rows']=[r for p in f for r in json.load(open(p))['rows']]; json.dump(d, open(sys.argv[1],'w'), indent=1)" OUT.json PART...
+.venv/bin/python bench/make_variants.py ~/zarrswarm-data/variants-month --start 2020-01-01 --days 31
 ```
 
-Сводные скрипты:
-- `bench/summarize_ehet.py RESULTS [--csv paper/figs/plots/e1e2.csv]` — по запросу и конфигурации медиана/мин/макс
-  секунд, медиана МБ, полнота;
-- `bench/summarize_sweep.py FILE...` — медиана времени по идентичности и запросу против числа узлов →
-  `paper/figs/plots/speed_vs_peers.csv`;
-- `bench/summarize_multisite.py RESULTS` — медиана [мин, макс] секунд, МБ, раскладки, худшая ошибка против эталона;
-- `bench/compare_emulators.py PROC EMU [--out bench/emulators.json] [--reps N]` — медианы по конфигурациям на обоих
-  стендах, парные ускорения lattice+JLPS и совпадает ли ранжирование конфигураций.
+This creates five storage variants of the same ARCO ERA5 2 m temperature values: hourly maps, six-hourly
+maps, point-oriented time chunks and tiled layouts, with different codecs and Zarr versions. This fixture
+measures layout and scheduling behavior. It does not introduce independently measured provider values.
 
-Парную статистику строит `bench/summarize_ehet.py RESULTS --stats OUTPUT.json`: медиана отношений времени
-в полных парах, 95% bootstrap-интервал (10 000 повторов, seed 0), число полных пар и более быстрых запусков.
-Старый `sim/results_ehet_v5_stats.json` относится к прежней версии оценщика; `v5` в этом имени — версия
-эксперимента, а не актуальный формат `lattice-v5`. Текущие повторные результаты хранятся отдельно в
-`bench/revalidation/`; подробности исправлений — в `docs/CORRECTNESS_REVALIDATION.md`.
+Use the retained `bench/sat_traces_meteor.json` for the placement behind the original results. The trace
+generator uses current orbital inputs; rerunning it is a new trace, not an exact reconstruction of the old one:
 
+```bash
+.venv/bin/python bench/sat_traces.py --days 31 --stations 40 --sats METEOR-M2 --out bench/sat-traces-new.json
+.venv/bin/python bench/avail_mc.py --traces bench/sat-traces-new.json --out bench/availability-new.json
+```
 
-В повторной проверке `lattice-v5` сетевые строки допускаются в итог только при `state=done`, полном
-покрытии запрошенных samples и `value_check=exact`. Прямая WAN-проверка использует `max_abs_err=0`.
-Источник сравнения — уже скачанные payload через `/api/read`; reference comparison выполняется после
-измерения времени. Кэш завершённого клиента удаляется сразу после проверки, чтобы серия не накапливала
-копии данных до заполнения NFS quota. Remote driver записывает PID узла и сверяет точный `--home`
-перед TERM, а при необходимости — перед KILL после пяти секунд ожидания.
+The availability calculation is Monte Carlo under declared independent failures or longitude-band outages.
+It is separate from running a network of real ground stations.
 
+## Three execution environments
 
-## Исправления повторной проверки L3
+### Processes with application shaping
 
-Рукопись использует файлы `bench/revalidation/`, а не прежние E-серии выше. Текущий драйвер
-не ограничивает поиск полного byte answer временем частичного ответа. После первого полного
-ответа последующие кандидаты получают `max(120 s, 3 × best complete time)`; до него — 1800 s.
-Coverage хранится без округления: частичный длинный ряд не должен округляться до единицы.
-Если выбранный набор чанков не покрывает запрос, Node один раз обновляет каталог и повторяет
-планирование. Время этого повтора входит в query timing; настоящие пробелы остаются `partial`.
-Source snapshots до и после этих изменений сохранены раздельно. Их численные результаты
-нельзя объединять с утверждением, что всё измерено на одной окончательной копии исходников.
+`sim/procswarm.py` starts one real `python -m zarrswarm.cli node` process per peer, with independent sockets
+on loopback. A node token bucket sets upload rate; `ZT_EMU_LATENCY_MS` injects delay in the application.
+This exercises the implementation but does not reproduce kernel packet queues and losses.
 
-JLPS исключает cached chunks из сетевого lower bound и нормировки remote-price loads; минимальный по
-байтам cover всегда входит в кандидаты. Гарантия относится к оценкам одной модели с заданным slack,
-а не к измеренному wall time. Таблицы process/kernel повторяются с исправленным solver; WAN сохраняет
-свою измеренную версию. Файлы прежних снимков не выдаются за замеры текущего solver.
+### Kernel network emulation
+
+`sim/netemu.py` uses user/network namespaces, veth pairs, a bridge and `tc netem`/`tbf`. It applies delay,
+loss and bandwidth shaping on both veth ends, so TCP queues and retransmissions come from the kernel.
+The holder advertises its rate but does not apply a second application-level shaper.
+
+The host needs unprivileged user namespaces and the `veth`, `sch_netem` and `sch_tbf` modules. An administrator
+can load those modules once. Then check the environment:
+
+```bash
+.venv/bin/python sim/netemu.py selftest
+```
+
+This self-check transfers generated data between two nodes at 1 MB/s and 50 ms delay. Do not treat it as a
+completed benchmark matrix.
+
+### Internet sites
+
+`sim/multisite.py` reads a TOML configuration such as `sim/multisite.toml`. Replace the example SSH hosts,
+interpreters, source paths, data paths and query ranges with your own. The controller starts a bootstrap/relay,
+remote holders and a fresh client for each query. Reverse SSH tunnels make the relay reachable from remote
+sites; node sessions last for the run. A new private network key is generated per run.
+
+The historical configuration names the actual sites used by that experiment. It is not a ready-to-run public
+service. Check ownership, allocated storage and ongoing work before starting another run on a shared host.
+
+| Phase | Comparison |
+|---|---|
+| `cloud` | xarray reads directly from the public ARCO bucket |
+| `http` | A catalogue client divides native chunk files across HTTP mirrors; eight requests per mirror |
+| `mirror` | One holder with the public layout |
+| `swarm` | All holders, with JLPS and minimum-byte selection |
+| `bytes` | The best completed byte-identical swarm, selected with prior knowledge |
+
+```bash
+.venv/bin/python sim/multisite.py sim/multisite.toml --phases cloud,http,mirror,swarm,bytes --reps 3 --out sim/multisite-new.json
+.venv/bin/python bench/summarize_multisite.py sim/multisite-new.json
+```
+
+The byte baseline is an oracle over byte swarms, not a blind discovery policy. Historical first-contact
+probing ablations remain separate from the completed measured matrix.
+
+## Heterogeneous-query driver
+
+```text
+python sim/e_hetero.py VARIANTS_DIR [options]
+```
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--procs` | Off | Separate processes with application shaping |
+| `--emu` | Off | Kernel namespaces and link shaping; with neither flag, nodes share one process |
+| `--placement` | `random` | `sat` assigns trace-covered hours to the first `--stations` holders |
+| `--peers` | 48 | Total nodes, including bootstrap/relays |
+| `--boot`, `--nat` | 3, 0.3 | Bootstrap/relay count and fraction of NAT holders |
+| `--rep-start`, `--reps` | 0, 3 | Repetition range `range(rep_start, reps)`; `--reps` is the end index |
+| `--modes` | `values,bytes` | Value identity and byte identity |
+| `--covers` | `jlps` | Add `bytes` to compare minimum-byte layout selection |
+| `--queries` | `map_day_1h,series_point_1h,period_6h` | A day of maps, a point series, and the full period at six-hour steps |
+| `--rate-mbps` | 4.0 | Median holder upload rate, in MB/s |
+| `--traces`, `--stations` | `bench/sat_traces.json`, 24 | Trace input and number of station holders |
+| `--out` | `sim/results_ehet.json` | JSON output; explicitly choose a new path |
+
+The repetition index fixes the random placement. Use the same index and fixture when comparing execution
+environments. The work directory is `ZT_SIM_ROOT`, defaulting to `~/.cache/zt_sim`; `ZT_KEEP_LOGS=1` retains
+node logs. Each completed row is written as the run progresses.
+
+```bash
+variant_dir=~/zarrswarm-data/variants-month
+.venv/bin/python sim/e_hetero.py "$variant_dir" --procs --placement sat --traces bench/sat_traces_meteor.json --peers 36 --stations 22 --rate-mbps 1 --covers jlps,bytes --rep-start 0 --reps 10 --out sim/heterogeneous-new.json
+.venv/bin/python bench/summarize_ehet.py sim/heterogeneous-new.json --csv bench/heterogeneous-new.csv --stats bench/heterogeneous-new-stats.json
+```
+
+For a holder-count sweep, run the same fixture at 12, 24, 36 and 48 peers with 7, 14, 22 and 29 stations,
+respectively. For the original kernel comparison, repeat the same placements with `--emu` and use
+`bench/compare_emulators.py PROCESS_JSON KERNEL_JSON --reps N --out NEW_JSON`. Later receiver/relay fixes
+have their own frozen matrices; the older kernel run is historical evidence, not the current comparison.
+
+## Summaries and acceptance checks
+
+`bench/summarize_ehet.py` reports medians, ranges, transferred bytes and coverage for complete exact answers.
+Its `--stats` output uses paired time ratios, a 10,000-resample bootstrap with seed 0, and records the paired
+repetition indices. `bench/summarize_multisite.py` reports source-reference errors as well as time and volume.
+`bench/summarize_sweep.py` writes the holder-count CSV to `bench/speed_vs_peers.csv`.
+
+Accept a network timing row only with `state=done`, full unrounded requested-sample coverage and a downloaded
+payload check equal to the reference. Run that check after timing. Reading missing truth through xarray can
+conceal an incomplete transfer and is not a valid completion check. Direct WAN controls require zero maximum
+absolute error for these lossless workload fixtures.
+
+Before the first complete byte answer, the oracle uses a 1800-second deadline. Once it has a complete answer,
+later candidates get at least 120 seconds or three times the best completed time. A quick partial answer
+must not set the deadline for a slower complete one.
+
+The final process replay contains ten placements with 90 complete exact answers. The completed kernel/NAT
+comparison contains 27 complete exact answers across three placements. WAN records contain 36 node answers
+and 18 cloud/HTTP controls. Their source versions differ and are identified by their SHA manifests; do not
+combine their rows under a claim that one final implementation was measured everywhere.
+
+A new run should record input hashes, source hashes, configuration, random seeds, completion checks and host
+conditions. Keep failed or interrupted rows distinguishable from accepted results. Remove task-owned clients
+and temporary caches after verifying results, without removing shared datasets or other jobs.

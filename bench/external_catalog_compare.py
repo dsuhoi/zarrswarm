@@ -34,9 +34,9 @@ from aiohttp import web
 from sim.e_hetero import VAR, build_sat, verify_downloaded_chunks
 from sim.netemu import EmuSwarm, ensure_router
 from sim.simulate import fresh_client
-from zarr_torrent import codec, scan
-from zarr_torrent.node import Node, merge_view
-from zarr_torrent.store import http
+from zarrswarm import codec, scan
+from zarrswarm.node import Node, merge_view
+from zarrswarm.store import http
 
 
 def dump(path, value):
@@ -168,7 +168,7 @@ async def aria_download(n, cat, reg, home, aria2):
         records[out] = (cid, b['vcid'], docs, v['arrays'][name]['taxis'])
         urls = '\t'.join(cat['http'][p] + '/' + cid for p, _ in peers)
         lines.append(urls + '\n  out=' + out)
-    coverage = __import__('zarr_torrent.jlps', fromlist=['region_coverage']).region_coverage(
+    coverage = __import__('zarrswarm.jlps', fromlist=['region_coverage']).region_coverage(
         VAR, v['arrays'], v['best'], keys, info['request']['g_lo'], info['request']['g_hi'],
         reg.get('isel'), tuple(info['lattice']))
     assert coverage['missing_samples'] == 0, coverage
@@ -329,7 +329,7 @@ def run(a):
                 'estimator': codec.ESTIMATOR, 'smoke': a.smoke, 'placement': a.placement,
                 'cycles': a.cycles, 'nat': a.placement == 'partial-nat',
                 'source_sha256': {str(p.relative_to(source)): hashlib.sha256(p.read_bytes()).hexdigest()
-                                  for p in sorted((source / 'zarr_torrent').glob('*.py')) + [Path(__file__).resolve()]},
+                                  for p in sorted((source / 'zarrswarm').glob('*.py')) + [Path(__file__).resolve()]},
                 'protocol': ('22 sparse stations and 11 window mirrors, 30% NAT, blocked inbound ports, shared outbound relays; ' if a.placement == 'partial-nat' else 'Two full public holders per layout; ') + 'preloaded common catalogue and declared rates; '
                             'fresh receiver caches; kernel TCP shaping; stored bytes; four verification workers; '
                             'minimum-byte cover for aria2; source-value checks outside query timing.'}

@@ -1,108 +1,120 @@
-# Справочник: `~/.zt/config.toml`
+# Configuration reference
 
-Файл создаёт `zt init` (с комментариями). Каталог узла — `~/.zt`, другой задаётся `--home DIR` или `ZT_HOME`.
-Флаги `zt node` важнее значений файла. Старый `config.json` читается, если `config.toml` нет; первый же
-`zt init` переводит его в TOML. Повторный `zt init` сохраняет `ctl_port`, `[[seed]]`, `[tuning]` и значения
-основных ключей; прочие пользовательские ключи и комментарии перезаписываются.
+`zarrswarm init` creates `~/.zt/config.toml`. Set `--home DIR` or `ZT_HOME`
+to use another node directory. Command-line flags override file values.
 
-В каталоге узла также лежат `node.key` (ключ ed25519: **это и есть узел**, не копируйте его на другие хосты) и
-`state.json` (раздачи, добавленные `zt seed`, и опубликованные имена).
+A legacy `config.json` is read when TOML is absent; initialization migrates it.
+Repeated initialization preserves `ctl_port`, `[[seed]]`, `[tuning]` and core
+settings, but rewrites other custom keys and comments.
 
-## Основные ключи
+The directory also contains `node.key`, the Ed25519 node identity, and
+`state.json`, which records manually registered stores and published names.
+Initialize a separate identity on each host.
 
-| ключ | по умолчанию | флаг `zt node` | смысл |
+## Main settings
+
+| Key | Default | Node flag or environment | Meaning |
 |---|---|---|---|
-| `network` | — | — | `ztnet://<id>@host:port` сети; только для справки и передачи другим |
-| `network_key` | `""` | env `ZT_NETWORK_KEY` | ключ закрытой сети (`zt init --private` / из приглашения `?k=`); без него узел отвечает 403. **Секрет** |
-| `port` | 7881 | `--port` | порт данных (TCP), к нему подключаются пиры |
-| `host` | `127.0.0.1` | `--host` | адрес привязки порта данных; `0.0.0.0` — принимать извне |
-| `ctl_port` | `port + 1` | `--ctl-port` | управляющий API, всегда на `127.0.0.1` (CLI, TUI, xarray: `ZT_CTL`) |
-| `public` | `""` | `--public` | внешний URL порта данных; пусто — узел за NAT или адрес определяется `auto` |
-| `bootstrap` | `[]` | `--bootstrap` | URL любых публичных узлов сети |
-| `relay` | `""` | `--relay` | релей, через который узел без входящих соединений доступен остальным |
-| `relay_server` | `false` | `--relay-server` | пересылать трафик узлов за NAT (для публичных узлов) |
-| `auto` | `false` | `--auto` | при старте проверить достижимость через bootstrap (`/whoami` + `/probe`) и выбрать публичный адрес или релей |
-| `upload_mbps` | 0 | `--upload-mbps` | потолок отдачи, МБ/с (0 — без ограничения); объявляется в DHT, планировщики клиентов его учитывают |
-| `cache_max_gb` | 0 | — | потолок скачанных данных в кэше узла, ГБ (0 — без ограничения). Раз в 30 с лишнее вытесняется по LRU до 90 %; ваши раздаваемые файлы, чётность и чанки, использованные за последние 10 мин, не трогаются |
-| `trust` | `[]` | `--trust` | публичные ключи доверенных издателей: их значения важнее большинства держателей |
+| `network` | Unset | None | Invitation retained for reference |
+| `network_key` | `""` | `ZT_NETWORK_KEY` | Private-network key; keep it secret |
+| `port` | 7881 | `--port` | TCP data port used by peers |
+| `host` | `127.0.0.1` | `--host` | Data-port bind address; `0.0.0.0` accepts external connections |
+| `ctl_port` | `port + 1` | `--ctl-port` | Local control API for CLI, TUI and xarray |
+| `public` | `""` | `--public` | Public data URL; empty means NAT or automatic discovery |
+| `bootstrap` | `[]` | `--bootstrap` | Public entry-node URLs |
+| `relay` | `""` | `--relay` | Relay used by a node without incoming connections |
+| `relay_server` | `false` | `--relay-server` | Relay traffic for NAT nodes |
+| `auto` | `false` | `--auto` | Check reachability and choose public address or relay |
+| `upload_mbps` | 0 | `--upload-mbps` | Upload limit in MB/s; zero is unlimited |
+| `cache_max_gb` | 0 | None | Download-cache limit in GB; zero is unlimited |
+| `trust` | `[]` | `--trust` | Publisher public keys with precedence over holder votes |
 
-## `[[seed]]` — что раздавать при каждом старте
+Cache eviction runs every 30 seconds and reduces excess use to 90% of the limit.
+It preserves your seeded files, parity and chunks used within the previous
+ten minutes.
+
+## Seed stores at startup
 
 ```toml
 [[seed]]
-path = "/data/era5/*.zarr"      # glob: все совпадения; несуществующий путь пишется в лог и пропускается
+path = "/data/era5/*.zarr"
 
 [[seed]]
 path = "/scratch/wb2_64x32.zarr"
 ```
 
-Раздачи из `zt seed PATH` запоминаются в `state.json` и тоже восстанавливаются; `zt unseed PATH` снимает раздачу
-(путь из `[[seed]]` вернётся при следующем старте — удалите его из файла).
+Missing glob matches are logged and skipped. Stores added with `zarrswarm seed`
+are also restored from `state.json`. Remove a startup entry when unseeding its
+path, or the next startup will seed it again.
 
-## `[tuning]` — тонкая настройка
+## Tuning settings
 
-Любой ключ необязателен. Значение передаётся узлу через переменную окружения (она же работает без конфига);
-неизвестный ключ — ошибка при старте.
+All keys are optional. The node maps them to environment variables before
+importing its runtime modules. Unknown tuning keys fail startup.
 
-| ключ | env | по умолчанию | смысл |
+| Key | Environment variable | Default | Meaning |
 |---|---|---|---|
-| `announce_every_s` | `ZT_ANNOUNCE_EVERY` | 600 | период повторной публикации записей в DHT |
-| `page_cache_mb` | `ZT_PAGE_CACHE_MB` | 256 | кэш страниц манифеста (CAPT) на узле |
-| `decoded_cache_mb` | `ZT_DECODED_MB` | 256 | кэш декодированных чанков для pushdown-запросов |
-| `client_cache_mb` | `ZT_DECODED_CACHE_MB` | 512 | кэш декодированных чанков клиента xarray |
-| `audit_rate` | `ZT_AUDIT` | 0.05 | доля pushdown-результатов, перепроверяемых по сырым чанкам |
-| `pushdown_frac` | `ZT_PUSHDOWN_FRAC` | 0.25 | запрашивать срез у держателя, если нужна доля чанка меньше этой |
-| `readahead_chunks` | `ZT_READAHEAD` | 4 | упреждающее чтение при последовательном проходе по времени |
-| `stall_min_s` | `ZT_STALL_MIN` | 5 | сколько секунд без байта считать соединение зависшим |
-| `xt1_below_bps` | `ZT_XT1_BELOW` | 3e7 | ниже этой скорости канала просить транспортный кодек xt1 |
-| `relay_frame_kb` | `ZT_RELAY_FRAME_KB` | 4096 | размер кадра пересылки через релей |
-| `rescan_every_s` | `ZT_RESCAN_EVERY` | 60 | как часто проверять раздаваемые датасеты на дописанные шаги (каждый 10-й раз — полный пересчёт хэшей) |
-| `follow_every_s` | `ZT_FOLLOW_EVERY` | 300 | как часто подписки (`zt follow`) догружают новое |
+| `announce_every_s` | `ZT_ANNOUNCE_EVERY` | 600 | DHT reannouncement interval |
+| `page_cache_mb` | `ZT_PAGE_CACHE_MB` | 256 | Manifest-page cache |
+| `decoded_cache_mb` | `ZT_DECODED_MB` | 256 | Holder's decoded pushdown cache |
+| `client_cache_mb` | `ZT_DECODED_CACHE_MB` | 512 | xarray decoded-chunk cache |
+| `audit_rate` | `ZT_AUDIT` | 0.05 | Sampled whole-chunk pushdown audit rate |
+| `pushdown_frac` | `ZT_PUSHDOWN_FRAC` | 0.25 | Request a slice below this source-chunk fraction |
+| `readahead_chunks` | `ZT_READAHEAD` | 4 | Upcoming view chunks prefetched during sequential reads |
+| `stall_min_s` | `ZT_STALL_MIN` | 5 | Seconds without data before a batch is considered stalled |
+| `xt1_below_bps` | `ZT_XT1_BELOW` | 3e7 | Request xt1 below this link rate in bytes/s |
+| `relay_frame_kb` | `ZT_RELAY_FRAME_KB` | 4096 | Relay data-frame size |
+| `rescan_every_s` | `ZT_RESCAN_EVERY` | 60 | Metadata check interval; every tenth check is a full stat-cached rescan |
+| `follow_every_s` | `ZT_FOLLOW_EVERY` | 300 | Subscription update interval |
 
-`client_cache_mb`, `pushdown_frac`, `readahead_chunks` действуют в процессе клиента (Python с xarray):
-для него задавайте переменные окружения, а не конфиг узла.
+`client_cache_mb`, `pushdown_frac` and `readahead_chunks` apply in the Python
+client process. Set their environment variables there; the node's configuration
+does not configure a separate client.
 
-## Все переменные окружения
+## Environment variables
 
-Полный список (`grep -rhoE 'ZT_[A-Z0-9_]+' zarr_torrent sim bench | sort -u`); значения по умолчанию — из кода.
-«Узел» — процесс `zt node`, «клиент» — процесс с `zarr_torrent` (xarray, `zt …`), «харнесс» — скрипты `sim/`.
-Переменные из таблицы `[tuning]` выше перечислены и здесь.
+The `ZT_*` names are the protocol's existing runtime settings. To inspect
+current references, run `rg -o 'ZT_[A-Z0-9_]+' zarrswarm sim bench`.
+Here, node means the server process, client means CLI/xarray, and harness means
+a script under `sim/`.
 
-| env | где | по умолчанию | смысл |
+| Variable | Process | Default | Meaning |
 |---|---|---|---|
-| `ZT_HOME` | CLI, TUI | `~/.zt` | каталог узла для `zt init` / `zt node` |
-| `ZT_CTL` | клиент | `http://127.0.0.1:7882` | управляющий API узла для `zt …`, `zt-tui`, `zarr_torrent.open_dataset` |
-| `ZT_CTL_HOST` | узел | `127.0.0.1` | адрес привязки управляющего API; он же добавляется к разрешённым `Host`. Нужен стендам эмуляции, где у каждого узла свой адрес (`sim/netemu.py`); в обычной работе не меняйте |
-| `ZT_NETWORK_KEY` | узел | — | ключ закрытой сети вместо `network_key` в файле. **Секрет** |
-| `ZT_TRUST` | узел | — | доверенные ключи через запятую (добавляются к `trust`) |
-| `ZT_ANNOUNCE_EVERY` | узел | 600 | период повторной публикации записей в DHT, с (`announce_every_s`) |
-| `ZT_ANNOUNCE_MBPS` | узел | 0 (нет) | объявляемая в DHT полоса отдачи, МБ/с, **без** ограничения отдачи в самом узле (канал ограничен извне, например ядром); `--upload-mbps` важнее. Без обоих объявляется собственная оценка |
-| `ZT_RESCAN_EVERY` | узел | 60 | период проверки раздаваемых датасетов на дописанные шаги, с (`rescan_every_s`) |
-| `ZT_FOLLOW_EVERY` | узел | 300 | период догрузки подписок `zt follow`, с (`follow_every_s`) |
-| `ZT_PAGE_CACHE_MB` | узел | 256 | кэш страниц манифеста CAPT (`page_cache_mb`) |
-| `ZT_DECODED_MB` | узел | 256 | кэш декодированных чанков для pushdown (`decoded_cache_mb`) |
-| `ZT_AUDIT` | узел | 0.05 | доля перепроверяемых pushdown-результатов (`audit_rate`) |
-| `ZT_PD_WHOLE_FRAC` | узел | 0.25 | если срезы одного чанка в пакете pushdown в сумме больше этой доли чанка, он скачивается целиком |
-| `ZT_STALL_MIN` | узел | 5 | секунд без байта до признания пачки зависшей (`stall_min_s`) |
-| `ZT_XT1_BELOW` | узел | 3e7 | ниже этой скорости канала (Б/с) просить транспортный кодек xt1 (`xt1_below_bps`) |
-| `ZT_RELAY_FRAME_KB` | узел | 4096 | размер кадра пересылки через релей (`relay_frame_kb`) |
-| `ZT_COVER_DEADLINE` | узел | 300 | предел на выбор покрытия задания по региону (вид + JLPS), с; по истечении — ошибка и стеки всех корутин в логе |
-| `ZT_JLPS_SLACK` | узел | 0.1 | покрытия с прогнозом не дальше этой доли от лучшего считаются равными; из них JLPS берёт читающее меньше байт |
-| `ZT_CLIENT_MBPS` | узел | 30 | полоса получателя (загрузка + проверка значений), МБ/с — ещё одно узкое место в JLPS и плане; 0 — не учитывать |
-| `ZT_CHUNK_OVERHEAD_MS` | узел | 50 | накладные расходы на чанк (запрос, чтение с диска, проверка) в цене JLPS, мс при медианной полосе |
-| `ZT_SCAN_WORKERS` | узел | 0 = по ядрам | потоки сканирования (декодирование и хэши чанков); 0 — по числу доступных ядер, но не больше 16 |
-| `ZT_HASH_CACHE` | узел | — | каталог общего на хост кэша хэшей чанков (ключ — inode, размер, mtime файла, раскладка, `VALUE_ID`, версия оценщика); полезен, когда несколько узлов раздают жёсткие ссылки одного архива |
-| `ZT_VALUE_ID` | узел, клиент | `lattice` | идентичность значений float: `lattice` (решётка квантования) или `exact` (хэш точных значений) |
-| `ZT_IDENTITY` | узел | — | `bytes`: в идентичность сетки входит кодировка (один рой на байтовое представление, как IPFS/BitTorrent) — абляция для экспериментов |
-| `ZT_DECODED_CACHE_MB` | клиент | 512 | кэш декодированных чанков xarray (`client_cache_mb`) |
-| `ZT_PUSHDOWN_FRAC` | клиент | 0.25 | запрашивать у держателя срез, если нужна доля чанка меньше этой (`pushdown_frac`) |
-| `ZT_READAHEAD` | клиент | 4 | упреждающее чтение view-чанков при последовательном проходе по времени (`readahead_chunks`) |
-| `ZT_EMU_LATENCY_MS` | узел (эмуляция) | 0 | задержка, которую узел добавляет к своим ответам, мс (`sim/procswarm.py`); `sim/netemu.py` её снимает — задерживает ядро |
-| `ZT_EMU_LOSS` | узел (эмуляция) | 0 | вероятность, что запрос к порту данных «повиснет» (потери на канале) |
-| `ZT_EMU_STRATEGY` | узел (эмуляция) | `maxflow` | стратегия выбора пиров: `maxflow`, `rarest`, `random`, `single` |
-| `ZT_EMU_ROUTER` | харнесс | — | служебный флаг `sim/netemu.py`: процесс уже перезапущен внутри `unshare -rn` (не задавайте вручную) |
-| `ZT_KEEP_LOGS` | харнесс | — | непустое: `ProcSwarm`/`EmuSwarm` при остановке сохраняют каталог роя с логами узлов (удаляются только домашние каталоги `h_*`) |
-| `ZT_SIM_ROOT` | харнесс | `~/.cache/zt_sim` | рабочий каталог роёв `sim/e_hetero.py` |
-| `ZT_SIM_DIR` | харнесс | `~/.cache/zt_sim` | рабочий каталог `sim/simulate.py` |
+| `ZT_HOME` | CLI, TUI | `~/.zt` | Node state directory |
+| `ZT_CTL` | Client | `http://127.0.0.1:7882` | Local control API |
+| `ZT_CTL_HOST` | Node | `127.0.0.1` | Control bind address; needed by isolated testbed nodes |
+| `ZT_NETWORK_KEY` | Node | Unset | Private-network key; secret |
+| `ZT_TRUST` | Node | Unset | Comma-separated trusted publisher keys |
+| `ZT_ANNOUNCE_EVERY` | Node | 600 | DHT reannouncement interval in seconds |
+| `ZT_ANNOUNCE_MBPS` | Node | 0 | Bandwidth hint in MB/s without local shaping; explicit upload limit takes precedence |
+| `ZT_RESCAN_EVERY` | Node | 60 | Metadata check interval in seconds |
+| `ZT_FOLLOW_EVERY` | Node | 300 | Follow update interval in seconds |
+| `ZT_PAGE_CACHE_MB` | Node | 256 | CAPT page-cache size |
+| `ZT_DECODED_MB` | Node | 256 | Decoded pushdown cache size |
+| `ZT_AUDIT` | Node | 0.05 | Sampled whole-chunk audit rate |
+| `ZT_PD_WHOLE_FRAC` | Node | 0.25 | Fetch the whole chunk when grouped pushdown demand exceeds this fraction |
+| `ZT_STALL_MIN` | Node | 5 | Seconds without data before declaring a stalled batch |
+| `ZT_XT1_BELOW` | Node | 3e7 | xt1 threshold in bytes/s |
+| `ZT_RELAY_FRAME_KB` | Node | 4096 | Relay frame size |
+| `ZT_COVER_DEADLINE` | Node | 300 | Regional cover-selection deadline in seconds |
+| `ZT_JLPS_SLACK` | Node | 0.1 | Predicted makespan slack; choose fewer bytes among covers within it |
+| `ZT_CLIENT_MBPS` | Node | 30 | Modeled receiver download and verification capacity in MB/s; zero disables this bound |
+| `ZT_CHUNK_OVERHEAD_MS` | Node | 50 | Modeled per-chunk request, disk and verification overhead |
+| `ZT_SCAN_WORKERS` | Node | 0 | Scan threads; zero uses available cores, capped at 16 |
+| `ZT_HASH_CACHE` | Node | Unset | Shared stat-based scan hash cache, also keyed by layout, metadata and identity version |
+| `ZT_VALUE_ID` | Node, client | `lattice` | Floating-point identity: independent lattice fitting or `exact` hashing |
+| `ZT_IDENTITY` | Node | Unset | `bytes` separates encoding-specific swarms for the byte-identity control |
+| `ZT_DECODED_CACHE_MB` | Client | 512 | xarray decoded-chunk cache size |
+| `ZT_PUSHDOWN_FRAC` | Client | 0.25 | Slice-request threshold |
+| `ZT_READAHEAD` | Client | 4 | Upcoming virtual chunks prefetched |
+| `ZT_EMU_LATENCY_MS` | Emulated node | 0 | Application-added response delay in milliseconds |
+| `ZT_EMU_LOSS` | Emulated node | 0 | Probability of intentionally hanging a data-port request |
+| `ZT_EMU_STRATEGY` | Emulated node | `maxflow` | Peer strategy: `maxflow`, `rarest`, `random`, `single` |
+| `ZT_EMU_ROUTER` | Harness | Unset | Internal marker for the network-namespace router |
+| `ZT_KEEP_LOGS` | Harness | Unset | Retain stopped swarm directories and node logs |
+| `ZT_SIM_ROOT` | Harness | `~/.cache/zt_sim` | Heterogeneous testbed work directory |
+| `ZT_SIM_DIR` | Harness | `~/.cache/zt_sim` | Simulator work directory |
 
-`ZT_EMU_*` намеренно не читаются из `config.toml`: это эмуляция каналов для экспериментов (`docs/experiments.md`).
+Cache sizes with an `_MB` suffix are in MB; intervals above are in seconds.
+`ZT_EMU_*` options are testbed controls and are not read from `config.toml`.
+See the [experiment guide](experiments.md).

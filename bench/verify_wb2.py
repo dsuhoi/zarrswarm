@@ -4,7 +4,7 @@ import argparse, json, sys, time
 from pathlib import Path
 import numpy as np, xarray as xr
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarr_torrent as zt
+import zarrswarm as zt
 
 COVER = {"2m_temperature": ("2000-01-01", "2004-12-31T18"), "10m_u_component_of_wind": ("2000-01-01", "2002-12-31T18"),
          "geopotential": ("2000-01-01", "2002-12-31T18"), "mean_sea_level_pressure": ("2002-01-01", "2004-12-31T18")}

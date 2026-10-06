@@ -17,9 +17,9 @@ import xarray as xr
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "sim"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from procswarm import ProcSwarm  # noqa: E402
-from zarr_torrent import capt  # noqa: E402
-from zarr_torrent.scan import scan  # noqa: E402
-from zarr_torrent.store import http  # noqa: E402
+from zarrswarm import capt  # noqa: E402
+from zarrswarm.scan import scan  # noqa: E402
+from zarrswarm.store import http  # noqa: E402
 
 
 def rss(pid):

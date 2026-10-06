@@ -1,48 +1,54 @@
-# Публикация документации
+# Publish the documentation
 
-Сайт собирается из Markdown-файлов в `docs/` с помощью MkDocs Material.
-Навигация, тема и проверка ссылок заданы в `mkdocs.yml`; версии инструментов — в `docs/requirements.txt`.
-Датированные отчёты проверки и исходные результаты хранятся в репозитории.
+MkDocs Material builds the website from Markdown in `docs/`.
+Navigation, theme and link validation are configured in `mkdocs.yml`;
+tool versions are pinned in `docs/requirements.txt`.
 
-## Локальный просмотр
+## Preview locally
 
-Из корня репозитория:
+From the repository root:
 
 ```bash
 uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs serve
 ```
 
-Откройте `http://127.0.0.1:8000`. Изменения Markdown появятся после сохранения файла.
-Инструменты документации устанавливаются в отдельное окружение uv.
+Open `http://127.0.0.1:8000`. The preview reloads when Markdown changes.
+Documentation tools run in a separate uv environment.
 
-Проверить сборку перед публикацией:
+Check the build before publishing:
 
 ```bash
 uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs build --strict
 ```
 
-Готовый сайт появится в `site/`. Неисправные ссылки, якоря и страницы навигации приводят к ошибке сборки.
+The generated site is written to `site/`. Missing navigation pages, local links
+and anchors fail the strict build.
 
 ## GitHub Pages
 
-1. Разместите проект в [репозитории ZarrSwarm](https://github.com/dsuhoi/zarrswarm). Для GitHub Free Pages доступны в публичных
-   репозиториях; поддержка приватных зависит от тарифа.
-2. В **Settings → Pages → Build and deployment → Source** выберите **GitHub Actions**.
-3. Добавьте файлы документации, `mkdocs.yml` и `.github/workflows/docs.yml` в ветку по умолчанию.
-   Первый запуск можно сделать вручную: **Actions → Documentation → Run workflow**.
+1. Push the project to the [repository](https://github.com/dsuhoi/zarrswarm).
+2. Open **Settings → Pages → Build and deployment → Source** and select
+   **GitHub Actions**.
+3. Push documentation, `mkdocs.yml` and `.github/workflows/docs.yml` to the
+   default branch. To run it manually, select
+   **Actions → Documentation → Run workflow**.
 
-Workflow проверяет сборку при изменениях документации в push и pull request. Публикация выполняется
-из ветки по умолчанию; адрес сайта появляется в окружении `github-pages` и в результате шага deployment.
-Адрес документации ZarrSwarm: `https://dsuhoi.github.io/zarrswarm/`.
+The workflow checks documentation changes on pushes and pull requests.
+Deployment uses the default branch. The published address appears in the
+`github-pages` environment and the deployment step.
+The configured site address is `https://dsuhoi.github.io/zarrswarm/`.
 
-В CI адрес берётся из GitHub Pages автоматически. Для локальной проверки конкретного адреса:
+In CI, the address is read from GitHub Pages. For a local check at a particular
+address, set `DOCS_SITE_URL` before the build:
 
 ```bash
-DOCS_SITE_URL=https://dsuhoi.github.io/zarrswarm/ \
-  uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs build --strict
+export DOCS_SITE_URL=https://dsuhoi.github.io/zarrswarm/
+uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs build --strict
 ```
 
-В разрешённых ветках окружения `github-pages` должна быть ветка по умолчанию.
-Дополнительный токен для этого workflow не требуется: используются `GITHUB_TOKEN` и OIDC GitHub Actions.
+The `github-pages` environment must allow deployment from the default branch.
+The workflow uses GitHub Actions' `GITHUB_TOKEN` and OIDC; no additional
+deployment token is needed. Enabling Pages in repository settings requires
+repository administration access.
 
-Официальная инструкция: [GitHub Pages с собственным workflow](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+See the [official GitHub Pages workflow guide](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).

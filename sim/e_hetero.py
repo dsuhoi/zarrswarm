@@ -23,9 +23,9 @@ import zarr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import simulate as S  # noqa: E402
-from zarr_torrent import scan as scanmod  # noqa: E402
-from zarr_torrent import codec  # noqa: E402
-from zarr_torrent.store import http, wait_job  # noqa: E402
+from zarrswarm import scan as scanmod  # noqa: E402
+from zarrswarm import codec  # noqa: E402
+from zarrswarm.store import http, wait_job  # noqa: E402
 
 VAR = "2m_temperature"
 
@@ -268,11 +268,11 @@ def main():
     }
     queries = {q: queries[q] for q in a.queries.split(",")}
     root = Path(os.environ.get("ZT_SIM_ROOT", "~/.cache/zt_sim")).expanduser()
-    from zarr_torrent.codec import ESTIMATOR
+    from zarrswarm.codec import ESTIMATOR
     import hashlib
     metadata = {"estimator": ESTIMATOR, "source_sha256": {
         str(p.relative_to(Path(__file__).resolve().parents[1])): hashlib.sha256(p.read_bytes()).hexdigest()
-        for p in sorted(Path(__file__).resolve().parents[1].joinpath("zarr_torrent").glob("*.py"))},
+        for p in sorted(Path(__file__).resolve().parents[1].joinpath("zarrswarm").glob("*.py"))},
         "started_utc": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()}
     rows = []
     for rep in range(a.rep_start, a.reps):

@@ -12,16 +12,17 @@ test = ["pytest", "dask"]
 netcdf = ["h5netcdf", "h5py"]
 
 [project.scripts]
-zarrswarm = "zarr_torrent.cli:main"
-zt = "zarr_torrent.cli:main"
-zt-tui = "zarr_torrent.tui:main"
+zarrswarm = "zarrswarm.cli:main"
+zarrswarm-tui = "zarrswarm.tui:main"
+zt = "zarrswarm.cli:main"
+zt-tui = "zarrswarm.tui:main"
 
 [build-system]
 requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["zarrswarm", "zarr_torrent"]
+packages = ["zarrswarm"]
 
 [project.urls]
 Repository = "https://github.com/dsuhoi/zarrswarm"

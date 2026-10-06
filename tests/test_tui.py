@@ -10,10 +10,10 @@ import pandas as pd
 import xarray as xr
 from textual.widgets import DataTable, Input, SelectionList, Static, TabbedContent, TextArea, Tree
 
-from zarr_torrent.cli import _config
-from zarr_torrent.node import Node
-from zarr_torrent.store import http
-from zarr_torrent.tui import AddDialog, SearchDialog, SeedDialog, SettingsScreen, ZtTui
+from zarrswarm.cli import _config
+from zarrswarm.node import Node
+from zarrswarm.store import http
+from zarrswarm.tui import AddDialog, SearchDialog, SeedDialog, SettingsScreen, ZtTui
 
 
 def port():
@@ -33,7 +33,7 @@ async def until(pilot, cond, n=100):
 
 
 def test_tui_torrent_flow(tmp_path, monkeypatch):
-    from zarr_torrent import store
+    from zarrswarm import store
     monkeypatch.setattr(store, "READAHEAD", 0)  # export scans time: no prefetch past the slice, exact piece map
     loop = asyncio.new_event_loop()
     threading.Thread(target=loop.run_forever, daemon=True).start()

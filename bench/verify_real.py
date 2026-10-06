@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import zarr_torrent as zt  # noqa: E402
+import zarrswarm as zt  # noqa: E402
 from make_era5like import field  # noqa: E402
-from zarr_torrent.store import http, keys_for, open_view, wait_job  # noqa: E402
+from zarrswarm.store import http, keys_for, open_view, wait_job  # noqa: E402
 
 COVER = {"t2m": ("2020-01-01", "2020-03-15 23:00"), "u10": ("2020-01-01", "2020-02-29 23:00"),
          "v10": ("2020-02-15", "2020-03-15 23:00")}

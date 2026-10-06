@@ -29,10 +29,10 @@ import xarray as xr
 from zarr.codecs import ZstdCodec
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarr_torrent as zt  # noqa: E402
-from zarr_torrent.codec import same_vcid, vcid_of  # noqa: E402
-from zarr_torrent.node import Node  # noqa: E402
-from zarr_torrent.store import http, wait_job  # noqa: E402
+import zarrswarm as zt  # noqa: E402
+from zarrswarm.codec import same_vcid, vcid_of  # noqa: E402
+from zarrswarm.node import Node  # noqa: E402
+from zarrswarm.store import http, wait_job  # noqa: E402
 
 URL = "https://s3.amazonaws.com/openneuro.org/ds000102/sub-01/func/sub-01_task-flanker_run-1_bold.nii.gz"
 

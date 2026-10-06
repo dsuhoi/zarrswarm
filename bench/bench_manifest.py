@@ -1,8 +1,8 @@
 """Scaling of manifest encode/decode + merge_view with many chunks and peers (no network)."""
 import json, os, sys, time, zlib
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from zarr_torrent.common import cjson
-from zarr_torrent.node import merge_view
+from zarrswarm.common import cjson
+from zarrswarm.node import merge_view
 
 def manifest(node, n_time, nvars, lay="24x181x360+0", start=0):
     arrays = {f"v{i}": {"vfid": f"vf{i}", "dims": ["time", "lat", "lon"], "taxis": 0, "fmt": 3, "attrs": {},

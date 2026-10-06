@@ -13,9 +13,9 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-import zarr_torrent as zt
-from zarr_torrent.node import Node
-from zarr_torrent.store import http, wait_job
+import zarrswarm as zt
+from zarrswarm.node import Node
+from zarrswarm.store import http, wait_job
 _ports = iter(range(10000, 30000))
 
 
@@ -59,7 +59,7 @@ def ctl(n):
 
 
 def test_opposing_slice_poisoning_is_rejected_at_receiver(net):
-    from zarr_torrent.node import merge_view
+    from zarrswarm.node import merge_view
     nodes, run, tmp = net
     times = pd.date_range("2020-01-01", periods=24, freq="h")
     good = np.tile(np.arange(20, dtype="f4").reshape(1, 4, 5), (24, 1, 1))
@@ -80,7 +80,7 @@ def test_opposing_slice_poisoning_is_rejected_at_receiver(net):
 
 
 def test_legacy_cached_ids_are_recomputed_without_removing_data(net):
-    from zarr_torrent import codec
+    from zarrswarm import codec
     nodes, run, tmp = net
     values = np.tile(np.arange(20, dtype="f4").reshape(1, 4, 5), (24, 1, 1))
     times = pd.date_range("2020-01-01", periods=24, freq="h")
@@ -107,8 +107,8 @@ def test_legacy_cached_ids_are_recomputed_without_removing_data(net):
 
 def test_identity_groups_are_independent_of_announcement_order(net):
     from itertools import permutations
-    from zarr_torrent.codec import vcid_of
-    from zarr_torrent.node import merge_view
+    from zarrswarm.codec import vcid_of
+    from zarrswarm.node import merge_view
     nodes, run, tmp = net
     good = np.tile(np.arange(20, dtype="f4").reshape(1, 4, 5), (24, 1, 1))
     times = pd.date_range("2020-01-01", periods=24, freq="h")
@@ -256,7 +256,7 @@ def test_optimistic_pushdown_catches_a_lying_holder(net):
     f = st["fraud"][-1]
     assert f["peer"] == nodes["evil"].ident.id and f["claimed_h"] != f["true_h"]
     # the stored receipt is a transferable proof: anyone can check the holder signed the wrong hash
-    from zarr_torrent.common import verify, cjson
+    from zarrswarm.common import verify, cjson
     body = cjson({"g": link.removeprefix("zt://"), "k": f["key"], "cid": f["cid"], "sel": f["sel"], "h": f["claimed_h"]})
     assert verify(f["pk"], f["sig"], body)
 
@@ -266,7 +266,7 @@ def test_closed_network_key(tmp_path):
     without it (or with a wrong key) gets 403 on every data-port path, DHT included."""
     import urllib.error
     import urllib.request
-    from zarr_torrent import cli
+    from zarrswarm import cli
     loop = asyncio.new_event_loop()
     threading.Thread(target=loop.run_forever, daemon=True).start()
     run = lambda c: asyncio.run_coroutine_threadsafe(c, loop).result(60)

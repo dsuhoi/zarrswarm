@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from zarr_torrent.aqp import VAS, RatioVDC, vdc_order
+from zarrswarm.aqp import VAS, RatioVDC, vdc_order
 from bench_vas import data
 
 ap = argparse.ArgumentParser(); ap.add_argument("--trials", type=int, default=2000)

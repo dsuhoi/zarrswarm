@@ -17,10 +17,10 @@ import pytest
 import xarray as xr
 import zarr
 
-import zarr_torrent as zt
-from zarr_torrent.node import Node
-from zarr_torrent.scan import scan
-from zarr_torrent.store import http
+import zarrswarm as zt
+from zarrswarm.node import Node
+from zarrswarm.scan import scan
+from zarrswarm.store import http
 
 LAT, LON, LEV = np.linspace(-10, 10, 8), np.linspace(0, 30, 12), np.array([1000, 850, 500], dtype="float64")
 
@@ -307,7 +307,7 @@ def test_spatial_region_download_only_touches_overlapping_tiles(swarm):
 
 
 def test_cli_get_to_netcdf_and_zarr_with_sel(swarm, tmp_path):
-    from zarr_torrent.cli import main as zt_main
+    from zarrswarm.cli import main as zt_main
     t = swarm["tmp"] / "s_cli_out"
     times = pd.date_range("2023-09-01", periods=48, freq="h")
     p = make(t / "a.zarr", times, ["nc1"], chunks=(24, 4, 6))

@@ -15,8 +15,8 @@ from functools import reduce
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent import jlps as solver, plan
-from zarr_torrent.scan import chunk_g
+from zarrswarm import jlps as solver, plan
+from zarrswarm.scan import chunk_g
 
 
 def fixture(seed):
@@ -84,7 +84,7 @@ def main():
     result = {"protocol": f"{args.cases} seeded three-peer graphs; two layouts; four requested samples; complete catalogue; exhaustive cover and holder assignment; identical graph and cost model for each comparison.",
               "hash_seed": 0, "source_sha256": {}, "rows": [], "summary": {}}
     root = Path(__file__).resolve().parents[1]
-    for name in ("zarr_torrent/jlps.py", "zarr_torrent/plan.py", "zarr_torrent/scan.py", "bench/planner_cover_oracle.py"):
+    for name in ("zarrswarm/jlps.py", "zarrswarm/plan.py", "zarrswarm/scan.py", "bench/planner_cover_oracle.py"):
         result["source_sha256"][name] = hashlib.sha256((root / name).read_bytes()).hexdigest()
     for seed in range(args.cases):
         arrays, best, bw, via, rb, receiver = fixture(seed)

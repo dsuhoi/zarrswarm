@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from zarr_torrent import cli
-from zarr_torrent.node import Node
+from zarrswarm import cli
+from zarrswarm.node import Node
 
 
 def test_init_writes_toml_and_keeps_user_sections(tmp_path):
@@ -57,9 +57,9 @@ def test_client_reads_through_api_when_node_paths_are_invisible(tmp_path, monkey
     import threading
     from pathlib import Path
 
-    import zarr_torrent as zt
-    from zarr_torrent import store
-    from zarr_torrent.store import http
+    import zarrswarm as zt
+    from zarrswarm import store
+    from zarrswarm.store import http
     vals = np.arange(240 * 12, dtype="f4").reshape(240, 3, 4)
     xr.Dataset({"t2m": (("time", "y", "x"), vals)},
                coords={"time": pd.date_range("2020-01-01", periods=240, freq="h"), "y": np.arange(3.0),

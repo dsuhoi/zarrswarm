@@ -1,5 +1,5 @@
 """Holder-count sweep (sim/e_hetero.py --peers N): median completion time per identity and query vs N
--> paper/figs/plots/speed_vs_peers.csv.
+-> bench/speed_vs_peers.csv.
 
 python bench/summarize_sweep.py sim/results_sweep_12.json sim/results_sweep_24.json ...
 """
@@ -19,4 +19,4 @@ for f in sys.argv[1:]:
     lines.append(f"{d['args']['peers']}," + ",".join(f"{cell[c]:.2f}" for c in cols.values())
                  + f",{hold['values']:.0f},{hold['bytes']:.0f}")
     print(lines[-1])
-open("paper/figs/plots/speed_vs_peers.csv", "w").write("\n".join(lines) + "\n")
+open("bench/speed_vs_peers.csv", "w").write("\n".join(lines) + "\n")

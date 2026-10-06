@@ -14,7 +14,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from zarr_torrent import codec
+from zarrswarm import codec
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     result = {"started_utc": datetime.now(timezone.utc).isoformat(),
               "estimator": codec.ESTIMATOR, "numpy": np.__version__,
               "source_sha256": {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
-                                for p in ("zarr_torrent/codec.py", "bench/identity_boundary.py")},
+                                for p in ("zarrswarm/codec.py", "bench/identity_boundary.py")},
               "packing_protocol_sha256": hashlib.sha256(args.protocol.read_bytes()).hexdigest(),
               "packing_protocol": json.loads(args.protocol.read_text()),
               "protocol": {"source_quantum": 1, "observed_code_strides": [1, 2, 4, 8, 16],

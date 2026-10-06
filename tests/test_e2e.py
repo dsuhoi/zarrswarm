@@ -10,9 +10,9 @@ import pytest
 import xarray as xr
 import zarr
 
-import zarr_torrent as zt
-from zarr_torrent.node import Node
-from zarr_torrent.store import http
+import zarrswarm as zt
+from zarrswarm.node import Node
+from zarrswarm.store import http
 
 LAT, LON = np.linspace(-10, 10, 8), np.linspace(0, 30, 12)
 

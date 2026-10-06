@@ -18,7 +18,7 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent.codec import ESTIMATOR, lattice_of, same_vcid, vcid_of
+from zarrswarm.codec import ESTIMATOR, lattice_of, same_vcid, vcid_of
 from lattice_probe import ARCO, NCAR, PAIRS
 
 TIMES = ("2020-01-03T18", "2020-01-15T06", "2020-01-28T00")
@@ -77,7 +77,7 @@ def main():
     result = {"estimator": ESTIMATOR, "started_utc": datetime.now(timezone.utc).isoformat(),
               "versions": {p: importlib.metadata.version(p) for p in ("numpy", "xarray", "h5netcdf", "h5py")},
               "source_sha256": {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
-                                for name in ("zarr_torrent/codec.py", "bench/provider_identity_controls.py",
+                                for name in ("zarrswarm/codec.py", "bench/provider_identity_controls.py",
                                              "bench/lattice_probe.py")},
               "protocol": "Four survey variables; 91x180 tiles; change one cell by one full-field ARCO step. Shared quantizers receive ARCO field parameters. L3 fits each tile independently. Exact identity compares float32 bits.",
               "times": args.times,

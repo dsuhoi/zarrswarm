@@ -3,27 +3,27 @@ import runpy
 
 
 def test_plan_selfcheck():
-    runpy.run_module("zarr_torrent.plan", run_name="__main__")
+    runpy.run_module("zarrswarm.plan", run_name="__main__")
 
 
 def test_jlps_selfcheck():
-    runpy.run_module("zarr_torrent.jlps", run_name="__main__")
+    runpy.run_module("zarrswarm.jlps", run_name="__main__")
 
 
 def test_aqp_vas_coverage():
-    runpy.run_module("zarr_torrent.aqp", run_name="__main__")
+    runpy.run_module("zarrswarm.aqp", run_name="__main__")
 
 
 def test_capt_selfcheck():
-    runpy.run_module("zarr_torrent.capt", run_name="__main__")
+    runpy.run_module("zarrswarm.capt", run_name="__main__")
 
 
 def test_parity_selfcheck():
-    runpy.run_module("zarr_torrent.parity", run_name="__main__")
+    runpy.run_module("zarrswarm.parity", run_name="__main__")
 
 
 def test_gf256_reed_solomon_selfcheck():
-    runpy.run_module("zarr_torrent.gf", run_name="__main__")
+    runpy.run_module("zarrswarm.gf", run_name="__main__")
 
 
 def test_plan_against_brute_force():
@@ -32,7 +32,7 @@ def test_plan_against_brute_force():
     to the optimum."""
     import itertools
     import random
-    from zarr_torrent.plan import plan
+    from zarrswarm.plan import plan
     ratios = []
     for trial in range(600):
         rnd = random.Random(trial)
@@ -62,7 +62,7 @@ def test_plan_against_brute_force():
 
 def test_plan_is_invariant_to_catalogue_order():
     """The same catalogue formerly produced 0.90 or 0.52 s after reversing chunk entries."""
-    from zarr_torrent.plan import plan
+    from zarrswarm.plan import plan
     chunks = {"a": (450000, ("p0", "p1")), "b": (450000, ("p2",)),
               "c": (650000, ("p0", "p1", "p2"))}
     bw = {"p0": 1e6, "p1": 0.5e6, "p2": 5e6}
@@ -78,7 +78,7 @@ def test_idle_holder_survives_until_assigned_worker_starts(tmp_path, monkeypatch
     import struct
     from contextlib import asynccontextmanager
     from types import SimpleNamespace
-    from zarr_torrent import node as mod
+    from zarrswarm import node as mod
 
     async def run():
         # Match _download's set construction and put the unassigned holder first.
@@ -131,7 +131,7 @@ def test_completed_workers_are_removed_from_wait_set(tmp_path, monkeypatch):
     import aiohttp
     from contextlib import asynccontextmanager
     from types import SimpleNamespace
-    from zarr_torrent import node as mod
+    from zarrswarm import node as mod
 
     async def run():
         payload, key = b'x' * 512, 'v@1/0'
@@ -174,8 +174,8 @@ def test_lattice_value_identity():
     of the code, < half a step) share one value id; shifts by a step or a unit offset, and genuinely different data,
     do not; non-float data keep exact identity; float32 vs float64 coordinates of one axis coincide."""
     import numpy as np
-    from zarr_torrent.codec import same_vcid, vcid_of
-    from zarr_torrent.scan import coord_id
+    from zarrswarm.codec import same_vcid, vcid_of
+    from zarrswarm.scan import coord_id
     rng = np.random.default_rng(0)
     for trial in range(40):
         k = rng.integers(0, 50000, (3, 40, 50))

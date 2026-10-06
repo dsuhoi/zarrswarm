@@ -9,11 +9,11 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-import zarr_torrent as zt
-from zarr_torrent import node as nodemod
-from zarr_torrent.node import Node
-from zarr_torrent.scan import split_key
-from zarr_torrent.store import http, wait_job
+import zarrswarm as zt
+from zarrswarm import node as nodemod
+from zarrswarm.node import Node
+from zarrswarm.scan import split_key
+from zarrswarm.store import http, wait_job
 
 
 def port():
@@ -369,7 +369,7 @@ def test_identity_modes_values_vs_bytes(tmp_path, monkeypatch):
     """Ablation used in the evaluation. Value identity: same values in different encodings (chunks, codec) and
     at different time steps share one grid. Byte identity (IPFS/BitTorrent-like): only identical encodings do -
     including single-step chunks of hourly and 6-hourly copies, whose bytes are identical."""
-    from zarr_torrent import scan as scanmod
+    from zarrswarm import scan as scanmod
     hours = pd.date_range("2024-01-01", periods=48, freq="h")
     d = feed(hours, 9)
     d.to_zarr(tmp_path / "a.zarr", encoding={"t2m": {"chunks": (1, 3, 4)}}, consolidated=False, zarr_format=2)

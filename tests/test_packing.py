@@ -9,12 +9,12 @@ import pytest
 import xarray as xr
 import zarr
 
-import zarr_torrent as zt
-from zarr_torrent import codec
-from zarr_torrent.common import check_signed, cid_of
-from zarr_torrent.node import merge_view
-from zarr_torrent.scan import scan
-from zarr_torrent.store import View, http, wait_job
+import zarrswarm as zt
+from zarrswarm import codec
+from zarrswarm.common import check_signed, cid_of
+from zarrswarm.node import merge_view
+from zarrswarm.scan import scan
+from zarrswarm.store import View, http, wait_job
 from test_security import ctl, net  # reuse the existing five-node local network
 
 
@@ -59,7 +59,7 @@ def test_slice_contract_and_scan_cache_invalidation(tmp_path, monkeypatch):
 
 
 def test_cli_scan_reports_source_contract_subgrids(tmp_path, capsys):
-    from zarr_torrent.cli import main
+    from zarrswarm.cli import main
     times, values, spec = samples(2)
     path = write(tmp_path / "scan.zarr", values, times, (1, 3, 5))
     params = tmp_path / "packing.json"; params.write_text(json.dumps(spec))

@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-ZT = [sys.executable, "-m", "zarr_torrent.cli"]
+ZT = [sys.executable, "-m", "zarrswarm.cli"]
 _ports = iter(range(10000, 30000, 2))
 
 

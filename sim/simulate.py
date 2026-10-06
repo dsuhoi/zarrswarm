@@ -1,4 +1,4 @@
-"""zarr-torrent swarm simulator: N real nodes (real DHT, relay, planner, HTTP) in one process with emulated
+"""ZarrSwarm swarm simulator: N real nodes (real DHT, relay, planner, HTTP) in one process with emulated
 links (upload cap + latency), NAT'd peers behind relays, partial replicas, churn.
 
 Experiments
@@ -34,9 +34,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 # many nodes share one process here: keep per-node caches small
 os.environ.setdefault("ZT_DECODED_MB", "32")
 os.environ.setdefault("ZT_PAGE_CACHE_MB", "32")
-import zarr_torrent as zt  # noqa: E402
-from zarr_torrent.node import Node  # noqa: E402
-from zarr_torrent.store import http, keys_for, open_view, wait_job  # noqa: E402
+import zarrswarm as zt  # noqa: E402
+from zarrswarm.node import Node  # noqa: E402
+from zarrswarm.store import http, keys_for, open_view, wait_job  # noqa: E402
 
 LAT, LON = np.linspace(90, -90, 91), np.arange(0, 360, 2.0)
 

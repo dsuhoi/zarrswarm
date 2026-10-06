@@ -6,4 +6,13 @@ dist/
 site/
 .pytest_cache/
 paper/*_author_*.zip
-bench/revalidation/reference_audit_ieee_20261006/raw/
+
+# LaTeX build outputs
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz

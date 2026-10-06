@@ -15,7 +15,7 @@ import xarray as xr
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from zarr_torrent import codec
+from zarrswarm import codec
 
 
 def native_field(work, row):
@@ -59,7 +59,7 @@ def main():
            hashlib.sha256(args.sample.read_bytes()).hexdigest(), "sample": str(args.sample),
            "protocol": "Same eight pinned fields and original payloads; native ecCodes float64 versus NetCDF float32. No target-dtype conversion. Coordinate selection only. One true GRIB-quantum change per tile.",
            "source_sha256": {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
-                             for p in ("bench/gfs_native_precision.py", "zarr_torrent/codec.py")}, "fields": []}
+                             for p in ("bench/gfs_native_precision.py", "zarrswarm/codec.py")}, "fields": []}
     if args.packing:
         protocol = ROOT / "bench/revalidation/packing_protocol_v8.json"
         out["packing_protocol_sha256"] = hashlib.sha256(protocol.read_bytes()).hexdigest()

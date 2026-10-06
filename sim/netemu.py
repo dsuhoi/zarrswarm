@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent.store import http  # noqa: E402
+from zarrswarm.store import http  # noqa: E402
 
 IN_ROUTER = "ZT_EMU_ROUTER"
 
@@ -84,7 +84,7 @@ class EmuSwarm:
         k = EmuSwarm._seq
         ip = f"10.0.{k // 250}.{k % 250 + 1}"
         port, cp = kw["port"], 7001
-        args = [sys.executable, "-m", "zarr_torrent.cli", "node", "--home", str(self.root / f"h_{name}"),
+        args = [sys.executable, "-m", "zarrswarm.cli", "node", "--home", str(self.root / f"h_{name}"),
                 "--host", ip, "--port", str(port), "--ctl-port", str(cp)]
         if kw.get("bootstrap"):
             args += ["--bootstrap", *kw["bootstrap"]]
@@ -165,7 +165,7 @@ def selftest():
     """Two nodes, a 1 MB/s uplink with 50 ms one-way delay: measured RTT and transfer rate must follow the shaping."""
     import xarray as xr
     import pandas as pd
-    import zarr_torrent as zt
+    import zarrswarm as zt
     root = Path("~/.cache/zt_netemu_selftest").expanduser()
     shutil.rmtree(root, ignore_errors=True)
     sw = EmuSwarm(root, 2, 1, 0.0, seed=1, relay_rate=25e6, rate_median=1e6, rate_range=(1e6, 1e6))

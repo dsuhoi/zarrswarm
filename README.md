@@ -8,7 +8,8 @@ DHT, chooses chunks for a request, verifies downloads and exposes the combined d
 Nodes behind NAT can serve data through a relay.
 
 [Documentation](https://dsuhoi.github.io/zarrswarm/) · [User guide](docs/user.md) ·
-[Operator guide](docs/operator.md) · [Configuration](docs/config.md) · [Experiments](docs/experiments.md)
+[Operator guide](docs/operator.md) · [Configuration](docs/config.md) · [Experiments](docs/experiments.md) ·
+[Manuscript](paper/ieee_access/main.pdf)
 
 ## Install from source
 
@@ -24,9 +25,9 @@ source .venv/bin/activate
 The `test` extra includes pytest and Dask; `netcdf` enables NetCDF export. For a minimal installation
 from the checkout, use `python -m pip install -e .` in a virtual environment.
 
-The distribution and public import are named `zarrswarm`. The original `zarr_torrent` import,
-`zt` and `zt-tui` commands, `zt://` links, `ZT_*` settings and `~/.zt` state remain compatible.
-`zarrswarm` and `python -m zarrswarm` also run the CLI.
+The distribution, implementation package and main command are named `zarrswarm`.
+`python -m zarrswarm` also runs the CLI; `zarrswarm-tui` opens the terminal interface.
+Short commands `zt` and `zt-tui`, `zt://` links, `ZT_*` settings and `~/.zt` node state remain supported.
 
 ## Test on one machine
 
@@ -47,19 +48,19 @@ GitHub Actions checks the package entry points, test suite and distribution buil
 On a machine with a public DNS name and an open TCP data port, start a bootstrap and relay:
 
 ```bash
-zt init --bootstrap-node --public-host data.example.org --private
-zt node
+zarrswarm init --bootstrap-node --public-host data.example.org --private
+zarrswarm node
 ```
 
-Replace `data.example.org` with your reachable host. `zt init` prints an invitation such as
+Replace `data.example.org` with your reachable host. `zarrswarm init` prints an invitation such as
 `ztnet://<node-id>@data.example.org:7881?k=<network-key>`. Pass it to the other participants.
 The invitation key grants access to the entire network. Omitting `--private` creates an open network.
 
 On another machine, or in another terminal with a separate state directory:
 
 ```bash
-ZT_HOME="$HOME/.zt-client" zt init --join 'ztnet://<node-id>@data.example.org:7881?k=<network-key>' --port 7891
-ZT_HOME="$HOME/.zt-client" zt node
+ZT_HOME="$HOME/.zt-client" zarrswarm init --join 'ztnet://<node-id>@data.example.org:7881?k=<network-key>' --port 7891
+ZT_HOME="$HOME/.zt-client" zarrswarm node
 ```
 
 In a new client terminal, set `ZT_CTL=http://127.0.0.1:7892` before using the client commands or Python.
@@ -73,12 +74,12 @@ For persistent services, public holders, multiple bootstrap nodes and Docker, se
 With a running local node:
 
 ```bash
-zt seed /path/to/data.zarr                     # prints zt://<grid>, or a multi-grid link
-zt search 2m_temperature
-zt peers 'zt://<grid>'
-zt get 'zt://<grid>' --vars t2m --time 2020-01-01:2020-01-02 --out subset.zarr
-zt name my-data 'zt://<grid>'                  # signed, updateable name
-zt-tui
+zarrswarm seed /path/to/data.zarr                     # prints zt://<grid>, or a multi-grid link
+zarrswarm search 2m_temperature
+zarrswarm peers 'zt://<grid>'
+zarrswarm get 'zt://<grid>' --vars t2m --time 2020-01-01:2020-01-02 --out subset.zarr
+zarrswarm name my-data 'zt://<grid>'                  # signed, updateable name
+zarrswarm-tui
 ```
 
 Use your store's variable names and time range. Seeding reads the original store rather than copying it.
@@ -91,12 +92,12 @@ The node polls for appended or revised data; [configuration](docs/config.md) des
 ## Read through xarray
 
 ```python
-import zarrswarm as zt
+import zarrswarm as zs
 
-# Requires a running local node. Use the link printed by `zt seed` or `zt search`.
-ds = zt.open_dataset("zt://<grid>", chunks={}, pushdown=False)
+# Requires a running local node. Use the link printed by `zarrswarm seed` or `zarrswarm search`.
+ds = zs.open_dataset("zt://<grid>", chunks={}, pushdown=False)
 subset = ds["t2m"].isel(time=slice(0, 24))
-zt.prefetch(subset)
+zs.prefetch(subset)
 result = subset.mean("time").compute()
 ```
 
@@ -110,7 +111,7 @@ less network traffic. Optional pushdown uses signed slices and sampled whole-chu
 use it on the selected subset.
 
 The P2P view is read-only. Save results with xarray's `to_zarr` or `to_netcdf`, and reopen the Dataset
-after holder metadata changes. Use `zt.open_dataset` to open `zt://` links; a native
+after holder metadata changes. Use `zs.open_dataset` to open `zt://` links; a native
 `xr.open_dataset("zt://...")` backend is not registered. Multi-machine Dask execution has not been validated.
 
 ## Verification and trust
@@ -118,7 +119,7 @@ after holder metadata changes. Use `zt.open_dataset` to open `zt://` links; a na
 Byte hashes check transferred chunks. Value identities determine which compatible copies may serve the same
 request. Exact mode preserves decoded values bit for bit. Source-contract mode reconstructs source integer
 codes using publisher-signed packing parameters and a valid decoder-error bound; see the
-[source-contract guide](docs/SOURCE_CONTRACT_INTEGRATION_V9.md). Without those parameters, lattice fitting
+[source-contract guide](docs/source-contracts.md). Without those parameters, lattice fitting
 is a heuristic and can merge some changed sparse fields.
 
 Signatures authenticate announcements rather than the scientific truth of a measurement. Configure trusted
@@ -147,8 +148,8 @@ uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs serve
 uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs build --strict
 ```
 
-The website has search, navigation and the existing Russian guides. GitHub Actions checks documentation changes
-and publishes from `main` to [GitHub Pages](https://dsuhoi.github.io/zarrswarm/).
+The English website includes search and guides for users, operators and experiments. GitHub Actions checks
+its build and publishes from `main` after GitHub Pages is enabled with **Source → GitHub Actions**.
 [Publishing instructions](docs/publishing.md) cover local preview and Pages configuration.
 
 ## License

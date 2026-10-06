@@ -1,440 +1,200 @@
-# zarr-torrent
+# ZarrSwarm architecture
 
-Децентрализованная (уровень 3: Kademlia DHT, без трекера) P2P-раздача Zarr-массивов
-с адресацией по координатам. Реплики могут различаться временным охватом, набором переменных,
-раскладкой чанков, кодеками, форматом Zarr (v2/v3) и единицами времени, и всё равно образуют один рой
-с общим индексом.
+ZarrSwarm joins compatible gridded datasets held at independent sites. A query can use copies with different
+chunk shapes, codecs, time ranges and Zarr versions. The client chooses which chunks and holders to use,
+checks the received data and presents the result through a read-only xarray view.
 
-## Быстрый старт
+This document describes the current implementation. The [experiment guide](docs/experiments.md) and
+[measured snapshots](bench/revalidation/README.md) identify the versions used for each published result.
 
-```bash
-# первый (публичный) узел сети: bootstrap + релей
-zt init --bootstrap-node --public-host data.example.org      # -> ztnet://<id>@data.example.org:7881
-zt node
-# любой другой узел: адрес (публичный или через релей) выбирается автоматически
-zt init --join ztnet://<id>@data.example.org:7881 [--listen-public] [--service]
-zt node
-zt seed /data/era5.zarr                                      # -> zt://<grid_id>
-zt search t2m                                                # поиск по индексу метаданных в DHT
-zt get zt://<grid_id> --vars t2m --time 2020-01-01:2020-03-01 --out t2m.zarr
-zt mean zt://<grid_id> t2m --rel-err 0.01                    # anytime-оценка с доверительным интервалом
-zt name era5 zt://<grid_id>                                  # -> zt://era5@<pubkey>
-zt-tui                                                       # TUI: раздача / загрузки / сеть
-```
+## From a local store to a shared view
+
+1. A holder scans a Zarr store, normalizes its coordinates and time units, and identifies its grid.
+2. It records each physical layout separately, including chunk boundaries and time stride.
+3. It computes byte and value identifiers for chunks and signs a manifest.
+4. The DHT advertises the holder under the grid identifier and searchable metadata tags.
+5. A receiving node fetches holder manifests and resolves compatible fields and chunk identities.
+6. It selects a complete cover for the requested samples, assigns transfers, verifies data and caches chunks.
+
+Discovery does not copy the dataset. Holders serve their original stores; receivers cache the chunks they use.
+Copies need compatible coordinates and field definitions. Re-encoding unrelated measurements does not make them
+interchangeable.
+
+## Grid, field, layout and chunk identities
+
+These identities answer different questions:
+
+| Identity | What it identifies | Main implementation |
+|---|---|---|
+| Grid | Coordinates, dimensions and a common time quantum | `zarrswarm/scan.py` |
+| Field | Variable name, dimensions, units and compatible value representation | `zarrswarm/scan.py`, `zarrswarm/node.py` |
+| Layout | Chunk shape and phase, time stride and offset, Zarr encoding metadata | `zarrswarm/scan.py` |
+| Byte identifier (`cid`) | One encoded chunk payload | `zarrswarm/codec.py` |
+| Value identifier (`vcid`) | Decoded values or source integer codes, under the selected identity mode | `zarrswarm/codec.py` |
+
+The grid's time quantum is the largest member of one day, one hour, one minute or one second compatible
+with the store's regular time stride. Aligned hourly and six-hourly copies can therefore share a grid.
+Their layouts still describe which samples each copy actually contains. Chunk keys use global time indices,
+so a local replica's starting date does not shift every key.
+
+For a request with time stride `S` and offset `O`, a layout with stride `r` and offset `o` can cover the
+requested lattice when `r` divides `S` and the offsets agree. The planner also checks spatial coverage and
+actual available chunks. A matching grid identifier alone does not establish a complete answer.
+
+Input support currently covers flat Zarr v2/v3 groups, standard calendars and regular time axes. General
+nested groups, irregular timelines and alternate calendars are outside the tested ingest path.
+
+## Value comparison
+
+### Exact mode
+
+Exact identity hashes canonical decoded values, including their dtype and shape. Integer data and
+non-lattice fallbacks use exact comparison. Byte identity instead groups only identical encoded payloads;
+rechunking or a codec change can split a byte swarm even if decoded values are identical.
+
+### Fitting mode
+
+The default floating-point path fits a lattice to each time slice independently. The current estimator is
+called `lattice-v5`; its serialized identifier starts with `L3:`. It records a hash and per-slice fitted
+level, step and radius. Relative integer codes, shape and time-axis placement enter the hash. Finite,
+NaN and positive/negative infinity masks are treated separately. Canonical byte order is little-endian.
+
+Comparison checks compatible hashes and the per-slice fit parameters. It is not a universal guarantee that
+one original source count cannot change. In the retained sparse-field control, fitting accepts 13 of 20
+changed cases. Dense provider controls exercise a different distribution; they do not remove that boundary.
+
+### Source-contract mode
+
+A publisher can supply the source quantizer's `step`, `origin` and `max_error`, either once for a field or
+per timestamp. The decoder-error bound must be positive and strictly below half a source step. A node can
+then recover absolute source integer codes and verify reconstruction against that bound. Different decoder
+dtypes may pool when they recover the same codes under the same authenticated field contract.
+
+The contract binds the grid, variable and units. A publisher signs it; mirrors forward the signature.
+The receiver must trust that publisher for the contract to anchor a field family. Conflicting trusted field
+contracts leave the field unresolved. Code equality still depends on correct source parameters and the
+claimed decoder-error bound; signatures authenticate their origin, not their scientific validity.
+
+See the [source-contract guide](docs/source-contracts.md) for operator commands, controls and restrictions.
+Arbitrary Zarr files do not automatically retain or reveal their original GRIB packing provenance.
+
+## Manifest merging and trust
+
+A manifest maps `variable@layout/chunk-index` to a byte identifier, value identifier, encoded size and valid
+prefix information. It also carries array metadata and coordinate documents. Signed announcements let a
+receiver attribute each claim to a node key.
+
+The receiving node first resolves field families, then groups compatible holders for each chunk. Trusted
+publishers and explicitly seeded local sources can establish authority; merely caching a received chunk
+does not turn the cache into a new authoritative measurement. Ordinary copies provide support for a value
+candidate. An unresolved tie remains unserved rather than becoming an arbitrary answer.
+
+An append can enlarge the valid prefix of a chunk. A receiver checks both content identity and valid sample
+coverage, and invalidates stale decoded data when the byte identifier or decoder metadata changes. The same
+rules apply to cached chunks, transport re-encoding and pushed-down slices.
+
+The DHT is a discovery mechanism, not a consensus service. Majority support alone provides no protection
+against a sufficiently large colluding group. Trusted publisher keys are needed when that distinction matters.
+
+## Selecting chunks and holders
+
+A request may be covered by several physical layouts. Whole-map chunks suit map queries; small spatial tiles
+or long time chunks can reduce transfer for a point series. Minimum-byte selection chooses a complete cover
+with the least estimated remote payload, but ignores where those bytes must come from.
+
+Joint Layout and Peer Selection (JLPS) considers both the cover and the transfer assignment. It uses a
+dynamic-programming cover oracle, iteratively changes prices for loaded resources, and evaluates candidate
+covers with a shared-capacity assignment model. The minimum-byte cover is always among the candidates.
+Cached chunks have no remote transfer cost. Receiver limits and shared relay bandwidth participate in the model.
+
+The implementation uses estimated rates, finite iterations and assignment rounding. Its bound applies to
+that cost model and its assumptions. It does not establish global optimality, a fixed approximation ratio
+for the joint problem, or a speedup on every observed network query. Small exhaustive controls and network
+measurements are reported separately in [bench/revalidation](bench/revalidation/README.md).
+
+Transfers probe new holders, update rate estimates and reassign unfinished work after failures. Endgame
+requests can fetch the same remaining chunk from two holders. The client checks chunks before adding them
+to verified coverage. If the chosen cover proves incomplete, it refreshes the catalogue once and replans;
+that work is part of query time. Genuine gaps remain partial answers.
+
+Implementation: `zarrswarm/jlps.py`, `zarrswarm/plan.py`, `zarrswarm/node.py`.
+
+## Transport, relays and caching
+
+Nodes use HTTP for DHT messages, manifests and chunks. A NAT holder can attach an outbound WebSocket to a
+public relay; the relay forwards requests to that holder. Shared relay capacity is a planner resource.
+The relay streams framed replies, while the holder's local HTTP response is buffered before framing.
+This is not a fully streaming store-to-receiver path.
+
+Private networks authenticate requests with an HMAC over the timestamp, method and path. This does not
+encrypt HTTP payloads. The control API binds to loopback by default. Public deployments need appropriate
+network isolation when data confidentiality or control access matters.
+
+The receiver keeps encoded chunks on disk and caches decoded arrays by byte identity plus decoder metadata.
+Metadata snapshots and signed source contracts are retained across cache restarts. An xarray Dataset opened
+before metadata changes is a snapshot; reopening it refreshes the virtual view.
+
+## Metadata updates
+
+Chunk-Addressed Paged Trees (CAPT) divide a manifest into hash-addressed pages. A signed head contains array
+metadata, coordinates, page root, count and version information. Receivers fetch changed pages instead of
+reloading the entire chunk list. Page addressing is stable across appends.
+
+Heads carry a monotonic sequence and previous-head reference. Nodes reject observed rollback and conflicting
+heads. Locally published versions persist across restart; received-head tracking is kept in memory.
+Legacy heads without sequence metadata remain accepted, so these checks are not a complete anti-rollback
+protocol across every receiver restart.
+
+Implementation: `zarrswarm/capt.py`, `zarrswarm/node.py`.
+
+## Optional transfer and analysis paths
+
+### Temporal transport encoding
+
+A holder may send an `xt1` temporal-XOR, bitshuffle and Zstd representation on slow paths. The receiver
+verifies decoded values and re-encodes its local chunk when needed. Exact round trips preserve signed zero,
+NaN payloads and byte order. This wire representation does not change the stored layout.
+
+### Value-level parity
+
+Reed–Solomon parity operates on compatible canonical tiles rather than original compressed chunk bytes.
+Cauchy coding over GF(256) allows recovery from `k` independent compatible data/parity members. Stripes
+interleave times so a contiguous outage need not erase a whole stripe.
+
+Source-contract fields use recovered absolute codes. Other fields use a lossless integer representation
+when available or an exact value-byte fallback. Each stripe requires one field definition and compatible
+spatial tile. Recovered data still pass content checks before entering the cache.
+
+Implementation: `zarrswarm/parity.py`, `zarrswarm/gf.py`.
+
+### Slices and approximate means
+
+Optional hyperslab pushdown returns signed slices and audits an initial set and a sample of later replies
+against whole chunks. It can save bytes but provides weaker immediate checking than downloading every chunk.
+A discovered mismatch rolls back the current batch and marks previously accepted results from that holder
+as tainted. Applications must handle that state; an earlier optimistic result cannot be silently made correct.
+
+Approximate means use a pilot sample and stratified allocation based on observed variance. Reported intervals
+use a Student/Satterthwaite estimate. Their nominal confidence level is not a proof of coverage for every field
+or adaptive workload. Whole-data reads remain available when sampling assumptions do not fit the task.
+
+Implementation: `zarrswarm/aqp.py`, `zarrswarm/node.py`.
+
+## xarray interface
 
 ```python
-import zarr_torrent as zt
-ds = zt.open_dataset("zt://<grid_id>")                                     # родная раскладка
-ts = zt.open_dataset("zt://<grid_id>", chunking={"time": -1, "lat": 1, "lon": 1})  # пересобранная
-zt.prefetch(ds.t2m.sel(time=slice("2020-01", "2020-02")))
-zt.progressive_mean(ds, "t2m", rel_err=0.01)
+import zarrswarm as zs
+
+ds = zs.open_dataset("zt://<grid>", chunks={}, pushdown=False)
+subset = ds["t2m"].isel(time=slice(0, 24))
+zs.prefetch(subset)
+result = subset.mean("time").compute()
 ```
 
-## Архитектура
-
-| Слой | Реализация |
-|---|---|
-| Идентичность | ed25519, `node_id = blake2b160(pk)`; все записи и манифесты подписаны |
-| Поиск пиров | Kademlia (K=8, α=3) по HTTP/JSON; записи `peer` (с подсказкой скорости), `name` (как BEP 46), `idx` (индекс метаданных); PEX |
-| Инициализация | `zt init`: ключи и конфиг, ссылка на сеть `ztnet://`; автоадресация в духе STUN: `/whoami`, обратная проверка `/probe`, при недоступности — релей |
-| NAT / HPC | websocket-релей с аутентификацией по подписи; такие узлы не попадают в таблицы маршрутизации (BEP 43) |
-| Идентичности данных | `grid_id` (сетка и шаг времени) ⊃ `vfid` (переменная по значениям) ⊃ `layout` ⊃ `fid` (кодеки); `cid` — хэш байтов, `vcid` — хэш декодированных значений |
-| Манифест | подписан узлом, сжат: `var@layout/i.j.k -> [cid, vcid, size, n_valid]` + метаданные раскладок |
-| Планирование | сигнатуры доступности → параметрический max-flow → work stealing + endgame; стратегии `maxflow`, `rarest`, `random`, `single` для сравнения |
-| Хранение | CAS `~/.zt/cas`; всё скачанное сразу раздаётся и индексируется |
-| xarray | `ZtStore`: режимы чанков `direct` / `assembled` / `progressive`; окно батчинга 5 мс; кэш декодированных чанков (LRU) |
-
-## Научная новизна
-
-### 1. Координатная адресация, объединяющая разнородные реплики
-`grid_id` — ключ *подсетки*: собственные измерения переменной, их координаты и определение времени.
-Датасет анонсируется под всеми своими подсетками, ссылка на него — `zt://g1+g2`, а `open_dataset` объединяет подсетки.
-Поэтому реплика с осью `level` и реплика без неё встречаются в подсетке поверхностных полей.
-Этот случай выявил реальный ERA5: при хэше по всему датасету рой распадался.
-`grid_id` не зависит от охвата, набора переменных, раскладки, кодеков, формата и CF-единиц времени.
-Абсолютный индекс времени `g = (t − rphase)/dt` (отсчёт от 1970-01-01) и ключ `var@layout/c…` при
-`c = (g − φ_ℓ)/c_t^ℓ` делают любую реплику куском одного глобального координатного пространства.
-Поэтому объединённое представление и глобальный индекс получаются без координатора.
-
-### 2. Эквивалентность по значениям, независимая от кодека (`vcid`)
-Пара хэшей (`cid` — транспорт, `vcid` — семантика) расширяет множество держателей чанка H(ℓ,j)
-на реплики с другим сжатием или форматом. При приёме чанк проверяется по `cid` отправителя,
-декодируется, сверяется `vcid` (большинство голосов) и перекодируется.
-В IPFS, BitTorrent и Icechunk эквивалентность только побайтовая.
-
-**Оценка решётки (`codec.lattice_of`).** Для float `vcid` строится по кодам решётки `v = φ + k·s`, оценённой по
-самим значениям каждого временного среза (`ZT_VALUE_ID=lattice`, по умолчанию). Два семейства:
-- *линейное* (scale/offset): g₀ — наименьший зазор между соседними различными значениями; единица — **средний**
-  зазор среди зазоров < 1.5·g₀, делённый на d = 1…8 (во float32 шаг 0.2 выглядит как зазоры 0.1953 и 0.2031, и
-  округление по наименьшему зазору уводило коды). Префильтр: если какой-то зазор отстоит от целого числа единиц
-  больше чем на 0.25, это d отбрасывается. Коды — накопленная сумма округлённых соседних зазоров, а не (u − u₀)/g₀;
-  затем три уточнения МНК в замкнутой форме (шаг и сдвиг пересчитываются, коды строятся заново). Решётка принята,
-  если все различные значения лежат в пределах 5 % шага и коды строго растут;
-- *двоичное* (`_binary_lattice`, GRIB `R + k·2^E`): самый крупный `s = 2^e`, при котором соседние различные значения
-  получают разные коды; φ — круговое среднее фазы.
-
-Если подходят оба, двоичная решётка заменяет линейную, только если она **крупнее** и все значения лежат не дальше
-**0.45 шага** от её узлов: декодер с ошибками порядка доли шага лежит и на более мелкой линейной решётке, а верная —
-степень двойки; на разреженном тайле степень двойки бывает крупнее истинного шага, и значения на границах ячеек
-переключали бы коды — там остаётся линейная. Версия оценщика `codec.ESTIMATOR = "lattice-v3"` входит в ключи кэша
-хэшей (`~/.zt/scan/<root>.<VALUE_ID>.<ESTIMATOR>.json` и общий `ZT_HASH_CACHE`), поэтому после смены оценщика
-`vcid` пересчитываются, а не берутся из кэша.
-
-Value-чётность ZTP-EC (`#v`, `parity.encode`) кодирует те же целочисленные коды (int32 относительно медианного кода,
-`codec.lattice_codes`, `mode = "codes"` в заголовке строки), если они воспроизводят значения всех членов страйпа
-точно; иначе — сырые байты значений (`mode = "bytes"`, `parity.mode`). Коды не зависят от декодера, поэтому ремонт
-собирает члены с площадок, чьи float расходятся в битах.
-
-### 3. JLPS: совместный выбор раскладки и пиров (алгоритм)
-**Постановка.** Запрос R = [g₀,g₁) × S. Раскладки ℓ ∈ L с шагом по времени c_t^ℓ, фазой φ_ℓ,
-покрытием C_ℓ и тайлингом пространства. Для чанка времени j раскладки ℓ объём
-B(ℓ,j) = n_S^ℓ · s^ℓ, где n_S^ℓ — число пространственных тайлов, пересекающих S.
-Держатели — H(ℓ,j) ⊆ P, полосы — b_p. Нужно выбрать набор чанков времени, покрывающий [g₀,g₁)
-(покрытие интервалами), и распределить их байты по пирам так, чтобы минимизировать makespan T:
-
-  min T  s.t.  Σ_{(ℓ,j)∋e} y_{ℓ,j} ≥ 1  ∀ элементарная ячейка e;
-               Σ_p x_{ℓj,p} = B(ℓ,j) y_{ℓ,j};   Σ_{ℓ,j} x_{ℓj,p} ≤ b_p T;   x_{ℓj,p}=0 при p∉H(ℓ,j).
-
-Это смешанная задача покрытия и упаковки. В общем виде она NP-трудна (покрытие множествами × планирование),
-но у нас покрытие одномерное: интервалы на оси времени, а пространство — прямое произведение.
-
-**Алгоритм (мультипликативные веса + DP по интервалам).**
-1. Граница ячеек — объединение границ чанков всех раскладок: m ≤ Σ_ℓ |C_ℓ| точек.
-2. Цены пиров λ_p ← 1/b_p.
-3. Повторять O(ε⁻² log|P|) раз:
-   a) оракул: кратчайший путь в DAG по точкам границы, где ребро «чанк (ℓ,j)» ведёт из любой
-      точки внутри чанка в его конец и имеет вес B(ℓ,j)·min_{p∈H(ℓ,j)} λ_p. Это точное покрытие
-      минимальной цены за O(m + #чанков);
-   b) байты выбранного покрытия направляются самым дешёвым держателям;
-      λ_p ← λ_p·(1 + ε·нагрузка_p/(b_p·T̂)).
-4. Усреднённые покрытия дают (1+O(ε))-приближение LP-оптимума (схема Garg–Könemann для min-max упаковки
-   с оракулом покрытия). Финальное покрытие берётся лучшим из итераций, пиры назначаются точным
-   параметрическим max-flow по сигнатурам доступности (п. 4).
-
-Сложность не зависит от размера пространственной области и от числа элементов, только от числа
-чанков времени и пиров. Ранее эти задачи решались по отдельности: планировщики загрузки из нескольких
-источников (BitTorrent, parallel access) считают набор кусков фиксированным, а системы перечанкования
-(Rechunker, virtual Zarr) работают с одним источником.
-
-Запрос может быть и пространственным: `isel` ограничивает нетемпоральные измерения, и в покрытие попадают только
-пересекающиеся тайлы (`zt get --sel lat=40:60,lon=0:30` переводит значения координат в индексы).
-*Реализовано:* `zarr_torrent/jlps.py` — DP-оракул, цикл мультипликативных весов, выбор лучшего покрытия
-точным max-flow с узлами-релеями. Покрытия сравниваются по makespan **целочисленного** назначения (п. 4);
-покрытия, чей прогноз не дальше `SLACK` = 10 % от лучшего (`ZT_JLPS_SLACK`), считаются равными, и из них берётся
-читающее меньше всего байт: под шумом оценок полос такие прогнозы неразличимы, а меньше байт с меньшего числа пиров —
-короче хвост. Перебор покрытий останавливается, когда нижняя оценка (весь объём при полной полосе всех держателей)
-уже вне этого допуска. Работает на стороне узла при загрузке по региону
-(`/api/download {region, cover: "jlps"}`, CLI `zt get`, `bench/verify_real.py`). Для пересобранных
-view-чанков внутри `ZtStore` пока используется частный случай с равными ценами (`View.sources`).
-
-### 4. Makespan-оптимальное назначение за время, не зависящее от числа чанков
-Реплики покрывают непрерывные диапазоны, поэтому число различных наборов держателей чанков
-(«сигнатур доступности») на порядки меньше числа чанков. Сеть max-flow имеет O(#сигнатур + |P|)
-вершин. Бинарный поиск по T даёт оптимум дробного назначения с потерей меньше одного чанка на пира
-при округлении. Оценки полосы (подсказки из анонсов плюс измерения EWMA), work stealing и
-endgame исправляют ошибки модели в реальном времени.
-
-*Реализовано (`plan.py`):* `plan()` возвращает makespan **целочисленного** назначения после округления и ремонта
-(`makespan_of`: самый медленный пир, общий релей или полоса получателя), а не дробную границу: целые чанки на
-медленных пирах делали «станционное» покрытие в 1.5 раза быстрее на бумаге (8.4 с план, 12–19 с факт).
-
-**Зондирование при первом контакте** (`Node._probe_unknown`, `_probe`). JLPS выбирает раскладку и держателей по
-полосам, а для незнакомого пира есть только подсказка из анонса (или ничего). Поэтому в задании по региону
-(`/api/download {region}`, стратегия `maxflow`): JLPS выбирает покрытие, затем держатели его чанков без замеров
-и без подсказки скачивают по одному самому маленькому своему чанку параллельно, и покрытие выбирается заново с
-измеренными полосами. Зонд включается, если незнакомых держателей ≥ 2 и ключей ≥ 3; если незнакомых больше трети
-числа ключей, зондируются те, кто держит больше всего ключей (не больше max(2, ключей // 3)). Когда ответила половина
-зондов, остальные ждут ещё до 3× прошедшего времени (не меньше 1 с); не успевший пир планируется со скоростью,
-которую он успел показать (байты / время). Без зондирования на трёх реальных площадках рой был в 2–3 раза медленнее
-своего лучшего источника (`sim/results_multisite_final.json`, `ablation_without_probing`).
-
-**Endgame по ETA.** Для каждого чанка в полёте хранится ожидаемое время прихода; освободившийся пир дублирует чанк,
-который придёт **последним**, если сам доставит его заметно раньше (в 1.5 раза), и не больше двух копий на чанк.
-Просроченный чанк (ETA прошло — держатель медленнее, чем считалось) считается требующим ещё столько же, сколько уже
-занял.
-
-**Защита от зависаний.** Выбор покрытия (вид + JLPS) ограничен `COVER_DEADLINE` = 300 с (`ZT_COVER_DEADLINE`):
-по истечении задание падает, а в лог узла выводятся стеки всех корутин. Те же стеки по запросу —
-`GET /api/debug/tasks` (только локальный управляющий API). На стороне клиента `store.wait_job(..., deadline=)`
-бросает `TimeoutError`, если задание всё ещё идёт; так харнесс экспериментов заменяет зависшего клиента.
-
-### 5. Anytime-агрегация с гарантией погрешности (AQP поверх роя)
-Порядок загрузки — перестановка bit-reversal (van der Corput) по сетке чанков, поэтому каждый префикс
-почти стратифицирован. Ratio-оценка с поправкой на конечную совокупность (FPC) даёт доверительный
-интервал, и загрузка отменяется при достижении `rel_err`.
-**VAS (реализовано, `aqp.py`, `zt mean --method vas`)**: страты — блоки по времени, H = clip(N/30, 2, 16);
-пилот по 5 чанков на страту, затем пачками жадное распределение Неймана по наибольшему снижению дисперсии
-W_h² s_h² (1/n_h − 1/(n_h+1)); стратифицированная оценка, t-квантиль со степенями свободы по Саттертуэйту,
-остановка не раньше чем через n_h ≥ 5. Офлайн, 1000–1500 испытаний на поле с «штормовым» эпизодом (480 чанков):
-
-| цель | ratio-VdC: чанков / покрытие | VAS: чанков / покрытие |
-|---|---|---|
-| 0.05% | 208 / 1.00 | **80** / 0.951 |
-| 0.02% | 396 / 1.00 | **88** / 0.92 |
-
-Ratio-VdC избыточно консервативен (покрытие 1.0). VAS требует в 2.6–4.5 раза меньше чанков при покрытии,
-близком к номинальным 95%. При 8 стратах и жёсткой цели покрытие падало до 0.86 (эффект ранней остановки),
-поэтому выбрано 16 страт. *Дальше:* учитывать стоимость c_h (полосы держателей страты), n_h ∝ N_h σ_h / √c_h.
-
-## Проверка
-
-- `tests/` — 31 тест:
-  - e2e-рой из 5 узлов (релей, NAT, перекодирование, прогрессивные оценки, DHT-имена);
-  - матрица сценариев: v2, v3, шардинг, разные раскладки и пересборка, данные без времени, скаляры,
-    CF packed int с отсутствующим чанком, суточный шаг с фазой, многоуровневые данные с dask,
-    смешанные v2/v3, поиск, автоадресация, JLPS/bytes по региону, пространственный регион;
-  - безопасность: подмена данных, Sybil и доверие, вечный повтор, CSRF, SSRF, мусор в DHT;
-  - TUI: раздача → поиск → выбор → загрузка;
-  - самопроверки алгоритмов (max-flow с релеями, JLPS, покрытие VAS).
-- `bench/`: накладные расходы (`bench_local`), масштаб манифестов (`bench_manifest`), оценщики (`bench_aqp_offline`),
-  реальные данные (`make_wb2_replicas`, `verify_wb2`, `make_era5like`, `verify_real`).
-- `sim/simulate.py`: N настоящих узлов с эмуляцией полос, задержек, NAT, отказов и потерь. Эксперименты:
-  E1 — стратегии, E2 — доступность, E3 — отказы посреди загрузки, E4 — DHT, E5 — JLPS, E6 — потери на каналах.
-
-## Результаты (29.09.2026)
-
-### Симулятор (`sim/simulate.py`, 24 настоящих узла, 3 bootstrap+релея, 30% за NAT, полосы 0.5–30 МБ/с, задержки 2–40 мс)
-
-**E1 — выбор пиров** (частичные реплики, 60 дней ERA5-подобных данных, ~31 МБ на загрузку, **8 повторов**,
-`sim/results_e1_v5_r8.json`, все значения сверены с генератором):
-
-| стратегия | среднее, с | медиана, с | худший, с | Джини отдачи | макс. доля пира | активных пиров |
-|---|---|---|---|---|---|---|
-| maxflow (наш) | **5.6** | **4.3** | **15.5** | 0.68 | 0.20 | 10.4 |
-| random | 7.1 | 4.7 | 15.6 | 0.72 | 0.25 | 11.0 |
-| single | 9.2 | 4.7 | 27.6 | 0.79 | 0.35 | 8.9 |
-| rarest (BitTorrent) | 12.3 | 8.6 | 36.4 | 0.80 | 0.30 | 7.1 |
-
-maxflow лучший в 5 из 8 повторов. В типичном случае выигрыш скромный (медиана 4.3 против 4.7 с у random),
-главный эффект — **хвост**: при неудачном размещении данных (повтор 4) maxflow 4.9 с против 15.6–36.4 с,
-среднее на 21–54% ниже. Одновременно лучшая децентрализация (Джини 0.68, самый нагруженный пир 20%).
-
-Этот результат дали два исправления (разбор по пирам, `sim/results_e1_v3..v5.json`): (1) **отмена хвоста
-endgame** — задание ждало дубликаты медленных NAT-пиров уже после получения всех данных (4.5 с данных → 7.8 с
-задания); (2) **перехват работы учитывает общий релей** — пиры за релеем 0.97 МБ/с «помогали» перехватом и
-endgame-дублями, и релей переслал 17.4 МБ вместо плановых 10 (план 13 с → факт 21.5 с); пир за занятым релеем
-больше не берёт чужую работу (T_err 1.65 → 0.82).
-
-**E5 — JLPS против покрытия с минимумом байт** (точная раскладка 24 ч на 6 медленных пирах по 0.6 МБ/с,
-грубая 168 ч на 4 быстрых по 15 МБ/с, 3 повтора, все значения проверены):
-
-| окно | ускорение JLPS | байт: min-bytes → JLPS |
-|---|---|---|
-| 2 дня (12 запросов) | ×5.8 (3.4 – 6.6) | 1.3 → 5.2 МБ |
-| 20 дней (3 запроса) | ×4.8 (4.5 – 5.2) | 12.0 → 15.0 МБ |
-
-JLPS сознательно читает больше байт (грубые чанки), зато с быстрых пиров.
-
-**E2 — доступность при отказах** (убиваются и bootstrap-узлы):
-
-| доля убитых | поиск в DHT | доступно чанков | загрузка |
-|---|---|---|---|
-| 0% | 2/2 | 1.00 | done |
-| 20% | 2/2 | 0.89 | done |
-| 40% | 2/2 | 0.72 | done |
-| 60% | 2/2 | 0.64 | done |
-
-Сеть находит данные, пока жив хотя бы один узел, через которого можно войти. Всё, что осталось хотя бы у одного
-выжившего сида, скачивается. Доступность ограничена числом реплик, а не протоколом.
-
-**E3 — отказы посреди загрузки:** убито 30% сидов, обе загрузки завершены за 5.1 и 2.8 с (35/35 и 47/48;
-один чанк был только у убитых). Благодаря быстрому отказу релея время сократилось со 120 с до 5 с.
-**E4 — DHT:** поиск успешен 24/24, ни один узел не обслуживает больше 11% RPC, медиана контактов 14.
-
-### Публичная сеть уровня 3 без туннелей (fibonacci — публичный bootstrap+релей)
-`zt init --bootstrap-node --public-host 193.39.168.186` → `ztnet://57a4…@193.39.168.186:7881`. panel и ноутбук
-подключились через `zt init --join ztnet://…` (узлы за NAT используют релей). Канал до fibonacci во время теста терял
-около 40–50% HTTP-запросов и SSH-подключений (сервер перегружен).
-- Первая попытка на старом коде: ожидание манифеста до 120 с, пир «падал» после первой же ошибки, `t2m` скачан
-  на 20 из 91 чанка, но задание всё равно отчиталось `done`. Неверных значений при этом не было:
-  чтение недокачанного чанка честно давало `OSError`.
-- Исправления: раздельные таймауты на соединение и чтение и повторы для метаданных; повтор DHT-RPC; пир считается
-  упавшим после 3 ошибок подряд; до 3 раундов дозагрузки с паузой; повторный bootstrap каждые 15 с;
-  состояние `partial` с числом `failed`; адаптивный таймаут чтения пачки.
-- Повтор: **t2m 303 МБ (173 МБ с fibonacci + 130 МБ с panel через релей, две раскладки), u10 29.5 МБ, v10 60 МБ —
-  всё скачано полностью, 0 неудачных чанков, все значения совпали** (12.6 мин, скорость ограничена каналом).
-
-### Реальный ERA5 (WeatherBench2, 6 ч, 64×32, 2000–2004)
-R1 на ноутбуке: zarr **v3**, 2000–2002, t2m + u10 + geopotential@500/850, чанки 100×64×32.
-R2 на panel: zarr **v2**, 2002–2004, t2m + msl, чанки 120×32×16. Ссылка `zt://5a1c…+9379…` (две подсетки).
-- `zt search 2m_temperature` находит подсетку у 2 сидов, `zt search geopotential` — у 1;
-- `zt get`: t2m собрана JLPS из обеих раскладок и сайтов (169 чанков, 44.6 МБ, 22.0 + 22.6 МБ);
-  msl (только panel, v2) — 23.5 МБ; u10 и geopotential — с ноутбука;
-- **все 4 переменные совпадают с эталоном WeatherBench2 значение в значение**, вне покрытия NaN.
-
-### Реальные площадки (синтетика)
-Ноутбук (bootstrap+релей, сид A: t2m+u10, 1 янв – 29 фев, чанки 24×181×360) и panel.weatherpaper.org (узел за NAT
-через обратный SSH-туннель, сид B: t2m+v10, 15 фев – 15 мар, раскладка 48×91×180, другие CF-единицы времени):
-- одна сетка `zt://77c65ccb…` у обеих реплик, поиск `zt search v10` находит её с охватом по времени;
-- `v10` (только panel) → ноутбук: 60 МБ за 2.7 с (22 МБ/с по WAN), все значения совпали;
-- `t2m` свежим клиентом: 298 МБ, две раскладки, 91 чанк за 3.0 с; 280 МБ пришло от *другого клиента*, раздававшего кэш;
-- panel ← `u10` (только на ноутбуке): 9.9 МБ за 2.1 с от двух пиров, значения совпали;
-- **третья площадка cloud.ru** (контейнер без входящих соединений и без PyPI; переносимый CPython 3.12 + `--target`,
-  сид C: t2m+u10, 20 янв – 25 фев, третья раскладка 72×181×360) вошла в тот же рой `zt://77c65ccb…`;
-  cloud.ru ← `v10` (только panel): 24 МБ за 4.7 с по пути panel → релей → cloud.ru;
-  cloud.ru ← `t2m` 10 фев – 5 мар: 104 МБ за 9.3 с с двух пиров; все значения (264×181×360 и 600×181×360) совпали.
-
-Fibonacci (193.39.168.186, открытый порт 7881 проверен) во время теста был перегружен (load 21–28, диск заполнен на 98%):
-SSH-команды зависали, поэтому узел там не запустился.
-Maria (193.181.213.6) не использовалась, потому что сменился ключ хоста и нужно подтверждение владельца.
-
-## Безопасность и надёжность (после независимого ревью, 29.09.2026)
-
-| Угроза | Защита | Тест |
-|---|---|---|
-| Пир подменяет данные (свой cid/vcid) | каждый чанк декодируется, `vcid` сверяется с выбранным **большинством держателей** | `test_majority_beats_conflicting_replica…` |
-| Испорченный или удалённый файл у сида → вечный цикл | не больше 2 попыток на (ключ, пир), затем пир исключается из держателей, ошибка `!` вместо заполнения | `test_tampered_seed_file…` |
-| CSRF или DNS-rebinding на управляющий API | обязательный заголовок `X-Zt-Client` (браузер без preflight его не пошлёт) и проверка `Host` | `test_control_api_requires…` |
-| SSRF через `/probe` | проверяется только адрес самого запрашивающего и указанный им порт | `test_probe_cannot_target…` |
-| Мусорные узлы и записи в DHT | id строго hex40, адрес только http(s), типы полей проверяются | `test_dht_ignores_malformed…` |
-| Флуд DHT | лимит 2000 записей на ключ (действующие издатели могут обновлять), 100 тыс. ключей всего | — |
-| Zip-бомбы и ложные длины | манифест ≤ 1 ГБ после распаковки, длина чанка = размеру из подписанного манифеста | — |
-| Злоупотребление релеем | ≤ 2000 подключённых узлов, ≤ 32 запроса в полёте на узел и ≤ 512 всего, сообщение ≤ 72 МБ | — |
-| Молчаливое заполнение у ожидающих | ошибка владельца → `!`; отменённый владелец → ожидающий дозагружает сам | — |
-| Утечки | очистка заданий, манифестов и видов; сессия store на каждый пакет | — |
-
-Имена в DHT сохраняются и переопубликовываются: TTL 1 ч больше не рвёт ссылки `zt://name@pk`.
-Против Sybil-атаки: **доверенные издатели** (`zt node --trust PUBKEY…`, `ZT_TRUST`). Если у ключа есть
-держатель из списка доверенных (или это мы сами), его `vcid` побеждает любое число прочих голосов
-(`test_trusted_publisher_beats_sybil_majority`: два сговорившихся пира перекрикивают честного, пока у клиента
-нет якоря доверия; с ним клиент получает верные значения).
-
-### E6 — потери на каналах (симулятор, 24 узла; каждый узел «подвешивает» долю входящих запросов)
-Эксперимент воспроизводит поведение канала до fibonacci. Средние по 2 повторам, все загрузки полные, значения верные:
-
-| версия | потери 0% | потери 20% | потери 40% | что изменено |
-|---|---|---|---|---|
-| v1 | 3.8 с | 86.8 с (12–161) | 257 с; второй повтор > 50 мин | повторы метаданных, 3 ошибки до отказа пира, раунды дозагрузки |
-| v2 | 4.4 с | 86.9 с (82–92) | — | таймауты метаданных 10 с, DHT 5 с |
-| v5 | 4.7 с | **52.6 с (36–69)** | **121 с (74–167)**, 1 чанк из 65 не докачан → `partial` | дедлайн 8 с на сбор манифестов, таймаут пачки 4× ожидаемого времени по узкому месту пир/релей (≥5 с), 4 раунда |
-
-При потерях 40% узел за релеем теряет примерно 1 − 0.6² ≈ 64% запросов (теряют и релей, и сам узел).
-Недокачанные чанки не подменяются: задание получает состояние `partial`, чтение даёт `OSError`, повторный `zt get` дозагружает.
-
-Замер фаз показал, что построение вида перестало быть узким местом (0 с), а время уходит на раунды дозагрузки.
-Слишком агрессивный таймаут (2 с) давал ложные «зависания» на релейных путях (релей буферизует пачку),
-и один чанк из-за этого не скачался (честная ошибка `OSError`, без подстановки данных).
-
-### E7 — optimistic pushdown (60 дней, чанки-карты 24×91×180, два сида по 5 МБ/с)
-
-| запрос | целыми чанками | pushdown + аудит (5%, первые 3 чанка пира) | pushdown, доверенные сиды |
-|---|---|---|---|
-| точка, весь период | 9.2 с, 74 МБ | 2.7 с, 6.2 МБ | **0.96 с, 0.01 МБ** |
-| регион 10×10 | 29.3 с, 74 МБ | **3.3 с, 8.0 МБ** | **1.2 с, 0.58 МБ** |
-| вся карта за сутки | 0.36 с | 0.37 с (pushdown не включается) | 0.37 с |
-
-По ходу нашлось и исправлено: лимит 256 срезов на запрос (откат на целые чанки), подсчёт аудитов после их
-завершения, монетка на каждый пакет (почти все чанки уходили на аудит), отсутствие отката.
-Тест `test_optimistic_pushdown_catches_a_lying_holder` показал, что без отката ложь из непроверенного чанка
-проходила (12 из 48 значений). Теперь пакет обманщика целиком пересчитывается, а ранее принятые квитанции
-отдаются как taint-список.
-
-### E8 — транспортный кодек `xt1` (реальный ERA5, R1, канал сида 2 МБ/с)
-Без `xt1`: 62.4 с, 123.8 МБ. С `xt1`: 50.7 с, 99.5 МБ (**×1.23**), 136 чанков пережато, значения точные.
-Офлайн по переменным: `xt1` сжимает в 1.13–1.73 раза против 1.08–1.30 у исходного zstd-1; zstd-19 не даёт ничего.
-Сжатие float без потерь упирается в энтропию мантиссы, поэтому основные резервы в pushdown и CAPT.
-
-### CAPT (`python -m zarr_torrent.capt`, `tests/test_capt.py`)
-1.46e5 чанков = 2355 страниц, 6.68 МБ, сборка 1.9 с. После добавления 10 чанков клиент докачал 96 КБ (1.4%).
-Месяц одной переменной из 40 лет × 10 переменных — 4.5 КБ (0.07%). Свежий клиент качает неделю из 400 дней
-по виду из диапазона (< 30% манифеста даже на маленьком дереве) и получает точные значения.
-
-### Округление потока и локальный ремонт плана (перебор на 3000 малых задач)
-
-Max-flow даёт дробное назначение; округление по квотам иногда оставляло «разрезанный» чанк на медленном пире
-(худший случай 2.1× от целочисленного оптимума, 3.2 % задач хуже оптимума более чем на 20 %). Добавлен локальный
-поиск после округления: перенос чанка с узкого места (пир или общий релей) к другому держателю, пока makespan
-падает; взаимозаменяемые чанки (размер, держатели) объединены в корзины, поэтому шаг не зависит от числа чанков.
-Итог: худший 1.54×, доля > 1.2× — 0.2 %; 10⁵ чанков планируются за 0.25–0.45 с. Дробная граница T ни разу не
-превысила целочисленный оптимум (корректность нижней оценки). Регрессия — `test_plan_against_brute_force`. В E1 (8 повторов, те же сиды) эффект в пределах шума: maxflow 5.6 → 5.5 с
-в среднем, медиана 4.3 → 4.2 с, 6 из 8 повторов быстрее, худший 15.5 → 16.9 с (`sim/results_e1_v6_repair.json`);
-на реальном рое хвосты и так добирает перехват работы, ремонт важен для точности прогноза плана на малых задачах.
-
-### Точность модели планировщика (E1, max-flow, 24 узла, 3 повтора; задания записывают прогноз и факт по пирам)
-
-| шаг | время прогонов, с | ошибка оценки T (факт/план) | таймауты чтения | фактическая/плановая полоса |
-|---|---|---|---|---|
-| исходно | 7.7 / 10.6 / 27.5 | 0.31–1.59 | — | прямые 0.46–0.79 |
-| калибровка подсказок (×0.8) + таймаут с суммой участков релея | 9.9 / 11.3 / 20.8 | 0.42–1.35 | 102 | прямые 0.87–0.92 |
-| + очередь релея и параллельные пачки пира в ожидании | 7.8 / 10.1 / 16.9 | 0.58–1.28 | 73 | прямые 0.87–0.93 |
-| + **потоковый (cut-through) релей** | 8.0 / 9.4 / 18.2 | 0.59–1.39 | **21** (ни одного отказа пира) | релей 0.65–0.75 |
-
-Причины расхождения по порядку: (1) заявленная полоса на ~23% выше полезной; (2) релей работал по схеме
-store-and-forward, и первый байт ждал оба участка, а таймаут считался по min и срабатывал ложно, отсюда
-второй раунд и +11 с простоя; (3) параллельные пачки делят одну исходящую полосу пира или релея.
-Теперь релей передаёт ответ кадрами, совместимость со старыми узлами сохранена.
-
-**Проверка в реальном WAN** (panel за NAT → SSH-туннель → релей на ноутбуке → клиент, `v10` 60 МБ):
-кадры по 256 КБ–8 МБ, отправляемые по мере чтения локального ответа, давали паузы > 5 с и ложные зависания.
-Итоговая схема: NAT-узел читает свой локальный ответ целиком (loopback) и отправляет по WAN кадрами по 4 МБ,
-релей пересылает их по мере поступления; для пиров без замеров и без объявленной полосы таймаут первого контакта
-мягкий (30 с). Три прогона: 11.9–31.8 с, **0 ошибок**, значения точные; скорость 1.9–5.1 МБ/с при голом
-`scp` 2.4–3.6 МБ/с в то же время, то есть релей работает на скорости канала.
-
-### E9 — erasure-коды (ZTP-EC): от отрицательного результата к выигрышу
-
-**Шаг 1: XOR-чётность проиграла репликам** (0.70–0.78 против 0.93–1.00 при гибели 40–60% узлов):
-в страйпе больше одной потери, добровольцы гибнут вместе с сидами.
-
-**Шаг 2: Cauchy-RS над GF(256)** (`gf.py`): каждый доброволец хранит свою строку j; любые k живых кусков (данные
-или строки) восстанавливают страйп. Детерминированный тест: единственный сид умер, 8 добровольцев × 1/8 объёма →
-**восстановлены все 30 чанков, значения точные** (`test_eight_rs_volunteers_rebuild_everything…`); две потери
-в одном страйпе лечатся двумя строками разных добровольцев (`test_two_losses_in_one_stripe…`).
-
-**Шаг 3: почему RS в симуляторе сначала не выигрывал.** (а) Реплики лежали в двух раскладках, а чётность
-строится по одной: данные второй раскладки не покрыты. Решение (реализовано): семейство `#v` кодирует
-**значения на каноническом гриде** — член страйпа собирается из любой раскладки и проверяется по `vcid`
-(`test_value_parity_spans_heterogeneous_layouts`: реплики 24 ч/48 ч, дни единственного погибшего держателя
-восстановлены бит-в-бит). Строку доброволец по умолчанию берёт из ещё не опубликованных в рое (MDS требует
-различных строк). (б) Сиды держат непрерывные окна: гибель сида стирает «пачку» соседних чанков, то есть весь
-страйп подряд. Решение: **перемежение** (члены с шагом D = ⌈N/k⌉). (в) При доле выживших ниже скорости кода
-(p_fail > 0.5 для k+k) репликация выигрывает, это теоретический порог.
-
-**Шаг 4: Монте-Карло при равном доп. объёме** (`bench/bench_ec_mc.py`, 2000 испытаний, 60 суток, 12 сидов
-с окнами 5–40%, независимые отказы с вероятностью p; правило декодирования то же, что в коде и тестах):
-
-| p | без добавок | 1 реплика | RS подряд (8 строк) | **RS с перемежением (8 строк)** | 2 реплики | **RS с перемежением (16)** |
-|---|---|---|---|---|---|---|
-| 0.3 | 0.909 | 0.973 | 0.969 | **1.000** | 0.992 | **1.000** |
-| 0.5 | 0.805 | 0.906 | 0.879 | **0.975** | 0.951 | **1.000** |
-| 0.6 | 0.713 | 0.822 | 0.776 | **0.903** | 0.897 | **0.984** |
-| 0.7 | 0.613 | 0.723 | 0.658 | **0.758** | 0.814 | **0.908** |
-
-При том же объёме RS с перемежением стабильно лучше репликации (+7–9 п.п. при p = 0.5–0.6, бюджет 1).
-RS без перемежения не лучше реплик. Интерливинг, подобранный под картину размещения реплик (непрерывные окна),
-и есть вклад, специфичный для массивов с осью времени.
-
-**Симулятор (30 настоящих узлов, 3 повтора, p = 0.2 и 0.4, бюджет = 1 реплика):**
-
-| режим | доступность | хранение всего |
-|---|---|---|
-| без добавок | 0.76–1.0 | 38–50 МБ |
-| 1 полная реплика | 1.0 | 50–67 МБ |
-| **8 RS-строк с перемежением** | **1.0** (восстановлено 0–6 чанков) | 54–72 МБ (+5–8% к реплике) |
-
-Попутно найдено и исправлено: (1) страйпы, выровненные по абсолютному индексу, давали полупустые блоки и строки
-размером 1/3 вместо 1/8 данных, поэтому смещение o = начало охвата вошло в имя семейства; (2) неудачное семейство
-повторно перекачивалось для каждого ключа, теперь оно запоминается; (3) **шторм перестроений CAPT**: каждый
-скачанный чанк менял версию индекса, и каждый запрос головы запускал параллельную O(N)-сборку, до 22 сразу,
-6+ ГБ. Теперь сборка одна на сетку и не чаще раза в 2 с (явный seed публикуется сразу). Тесты ускорились в 2.5 раза.
-
-### Масштаб: 24 → 64 → 100 узлов
-| узлов | поиск в DHT | макс. доля RPC одного узла | медиана контактов | доступность при −60% узлов |
-|---|---|---|---|---|
-| 24 | 24/24 | 11% | 14 | 0.54–0.73 |
-| 64 | 64/64 | 7.2% | 24 | 0.59 |
-| 100 | 100/100 | **5.1%** | 25.5 | 0.83 |
-
-Нагрузка управляющего уровня размазывается тем сильнее, чем больше сеть: это свойство Kademlia.
-
-### Масштаб (симулятор, 64 узла, 4 bootstrap+релея, 30% за NAT)
-Поиск в DHT успешен 64/64, самый нагруженный узел обслуживает 7.2% RPC (на 24 узлах было 11%), медиана контактов 24.
-При гибели 60% узлов (выжили 3 из 4 bootstrap) поиск успешен, доступность 0.59 = доля того, что было
-у выживших, загрузка завершена.
-
-## Известные ограничения (`ponytail:` в коде)
-
-Слияние вида — чистый Python, ~5 мкс на запись (1.17 млн записей ≈ 6 с); смягчено ETag/304 и мемоизацией,
-пересчёт только при изменении реплик. Только плоские группы; стандартные календари; регулярная ось времени из ≥2 шагов; манифест передаётся
-целиком (~50 Б/чанк); вытеснение из k-bucket без ping; если у одной переменной в сетке расходится тип
-данных, в представлении остаётся семейство большинства; покрытие раскладок учитывается только по оси времени.
+The local node exposes a virtual read-only Zarr store. `chunks={}` enables local Dask; `chunking=` controls
+the virtual Zarr layout. Neither rewrites holder stores. With pushdown disabled, selecting a small slice
+still fetches whole source chunks. `prefetch` identifies chunks through a dry read and may allocate an array
+the size of the selected input. Multi-machine Dask execution and a native `xr.open_dataset("zt://...")`
+backend have not been validated or registered.
+
+Implementation: `zarrswarm/store.py`. See the [user guide](docs/user.md) for exports and examples.

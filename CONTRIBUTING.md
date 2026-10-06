@@ -9,7 +9,7 @@ For documentation changes, run:
 uv tool run --python 3.12 --with-requirements docs/requirements.txt mkdocs build --strict
 ```
 
-Implementation changes belong in `zarr_torrent/`; `zarrswarm/` exposes the public package API.
+Implementation changes belong in `zarrswarm/`, including the public Python API and CLI.
 Keep the existing commands, link schemes and configuration compatible, or document a migration.
 Add a focused regression check for a behavior change. Use small, generated fixtures for local tests.
 

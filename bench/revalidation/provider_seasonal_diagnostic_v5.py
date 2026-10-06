@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from zarr_torrent import codec
+from zarrswarm import codec
 
 work = Path(sys.argv[1])
 result = json.loads((work / "provider_seasonal_v5.json").read_text())

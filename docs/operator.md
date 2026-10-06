@@ -1,130 +1,149 @@
-# Гайд администратора: поднять сеть и узлы
+# Operator guide
 
-## 1. Роли узлов
+## Node roles
 
-| роль | нужно | `zt init` |
+| Role | Requirements | Initialization |
 |---|---|---|
-| **bootstrap + релей** (1–3 на сеть) | публичный IP или DNS, открытый TCP-порт данных (7881) | `--bootstrap-node --public-host HOST` |
-| **публичный узел** (кластер с внешним IP) | открытый порт данных | `--join ztnet://… --listen-public` |
-| **узел за NAT** (ноутбук, вычислительный узел, контейнер) | только исходящие соединения | `--join ztnet://…` |
+| Bootstrap and relay | Public IP or DNS name and an open TCP data port | `--bootstrap-node --public-host HOST` |
+| Public holder | An externally reachable data port | `--join ztnet://... --listen-public` |
+| Node behind NAT | Outbound connections to bootstrap and relay | `--join ztnet://...` |
 
-Узел за NAT подключается к релею по websocket и доступен остальным через него; раздавать он может так же, как
-публичный. Трекера и центрального сервера нет: bootstrap нужен только для входа в DHT, после этого узлы находят
-друг друга сами (Kademlia + обмен пирами). Два-три bootstrap-узла на разных площадках убирают единую точку входа.
+A NAT node attaches to a relay over a websocket and serves data through it.
+Bootstrap nodes provide entry into the DHT; peers then discover each other through
+Kademlia and peer exchange. Use two or three public entry points at separate
+sites when one bootstrap host is insufficient.
 
-## 2. Первый узел сети
+## Start the first node
+
+Install from source as described in the [README](https://github.com/dsuhoi/zarrswarm#install-from-source),
+then activate the environment:
 
 ```bash
-uv venv -p 3.12 .venv && uv pip install -p .venv -e .       # или pip install -e . в любом venv с Python ≥ 3.11
-                                                             # или Docker, см. ниже
 source .venv/bin/activate
-zt init --bootstrap-node --public-host data.example.org --service
-#   node id   3f9c…
-#   config    ~/.zt/config.toml
-#   network   ztnet://3f9c…@data.example.org:7881     <- эту строку раздайте участникам
-systemctl --user enable --now zt-node                        # или просто: zt node
-loginctl enable-linger $USER                                 # чтобы user-сервис жил без входа в систему
+zarrswarm init --bootstrap-node --public-host data.example.org --service
+systemctl --user enable --now zt-node
 ```
 
-Для закрытой сети добавьте `--private`: приглашение будет содержать ключ (`?k=…`), узлы без него получат 403 —
-подробно о доступе, регистрации датасетов и лимитах в `docs/network.md`.
+Replace the hostname with your reachable host. The printed
+`ztnet://<id>@data.example.org:7881` invitation is used by other participants.
+You can run `zarrswarm node` directly instead of installing a service.
+On Linux, `loginctl enable-linger "$USER"` lets a user service continue after logout.
 
-Откройте входящий TCP 7881 (порт данных). Управляющий порт 7882 слушает только `127.0.0.1` и принимает запросы
-лишь с заголовком `X-Zt-Client` и локальным `Host` — наружу его не открывайте и не пробрасывайте.
+Add `--private` to create an invitation containing a network key.
+[Network access](network.md) describes its scope.
 
-## 3. Остальные узлы
+Open incoming TCP port 7881. The control API uses port 7882 on loopback and
+requires `X-Zt-Client` and a local `Host`. Keep this control port local.
+
+## Join other nodes
 
 ```bash
-zt init --join ztnet://3f9c…@data.example.org:7881 --service     # за NAT: адрес = релей, входящих не нужно
-zt init --join ztnet://3f9c…@data.example.org:7881 --listen-public --service  # есть внешний IP: проверит сам
+zarrswarm init --join 'ztnet://<id>@data.example.org:7881' --service
+zarrswarm init --join 'ztnet://<id>@data.example.org:7881' --listen-public --service
 ```
 
-С `--listen-public` узел при старте спрашивает bootstrap, видит ли тот его порт (`/whoami` + `/probe`); если нет —
-автоматически уходит на релей. Добавить второй bootstrap: допишите URL в `bootstrap = [...]` в `config.toml`.
+The first form uses a relay. With `--listen-public`, the node asks bootstrap to
+check its address and port using `/whoami` and `/probe`. If unreachable, it uses
+the relay. Add other entry points to `bootstrap = [...]` in `config.toml`.
 
-### Docker
+## Docker
 
 ```bash
 docker build -t zarrswarm .
-mkdir -p ~/zt-home
-U="--user $(id -u):$(id -g)"                    # файлы узла принадлежат вам, а не root
-docker run --rm $U -v ~/zt-home:/zt zarrswarm init --join ztnet://3f9c…@data.example.org:7881
-docker run -d --name zt --restart unless-stopped $U --network host \
-       -v ~/zt-home:/zt -v /data:/data:ro zarrswarm node
-docker exec zt zt status
+mkdir -p "$HOME/zt-home"
+docker run --rm --user "$(id -u):$(id -g)" -v "$HOME/zt-home:/zt" zarrswarm init --join 'ztnet://<id>@data.example.org:7881'
+docker run -d --name zarrswarm --restart unless-stopped --user "$(id -u):$(id -g)" --network host -v "$HOME/zt-home:/zt" -v /data:/data:ro zarrswarm node
+docker exec zarrswarm zarrswarm status
 ```
 
-`--network host` — самый простой вариант: порт данных 7881 и управляющий 7882 (на `127.0.0.1` хоста) доступны
-как у обычного узла, поэтому `zt`, `zt-tui` и `zarr_torrent.open_dataset` на хосте работают без настроек.
-Если пути к данным внутри контейнера (`/data/…`) не совпадают с хостовыми, клиент на хосте сам перейдёт на чтение
-чанков через API узла (`/api/read`). Без host-сети: `-p 7881:7881`, а клиентов запускайте внутри контейнера
-(`docker exec`), потому что управляющий порт наружу не публикуется.
+On Linux, host networking exposes the data port and keeps the control port on
+host loopback. Host CLI and xarray clients can use their normal settings.
+If a container's data paths differ from the host's, host clients read chunks
+through the node's `/api/read` endpoint.
 
-## 4. Что раздавать
+With bridge networking, publish only `-p 7881:7881` and run control clients
+inside the container using `docker exec`. The node files belong to the UID/GID
+specified in the example.
+
+## Seed stores and manage disk use
 
 ```toml
 # ~/.zt/config.toml
-upload_mbps = 50            # не отдавать больше 50 МБ/с (0 — без ограничения)
+upload_mbps = 50
 
 [[seed]]
 path = "/data/era5/*.zarr"
 ```
 
-Перезапустите узел (`systemctl --user restart zt-node`). Разово: `zt seed /path/ds.zarr` (запоминается).
-Растущие датасеты (оперативная лента дописывает шаги `to_zarr(append_dim="time")`) подхватываются сами:
-раз в минуту узел сверяет метаданные и публикует новые чанки; раз в 10 минут полный пересчёт ловит и перезапись
-на месте (предварительные значения → окончательные). Ограничить диск под скачанное: `cache_max_gb = 200`.
-Раздача не копирует данные: узел читает чанки прямо из ваших Zarr-хранилищ (v2 и v3, любые кодеки).
-Изменили файлы — узел пересканирует их при `zt seed` того же пути; испорченный на диске чанк отдаётся
-с неверным хэшем, клиенты его отбрасывают, а узел исключает его из раздачи.
-Сканирование (`zt seed`, старт узла) декодирует каждый чанк, по потоку на доступное ядро (не больше 16;
-`ZT_SCAN_WORKERS=N` — явно): на станции с 1 vCPU — один поток и меньше пиковой памяти. После скана узел возвращает
-освобождённую кучу ОС (`malloc_trim`, только glibc). Хэши запоминаются в `~/.zt/scan`, повторный скан неизменённых
-файлов их не пересчитывает; `ZT_HASH_CACHE=DIR` — общий кэш для всех узлов хоста (по inode файла: жёсткие ссылки
-одного архива хэшируются один раз).
+`upload_mbps` is in MB/s; zero means unlimited. Restart the node after changing
+configuration. `zarrswarm seed /path/data.zarr` registers a store immediately
+and remembers it across restarts.
 
-### Повышение доступности без полной копии
+The node checks metadata every minute by default and performs a full stat-cached
+rescan every tenth check. Appended samples and in-place revisions are then
+announced. `cache_max_gb = 200` limits downloaded cached data; it does not limit
+the original stores you seed.
 
-Добровольцу не нужно хранить весь датасет: одна строка Reed–Solomon-чётности занимает 1/k объёма, и любые k живых
-кусков восстанавливают данные погибших сидов.
+Seeding decodes chunks to build identities. Scanning uses one thread per
+available core, up to 16, unless `ZT_SCAN_WORKERS` overrides the count.
+The node releases unused scan heap memory with `malloc_trim` on glibc.
+Unchanged file identities reuse `~/.zt/scan`. `ZT_HASH_CACHE=DIR` shares
+hashes between nodes on one host, using file identity and metadata.
+File changes that preserve size and modification time are outside this
+stat-based cache model.
+
+Corrupt chunks fail receiver validation and are excluded from serving.
+Reseed a changed store to refresh it immediately.
+
+## Store repair data
 
 ```bash
-zt parity zt://<grid> t2m --k 8 --drop     # хранить только чётность (строка выбирается сама, свободная в рое)
+zarrswarm parity 'zt://<grid>' t2m --k 8 --drop
 ```
 
-## 5. Наблюдение
+A volunteer can retain a Reed–Solomon parity row instead of a complete dataset.
+A row contains one encoded shard per stripe; any `k` compatible data and distinct
+parity shards recover that stripe. Actual stored size depends on representation
+and compression. See the [protocol](https://github.com/dsuhoi/zarrswarm/blob/main/PROTOCOL.md).
+
+## Monitor nodes
 
 ```bash
-zt status                  # адрес, контакты DHT, раздачи, задания
-zt peers zt://<grid>       # кто держит данные, сколько чанков, объявленная скорость
-zt-tui                     # список датасетов, карта частей, пиры, настройки (docs/user.md)
+zarrswarm status
+zarrswarm peers 'zt://<grid>'
+zarrswarm-tui
 journalctl --user -u zt-node -f
 ```
 
-## 6. Безопасность
+## Keys and trust
 
-* Ключ узла — `~/.zt/node.key`; он подписывает записи в DHT и квитанции pushdown. Не копируйте каталог узла
-  на другой хост (два узла с одним id мешают друг другу), делайте новый `zt init`.
-* Каждый чанк проверяется по хэшу байтов и хэшу значений; расхождение между держателями решается большинством,
-  а при `trust = ["<pubkey>"]` — ключом доверенного издателя (защита от сговора).
-* Закрытая сеть (`--private`): ключ из приглашения по сети не передаётся. Каждый запрос подписывается заголовком
-  `X-Zt-Net: <ts>:<HMAC-SHA256(ключ, ts\nМЕТОД\nПУТЬ)>`, узел принимает подпись не старше ±120 с, иначе 403.
-  Поэтому **часы всех узлов должны быть синхронизированы (NTP)**: узел с часами, ушедшими больше чем на 2 минуты,
-  получает 403 от всех и сам всем отказывает. Ключ — секрет (`network_key` в `config.toml` или `ZT_NETWORK_KEY`).
-* Версии манифестов: узел хранит номер версии и предыдущий корень своих манифестов в `~/.zt/heads.json`; при
-  переносе каталога узла переносите и его (без него номер всё равно растёт: он не меньше текущего времени в мс).
-  Клиент отвергает откат на старую версию, а два разных манифеста одной версии от одного держателя считает
-  доказательством двуличия: держатель попадает в чёрный список узла (в памяти, до перезапуска), доказательство и
-  список видны в `/api/status` управляющего API (поля `fraud`, `blacklist`).
-* Узел отвечает только на пути протокола (`/dht`, `/m`, `/mh`, `/mp`, `/cb`, `/qb`, `/pex`, `/whoami`, `/probe`,
-  `/relay/attach`, `/r/…`); `/probe` проверяет только адрес самого спрашивающего (не SSRF).
+`~/.zt/node.key` is the node's Ed25519 identity. Initialize a distinct identity
+on each host. DHT records, manifests and pushdown receipts use its signatures.
 
-## 7. Типичные проблемы
+Configure `trust = ["<pubkey>"]` to give selected publishers precedence over
+ordinary holder votes. A signature authenticates an announcement; it does not
+establish the scientific truth of a measurement.
 
-| симптом | причина и что делать |
+Private networks authenticate each request with a timestamped HMAC. The
+network key is not sent in the header, but payloads are unencrypted HTTP.
+Synchronize clocks: a difference greater than 120 seconds causes authentication
+failures. Use a VPN if you need channel confidentiality.
+
+Manifest versions and previous roots are saved in `~/.zt/heads.json`.
+Clients reject observed rollbacks and blacklist holders that sign different
+roots at one version. `/api/status` exposes `fraud` and `blacklist`.
+The blacklist is local and held in memory until restart.
+`/probe` checks the requesting address rather than an arbitrary host.
+
+## Troubleshooting
+
+| Symptom | Check |
 |---|---|
-| `contacts=0` в `zt status` | bootstrap недоступен: проверьте `curl http://HOST:7881/whoami` и порт в фаерволе |
-| `ro=True`, хотя внешний IP есть | порт закрыт снаружи → узел работает через релей; откройте порт и перезапустите |
-| загрузка медленнее ожидаемого | `zt peers LINK`: у держателей низкий `bw` или все за одним медленным релеем; добавьте публичный узел-релей ближе к ним |
-| `cannot reseed …` в логе | путь из `[[seed]]`/`state.json` исчез; узел продолжает работу без него |
-| занят порт 7881/7882 | `zt init --port N` (управляющий будет N+1) и `ZT_CTL=http://127.0.0.1:N+1` для клиентов |
+| `contacts=0` | Bootstrap reachability, `http://HOST:7881/whoami` and the data-port firewall |
+| `ro=True` on a public host | External port reachability; open the port and restart |
+| Slow downloads | Holder bandwidth and shared relay capacity in `zarrswarm peers LINK` |
+| `cannot reseed ...` | A configured seed path disappeared; other stores continue serving |
+| Port 7881 or 7882 is busy | Initialize with `--port N`; use `ZT_CTL=http://127.0.0.1:<N+1>` for that node |
+
+The short `zt` and `zt-tui` command aliases, `zt-node` service name,
+`ZT_*` settings and `~/.zt` state directory are supported for existing nodes.

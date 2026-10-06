@@ -64,7 +64,7 @@ def _write_config(home: Path, cfg: dict):
     path = home / "config.toml"
     path.touch(mode=0o600)
     path.chmod(0o600)  # may hold the network key
-    path.write_text(f"""# zarr-torrent node configuration (docs/config.md). Command-line flags override these values.
+    path.write_text(f"""# ZarrSwarm node configuration (docs/config.md). Command-line flags override these values.
 
 # network this node belongs to (printed by `zt init`, give it to other hosts)
 network = {v("network", "")}
@@ -154,8 +154,8 @@ def cmd_init(a):
     if a.service:
         unit = Path("~/.config/systemd/user/zt-node.service").expanduser()
         unit.parent.mkdir(parents=True, exist_ok=True)
-        unit.write_text(f"[Unit]\nDescription=zarr-torrent node\nAfter=network-online.target\n\n[Service]\n"
-                        f"ExecStart={sys.executable} -m zarr_torrent.cli node --home {home}\nRestart=always\n"
+        unit.write_text(f"[Unit]\nDescription=ZarrSwarm node\nAfter=network-online.target\n\n[Service]\n"
+                        f"ExecStart={sys.executable} -m zarrswarm.cli node --home {home}\nRestart=always\n"
                         f"RestartSec=5\n\n[Install]\nWantedBy=default.target\n")
         print(f"service   {unit}  (systemctl --user enable --now zt-node)")
 
@@ -370,7 +370,7 @@ def cmd_name(a):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="zt", description="P2P distribution of Zarr arrays")
+    ap = argparse.ArgumentParser(prog="zarrswarm", description="Verified peer-to-peer sharing of Zarr arrays")
     ap.add_argument("--ctl", default=CTL, help="local node control URL (env ZT_CTL)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("init", help="create identity + config for this host")

@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent.store import http  # noqa: E402
+from zarrswarm.store import http  # noqa: E402
 from simulate import port  # noqa: E402
 
 
@@ -54,7 +54,7 @@ class ProcSwarm:
 
     def _start(self, name, kw):
         cp = port()
-        args = [sys.executable, "-m", "zarr_torrent.cli", "node", "--home", str(self.root / f"h_{name}"),
+        args = [sys.executable, "-m", "zarrswarm.cli", "node", "--home", str(self.root / f"h_{name}"),
                 "--host", "127.0.0.1", "--port", str(kw["port"]), "--ctl-port", str(cp)]
         if kw.get("rate"):
             args += ["--upload-mbps", str(kw["rate"] / 1e6)]

@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - zarrswarm/**
-      - zarr_torrent/**
       - tests/**
       - pyproject.toml
       - uv.lock
@@ -12,7 +11,6 @@ on:
   pull_request:
     paths:
       - zarrswarm/**
-      - zarr_torrent/**
       - tests/**
       - pyproject.toml
       - uv.lock
@@ -37,7 +35,7 @@ jobs:
         run: uv sync --frozen --extra test --extra netcdf
       - name: Check package entry points
         run: |
-          .venv/bin/python -c "import zarrswarm, zarr_torrent; assert zarrswarm.open_dataset is zarr_torrent.open_dataset"
+          .venv/bin/python -c "import zarrswarm; assert zarrswarm.open_dataset.__module__ == 'zarrswarm.store'"
           .venv/bin/python -m zarrswarm --help
           .venv/bin/zarrswarm --help
       - name: Run tests

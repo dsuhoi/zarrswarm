@@ -1,6 +1,6 @@
 """xarray / zarr integration.
 
-    import zarr_torrent as zt
+    import zarrswarm as zt
     ds = zt.open_dataset("zt://<grid_id>")                          # union view, native chunks
     ts = zt.open_dataset("zt://<grid_id>", chunking={"time": 8760, "lat": 1, "lon": 1})  # re-chunked view
     sub = ds.t2m.sel(time=slice("2020-01-05", "2020-01-20"))
@@ -735,7 +735,7 @@ def store_of(ds, var: str | None = None) -> ZtStore:
     tok = json.loads(ds.attrs.get("zt_stores", "{}")).get(var) if var else None
     s = _STORES.get(tok or ds.attrs.get("zt_store", ""))
     if s is None:
-        raise ValueError("dataset was not opened with zarr_torrent.open_dataset")
+        raise ValueError("dataset was not opened with zarrswarm.open_dataset")
     return s
 
 

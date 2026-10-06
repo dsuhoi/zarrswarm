@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import simulate as S  # noqa: E402
 from e_hetero import verify_downloaded_chunks  # noqa: E402
 from procswarm import ProcSwarm  # noqa: E402
-from zarr_torrent.store import http, wait_job  # noqa: E402
+from zarrswarm.store import http, wait_job  # noqa: E402
 
 VAR = "2m_temperature"
 ARCO = "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3"
@@ -81,16 +81,16 @@ class Remote:
         exports = " ".join(f"{k}={v}" for k, v in dict(env, PYTHONPATH=site.get("pythonpath", src)).items())
         work = site.get('work', '~/zt_ms')
         home = f"{work}/h_{name}"
-        q = (f"from zarr_torrent.store import http; import json; "
+        q = (f"from zarrswarm.store import http; import json; "
              f"print('GRIDS', json.dumps([s['grid'] for s in http('http://127.0.0.1:{ctl}','GET','/api/status')['seeds']]))")
         # page-cache the replica first: otherwise whichever configuration runs first pays the site's cold disk
         # (measured: 9.3 s vs 2.1 s for the same 56 MB from the same peers)
         cmd = (f"trap 'kill 0' EXIT HUP TERM; cd {src}; export {exports}; mkdir -p {work}; rm -rf {home}; "
                f"find {data} -type f -exec cat {{}} + > /dev/null; "
-               f"{site.get('nice', 'nice -n 10')} {py} -m zarr_torrent.cli node --home {home} --host 127.0.0.1 "
+               f"{site.get('nice', 'nice -n 10')} {py} -m zarrswarm.cli node --home {home} --host 127.0.0.1 "
                f"--port {port} --ctl-port {ctl} --bootstrap http://127.0.0.1:{tport} --relay http://127.0.0.1:{tport} "
                f"> {home}.log 2>&1 & echo $! > {home}.pid; "
-               f"for i in $(seq 90); do sleep 2; {py} -m zarr_torrent.cli --ctl http://127.0.0.1:{ctl} seed {data} "
+               f"for i in $(seq 90); do sleep 2; {py} -m zarrswarm.cli --ctl http://127.0.0.1:{ctl} seed {data} "
                f">/dev/null 2>&1 && break; done; {py} -c \"{q}\"; echo SEEDED; wait")
         self.args = ["ssh", "-tt", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", "-o", "ServerAliveInterval=15",
                      site["host"], cmd]
@@ -231,7 +231,7 @@ def main():
     logs = root / "logs"
     logs.mkdir(parents=True, exist_ok=True)
     rows = []
-    from zarr_torrent.codec import ESTIMATOR
+    from zarrswarm.codec import ESTIMATOR
     out = lambda: json.dump({"config": cfg, "reps": a.reps, "estimator": ESTIMATOR, "rows": rows}, open(a.out, "w"), indent=1)
 
     def emit(row):

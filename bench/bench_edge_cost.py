@@ -39,8 +39,8 @@ def _exact(v):
 
 
 def measure(out: Path):
-    from zarr_torrent import codec
-    from zarr_torrent.common import cid_of
+    from zarrswarm import codec
+    from zarrswarm.common import cid_of
     res = {"host": platform.node(), "machine": platform.machine(), "python": platform.python_version(),
            "estimator": codec.ESTIMATOR, "time_axis": 0, "variants": {}}
     for d in sorted(p for p in out.iterdir() if p.is_dir()):

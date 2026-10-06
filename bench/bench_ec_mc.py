@@ -1,6 +1,6 @@
 """Monte-Carlo availability of replication vs Cauchy-RS volunteers at EQUAL extra storage, under independent
 node failures - the placement model of the simulator (seeders hold contiguous time windows), thousands of trials.
-Decodability rule = the one implemented and tested in zarr_torrent (a stripe with m lost members is rebuilt iff
+Decodability rule = the one implemented and tested in zarrswarm (a stripe with m lost members is rebuilt iff
 >= m of its parity rows survive; tests/test_parity.py checks it end-to-end).
 
 python bench/bench_ec_mc.py [--trials 3000]
