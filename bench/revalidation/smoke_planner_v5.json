@@ -1,0 +1,86 @@
+{
+ "args": {
+  "variants": "/home/dsuhoi/.cache/zt_variants_small",
+  "peers": 6,
+  "boot": 1,
+  "nat": 0.0,
+  "reps": 1,
+  "rep_start": 0,
+  "modes": "values",
+  "out": "bench/revalidation/smoke_planner_v5.json",
+  "placement": "random",
+  "procs": true,
+  "emu": false,
+  "rate_mbps": 4.0,
+  "covers": "jlps",
+  "queries": "map_day_1h",
+  "traces": "bench/sat_traces.json",
+  "stations": 24
+ },
+ "metadata": {
+  "estimator": "lattice-v5",
+  "source_sha256": {
+   "zarr_torrent/__init__.py": "5ddf76b34f9ea3d83b7099839bb0d785d2488ce706ba497101c354fb5df2c9e4",
+   "zarr_torrent/aqp.py": "c45f6d5c3de93f059b11c818d7245800c37473178fb26ca0b10a5c1c662b37f3",
+   "zarr_torrent/capt.py": "f47637ee037b8453546569f613c1f9fe7d5c5032fed14ff7a7c82558bdca4111",
+   "zarr_torrent/cli.py": "77d933779c88f442941296dbf4dd7ba033b03ae5a187813aee5e870b37ea095c",
+   "zarr_torrent/codec.py": "cd3dbcaf4ee811f73f47e480ba15c8c73872de2461d7729b8dab27d032441bc3",
+   "zarr_torrent/common.py": "ef5cced662932c65cc839276691d1efd2fb328ddb9abaca86a4e6c42fcd82192",
+   "zarr_torrent/dht.py": "64206c03be60ff0b2bc09524225148bdf55701f20d801c7e462b603d1f17cf23",
+   "zarr_torrent/gf.py": "aaa5fee28ea49a747f03002d249b0f802e53e3a35b77c9b42cd36fd2d82291da",
+   "zarr_torrent/jlps.py": "1f7dc3731e48ef06d80d6c58c533150348f12b943e057574d08f0dcd3368594b",
+   "zarr_torrent/node.py": "43efea8b6fc44f50239d701a4523a793db496976748069c97bbd84c2d196c625",
+   "zarr_torrent/parity.py": "650063f950340ddd07c83750d3625564f82a89b31f8fdc317a463146020a8c0d",
+   "zarr_torrent/plan.py": "4d8796d72df64e4adc27ee5ef7759562fafaf37f4e387708705b0510d78d0795",
+   "zarr_torrent/pushdown.py": "e918b4627eff490bdcb7d8ac18e9c6d219432fcc2a1eb2a4edb6c5b36861ce13",
+   "zarr_torrent/scan.py": "7c7b44f3b7dd82e8aa396a0c915dfafca35de1ffae6ba2e97045ebbeac7fa7d8",
+   "zarr_torrent/store.py": "9c8cda9d296ed84065602c214d28ffe64803a716e1cf7dd26ab05d33eff874d2",
+   "zarr_torrent/tui.py": "057e1f34029d30ac167e86edabc4c67a4a983c27b0001d82f9a62c9c9b7c8ef6"
+  },
+  "started_utc": "2026-10-03T22:55:16.709461+00:00"
+ },
+ "rows": [
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 0,
+   "query": "map_day_1h",
+   "swarm_holders": 5,
+   "swarms": 1,
+   "seconds": 17.19,
+   "bytes": 157388225,
+   "chunks": 64,
+   "total": 64,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 1,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 22.68,
+   "est_T": 23.644,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 16.92
+   },
+   "peer_detail": {
+    "45a0540d": {
+     "pred_MB": 172.29,
+     "bw_MBps": 7.6,
+     "act_MB": 157.39,
+     "end_s": 16.916,
+     "via": false
+    }
+   },
+   "cover": [
+    "168x91x180+144"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,134 @@
+[
+ {
+  "mode": "exact",
+  "holders": [
+   "A",
+   "B"
+  ],
+  "trusted_a": false,
+  "state": "partial",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 0,
+   "missing_samples": 24
+  },
+  "estimator": "lattice-v4",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 0.0,
+  "contested": 24,
+  "done": 0,
+  "missing": 24,
+  "per_peer_MB": {}
+ },
+ {
+  "mode": "exact",
+  "holders": [
+   "A",
+   "B",
+   "C"
+  ],
+  "trusted_a": false,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v4",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 2.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "72b974": 25.7,
+   "f67005": 25.7
+  },
+  "max_abs_diff_vs_arco": 0.0,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ },
+ {
+  "mode": "lattice",
+  "holders": [
+   "A",
+   "B"
+  ],
+  "trusted_a": false,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v4",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 2.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "546f20": 26.4,
+   "84fb50": 13.8
+  },
+  "max_abs_diff_vs_arco": 0.00079345703125,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ },
+ {
+  "mode": "lattice",
+  "holders": [
+   "A",
+   "B",
+   "C"
+  ],
+  "trusted_a": false,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v4",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 3.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "09bb15": 8.3,
+   "e0272d": 17.6,
+   "a341dd": 15.4
+  },
+  "max_abs_diff_vs_arco": 0.00079345703125,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ },
+ {
+  "mode": "exact",
+  "holders": [
+   "A",
+   "B"
+  ],
+  "trusted_a": true,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v4",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 1.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "ddc628": 55.0
+  },
+  "max_abs_diff_vs_arco": 0.0,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ }
+]

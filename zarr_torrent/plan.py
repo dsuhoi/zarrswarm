@@ -107,13 +107,17 @@ def plan(chunks: dict, bw: dict, max_groups: int = 400, via: dict | None = None,
     byte from a remote peer passes it, so it is one more shared bottleneck; peers in `local` (the receiver itself)
     bypass it. Returns ({peer: [keys]}, estimated makespan seconds)."""
     via, via_bw = via or {}, via_bw or {}
+    # Flow rounding and its repair must not depend on manifest/dictionary arrival order.
+    chunks = {k: (size, tuple(sorted(holders)))
+              for k, (size, holders) in sorted(chunks.items(), key=lambda item: str(item[0]))}
     groups = defaultdict(list)
     for k, (size, peers) in chunks.items():
         groups[frozenset(peers)].append((k, size))
     if not groups:
         return {}, 0.0
     if len(groups) > max_groups:  # ponytail: pathological fragmentation -> LPT greedy
-        return _greedy(chunks, bw)
+        asg, _ = _greedy(chunks, bw)
+        return asg, makespan_of(asg, chunks, bw, via, via_bw, client_bw, local)
     glist = list(groups.items())
     vol = [sum(s for _, s in ks) for _, ks in glist]
     total = float(sum(vol))
@@ -123,12 +127,12 @@ def plan(chunks: dict, bw: dict, max_groups: int = 400, via: dict | None = None,
         cap = defaultdict(dict)
         for i, (g, _) in enumerate(glist):
             cap["s"][("g", i)] = float(vol[i])
-            for p in g:
+            for p in sorted(g):
                 cap[("g", i)][("p", p)] = INF
         sink = "c" if client_bw else "t"
         if client_bw:
             cap["c"]["t"] = client_bw * T
-        for p in peers:
+        for p in sorted(peers):
             r = via.get(p)
             dst = "t" if p in local else sink
             if r is not None and r in via_bw:
@@ -154,7 +158,7 @@ def plan(chunks: dict, bw: dict, max_groups: int = 400, via: dict | None = None,
     _, f = solve(hi)
     out = defaultdict(list)
     for i, (g, ks) in enumerate(glist):
-        quota = {p: f[("g", i)][("p", p)] for p in g}
+        quota = {p: f[("g", i)][("p", p)] for p in sorted(g)}
         for k, s in sorted(ks, key=lambda x: -x[1]):
             p = max(quota, key=quota.get)
             out[p].append(k)

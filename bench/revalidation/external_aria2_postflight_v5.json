@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-10-04T22:13:15.408766+00:00",
+  "host": "weather-projects-0",
+  "kernel": "5.15.0-1044-nvidia",
+  "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+  "cpu_quota": "1600000 100000",
+  "own_active_processes": [],
+  "unique_new_allocated_bytes": 78020608,
+  "preexisting_hashcache_allocated_bytes": 25731072,
+  "home_free_bytes": 3331588096,
+  "temporary_node_homes_removed": [
+    "run/smoke_initial/h_boot0",
+    "run/smoke_initial/h_p00",
+    "run/smoke_initial/h_p01",
+    "run/smoke_initial/h_p02",
+    "run/smoke_initial/h_p03",
+    "run/smoke_initial/h_p04",
+    "run/smoke_initial/h_p05",
+    "run/smoke_initial/h_p06",
+    "run/smoke_initial/h_p07",
+    "run/smoke_initial/h_p08",
+    "run/smoke_initial/h_p09"
+  ],
+  "receiver_scratch_remaining": [],
+  "packages": {
+    "aria2.deb": "fa5b73e1b02082b9347e8066143fbb4638ff9162dd45bfd0123a8095b712e1b1",
+    "libaria2-0.deb": "76bbf50bebafdad88b3625576c40e79039713ef89b0d832ecc6455fb52445df8",
+    "libssh2-1.deb": "7416e785fe98d0a672d3b5937170de9191a9cc1514797166a05ad8c55bb38712",
+    "libc-ares2.deb": "d1c9a66669d6a4ec968efebb670a72d2188d98a1f37823c1f6cde8da23b51e0c"
+  },
+  "dataset_reused": "/home/jovyan/zt_ms/variants_month",
+  "dataset_present": true
+}

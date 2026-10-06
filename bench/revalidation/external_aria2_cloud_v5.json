@@ -1,0 +1,3465 @@
+{
+  "metadata": {
+    "started_utc": "2026-10-04T21:35:47.556563+00:00",
+    "host": "weather-projects-0",
+    "cpu_quota": "1600000 100000",
+    "aria2_version": "aria2 version 1.36.0",
+    "aria2_sha256": "e218243e2e742aedb78803e273e7d8a2b3e00286caf96c0bcf4fb3086b5a26e8",
+    "estimator": "lattice-v5",
+    "smoke": false,
+    "nat": false,
+    "source_sha256": {
+      "zarr_torrent/__init__.py": "5ddf76b34f9ea3d83b7099839bb0d785d2488ce706ba497101c354fb5df2c9e4",
+      "zarr_torrent/aqp.py": "c45f6d5c3de93f059b11c818d7245800c37473178fb26ca0b10a5c1c662b37f3",
+      "zarr_torrent/capt.py": "f47637ee037b8453546569f613c1f9fe7d5c5032fed14ff7a7c82558bdca4111",
+      "zarr_torrent/cli.py": "77d933779c88f442941296dbf4dd7ba033b03ae5a187813aee5e870b37ea095c",
+      "zarr_torrent/codec.py": "cd3dbcaf4ee811f73f47e480ba15c8c73872de2461d7729b8dab27d032441bc3",
+      "zarr_torrent/common.py": "ef5cced662932c65cc839276691d1efd2fb328ddb9abaca86a4e6c42fcd82192",
+      "zarr_torrent/dht.py": "64206c03be60ff0b2bc09524225148bdf55701f20d801c7e462b603d1f17cf23",
+      "zarr_torrent/gf.py": "aaa5fee28ea49a747f03002d249b0f802e53e3a35b77c9b42cd36fd2d82291da",
+      "zarr_torrent/jlps.py": "1f7dc3731e48ef06d80d6c58c533150348f12b943e057574d08f0dcd3368594b",
+      "zarr_torrent/node.py": "43efea8b6fc44f50239d701a4523a793db496976748069c97bbd84c2d196c625",
+      "zarr_torrent/parity.py": "650063f950340ddd07c83750d3625564f82a89b31f8fdc317a463146020a8c0d",
+      "zarr_torrent/plan.py": "85bcfb19ccba568823e1f0447bfdafcdcce5a94362b47c723f1b7192f203a24f",
+      "zarr_torrent/pushdown.py": "e918b4627eff490bdcb7d8ac18e9c6d219432fcc2a1eb2a4edb6c5b36861ce13",
+      "zarr_torrent/scan.py": "7c7b44f3b7dd82e8aa396a0c915dfafca35de1ffae6ba2e97045ebbeac7fa7d8",
+      "zarr_torrent/store.py": "9c8cda9d296ed84065602c214d28ffe64803a716e1cf7dd26ab05d33eff874d2",
+      "zarr_torrent/tui.py": "057e1f34029d30ac167e86edabc4c67a4a983c27b0001d82f9a62c9c9b7c8ef6",
+      "bench/external_catalog_compare.py": "39bfd3b6bfe062ed5484f69cbf05094e4f035fb0d4faa320b37526cc8e2abd7e"
+    },
+    "protocol": "Two full holders per layout; preloaded full catalogue and declared rates; fresh receiver caches; kernel TCP shaping; stored bytes; four verification workers; minimum-byte cover for aria2; source-value checks outside query timing.",
+    "completed_utc": "2026-10-04T21:55:55.630889+00:00"
+  },
+  "rows": [
+    {
+      "arm": "native-jlps",
+      "seconds": 14.935355524998158,
+      "job": {
+        "id": "c7c2ba6b",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 24,
+        "done": 24,
+        "bytes": 56221460,
+        "missing": 0,
+        "per_peer": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": 9372957,
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": 44512917,
+          "01743492f395f71060f949eba897e994e5dc0730": 2335586
+        },
+        "t0": 1791149790.8029861,
+        "t1": 1791149805.6993263,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0"
+        ],
+        "cover": {
+          "covers": 3,
+          "layouts": [
+            "1x721x1440+0"
+          ],
+          "cover": "jlps",
+          "est_T": 13.415,
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 14.9
+        },
+        "plan_T": 13.1,
+        "pred": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 9372957,
+            "bw": 4000000,
+            "via": null
+          },
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 44512917,
+            "bw": 3397775,
+            "via": null
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 2335586,
+            "bw": 190471,
+            "via": null
+          }
+        },
+        "actual": {
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 44512917,
+            "busy_s": 14.894,
+            "end_s": 14.894
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 2335586,
+            "busy_s": 10.542,
+            "end_s": 10.543
+          },
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 9372957,
+            "busy_s": 2.59,
+            "end_s": 2.591
+          }
+        },
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "day_maps",
+      "order": 0
+    },
+    {
+      "arm": "native-min",
+      "seconds": 13.277902680987609,
+      "job": {
+        "id": "8bf0128f",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 24,
+        "done": 24,
+        "bytes": 56221460,
+        "missing": 0,
+        "per_peer": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": 9372957,
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": 46848503
+        },
+        "t0": 1791149809.5123491,
+        "t1": 1791149822.7380588,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 13.22
+        },
+        "plan_T": 13.1,
+        "pred": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 9372957,
+            "bw": 4000000,
+            "via": null
+          },
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 44512917,
+            "bw": 3397775,
+            "via": null
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 2335586,
+            "bw": 190471,
+            "via": null
+          }
+        },
+        "actual": {
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 46848503,
+            "busy_s": 13.223,
+            "end_s": 13.223
+          },
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 9372957,
+            "busy_s": 2.513,
+            "end_s": 2.514
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 0,
+            "busy_s": 0.0,
+            "end_s": 0.002
+          }
+        },
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "day_maps",
+      "order": 1
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 18.625203988005524,
+      "job": {
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        },
+        "bytes": 56221460,
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0"
+        ],
+        "state": "done",
+        "transfer_s": 17.56051589999697,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "day_maps",
+      "order": 2
+    },
+    {
+      "arm": "native-min",
+      "seconds": 9.955421848004335,
+      "job": {
+        "id": "eb9ebc5c",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 5,
+        "done": 5,
+        "bytes": 27697995,
+        "missing": 0,
+        "per_peer": {
+          "4218b05265f03f9b49b7836abb1fda72e0c0693d": 15237773,
+          "2e87de0a202c7f3855ce6fb2355b7e6ef3160ed7": 12460222
+        },
+        "t0": 1791149848.3322167,
+        "t1": 1791149858.2443993,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 9.91
+        },
+        "plan_T": 11.1,
+        "pred": {
+          "4218b05265f03f9b49b7836abb1fda72e0c0693d": {
+            "bytes": 15237773,
+            "bw": 1401024,
+            "via": null
+          },
+          "2e87de0a202c7f3855ce6fb2355b7e6ef3160ed7": {
+            "bytes": 12460222,
+            "bw": 1122694,
+            "via": null
+          }
+        },
+        "actual": {
+          "4218b05265f03f9b49b7836abb1fda72e0c0693d": {
+            "bytes": 15237773,
+            "busy_s": 9.827,
+            "end_s": 9.827
+          },
+          "2e87de0a202c7f3855ce6fb2355b7e6ef3160ed7": {
+            "bytes": 12460222,
+            "busy_s": 9.909,
+            "end_s": 9.91
+          }
+        },
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "point_series",
+      "order": 0
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 10.607299619994592,
+      "job": {
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        },
+        "bytes": 27697995,
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2"
+        ],
+        "state": "done",
+        "transfer_s": 10.044317938009044,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "point_series",
+      "order": 1
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 10.330944344997988,
+      "job": {
+        "id": "ef67632a",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 5,
+        "done": 5,
+        "bytes": 27697995,
+        "missing": 0,
+        "per_peer": {
+          "4218b05265f03f9b49b7836abb1fda72e0c0693d": 15237773,
+          "2e87de0a202c7f3855ce6fb2355b7e6ef3160ed7": 12460222
+        },
+        "t0": 1791149886.9164577,
+        "t1": 1791149897.0900843,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2"
+        ],
+        "cover": {
+          "covers": 5,
+          "layouts": [
+            "168x91x180+144"
+          ],
+          "cover": "jlps",
+          "est_T": 11.199,
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 10.17
+        },
+        "plan_T": 11.1,
+        "pred": {
+          "4218b05265f03f9b49b7836abb1fda72e0c0693d": {
+            "bytes": 15237773,
+            "bw": 1401024,
+            "via": null
+          },
+          "2e87de0a202c7f3855ce6fb2355b7e6ef3160ed7": {
+            "bytes": 12460222,
+            "bw": 1122694,
+            "via": null
+          }
+        },
+        "actual": {
+          "4218b05265f03f9b49b7836abb1fda72e0c0693d": {
+            "bytes": 15237773,
+            "busy_s": 10.021,
+            "end_s": 10.021
+          },
+          "2e87de0a202c7f3855ce6fb2355b7e6ef3160ed7": {
+            "bytes": 12460222,
+            "busy_s": 10.171,
+            "end_s": 10.172
+          }
+        },
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "point_series",
+      "order": 2
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 48.59054369399382,
+      "job": {
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        },
+        "bytes": 290705287,
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0"
+        ],
+        "state": "done",
+        "transfer_s": 48.5076956670091,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "month_6h",
+      "order": 0
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 32.73065361000772,
+      "job": {
+        "id": "9beed90e",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 124,
+        "done": 124,
+        "bytes": 290705287,
+        "missing": 0,
+        "per_peer": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": 140741035,
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": 114901330,
+          "43717188653cfb770dca587d5f0e8e6f1430b4da": 30395011,
+          "01743492f395f71060f949eba897e994e5dc0730": 4667911
+        },
+        "t0": 1791149965.3982322,
+        "t1": 1791149997.9555666,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0"
+        ],
+        "cover": {
+          "covers": 4,
+          "layouts": [
+            "1x721x1440+0"
+          ],
+          "cover": "jlps",
+          "est_T": 36.033,
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 32.55
+        },
+        "plan_T": 35.19,
+        "pred": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 140744977,
+            "bw": 4000000,
+            "via": null
+          },
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 119569667,
+            "bw": 3397775,
+            "via": null
+          },
+          "43717188653cfb770dca587d5f0e8e6f1430b4da": {
+            "bytes": 25722732,
+            "bw": 784594,
+            "via": null
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 4667911,
+            "bw": 190471,
+            "via": null
+          }
+        },
+        "actual": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 140741035,
+            "busy_s": 30.23,
+            "end_s": 30.23
+          },
+          "43717188653cfb770dca587d5f0e8e6f1430b4da": {
+            "bytes": 30395011,
+            "busy_s": 32.551,
+            "end_s": 32.552
+          },
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 117240404,
+            "busy_s": 30.211,
+            "end_s": 30.213
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 4667911,
+            "busy_s": 24.672,
+            "end_s": 24.675
+          }
+        },
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "month_6h",
+      "order": 1
+    },
+    {
+      "arm": "native-min",
+      "seconds": 32.610484789009206,
+      "job": {
+        "id": "5631ecb8",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 124,
+        "done": 124,
+        "bytes": 290705287,
+        "missing": 0,
+        "per_peer": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": 138398416,
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": 117237155,
+          "43717188653cfb770dca587d5f0e8e6f1430b4da": 30401805,
+          "01743492f395f71060f949eba897e994e5dc0730": 4667911
+        },
+        "t0": 1791150003.829198,
+        "t1": 1791150036.3946877,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 32.56
+        },
+        "plan_T": 35.19,
+        "pred": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 140744977,
+            "bw": 4000000,
+            "via": null
+          },
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 119569667,
+            "bw": 3397775,
+            "via": null
+          },
+          "43717188653cfb770dca587d5f0e8e6f1430b4da": {
+            "bytes": 25722732,
+            "bw": 784594,
+            "via": null
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 4667911,
+            "bw": 190471,
+            "via": null
+          }
+        },
+        "actual": {
+          "75755a0974b86047caea648a4e9a3eae6f29bc70": {
+            "bytes": 138398416,
+            "busy_s": 29.319,
+            "end_s": 29.319
+          },
+          "55d2f23d4b372ee1b4dbad22b141bd016106775b": {
+            "bytes": 117237155,
+            "busy_s": 30.295,
+            "end_s": 30.296
+          },
+          "01743492f395f71060f949eba897e994e5dc0730": {
+            "bytes": 4667911,
+            "busy_s": 24.754,
+            "end_s": 24.756
+          },
+          "43717188653cfb770dca587d5f0e8e6f1430b4da": {
+            "bytes": 30401805,
+            "busy_s": 32.558,
+            "end_s": 32.561
+          }
+        },
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "f5bd9df5ea6c701ba2e9444821422b55fb2a8af4f26575bbc01954841d0d11ab",
+      "rep": 0,
+      "query": "month_6h",
+      "order": 2
+    },
+    {
+      "arm": "native-min",
+      "seconds": 14.034495492000133,
+      "job": {
+        "id": "a6b5fcd4",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 24,
+        "done": 24,
+        "bytes": 56221460,
+        "missing": 0,
+        "per_peer": {
+          "92a4a7602575d41f6367a998f7b241a511b17d43": 9372957,
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": 44512917,
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": 2335586
+        },
+        "t0": 1791150098.7999294,
+        "t1": 1791150112.786043,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 13.99
+        },
+        "plan_T": 16.4,
+        "pred": {
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 7036321,
+            "bw": 467284,
+            "via": null
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 2336636,
+            "bw": 2018744,
+            "via": null
+          },
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 44512917,
+            "bw": 2713816,
+            "via": null
+          },
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 2335586,
+            "bw": 172322,
+            "via": null
+          }
+        },
+        "actual": {
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 44512917,
+            "busy_s": 13.984,
+            "end_s": 13.984
+          },
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 0,
+            "busy_s": 12.617,
+            "end_s": 12.618
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 9372957,
+            "busy_s": 4.227,
+            "end_s": 4.229
+          },
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 2335586,
+            "busy_s": 11.259,
+            "end_s": 11.261
+          }
+        },
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "day_maps",
+      "order": 0
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 20.249868920000154,
+      "job": {
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        },
+        "bytes": 56221460,
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0"
+        ],
+        "state": "done",
+        "transfer_s": 20.193058116012253,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "day_maps",
+      "order": 1
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 14.110096812000847,
+      "job": {
+        "id": "1c449f46",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 24,
+        "done": 24,
+        "bytes": 56221460,
+        "missing": 0,
+        "per_peer": {
+          "92a4a7602575d41f6367a998f7b241a511b17d43": 9372957,
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": 44512917,
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": 2335586
+        },
+        "t0": 1791150139.9430132,
+        "t1": 1791150154.0002668,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0"
+        ],
+        "cover": {
+          "covers": 3,
+          "layouts": [
+            "1x721x1440+0"
+          ],
+          "cover": "jlps",
+          "est_T": 16.625,
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 14.06
+        },
+        "plan_T": 16.4,
+        "pred": {
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 7036321,
+            "bw": 467284,
+            "via": null
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 2336636,
+            "bw": 2018744,
+            "via": null
+          },
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 44512917,
+            "bw": 2713816,
+            "via": null
+          },
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 2335586,
+            "bw": 172322,
+            "via": null
+          }
+        },
+        "actual": {
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 0,
+            "busy_s": 12.645,
+            "end_s": 12.645
+          },
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 44512917,
+            "busy_s": 14.054,
+            "end_s": 14.056
+          },
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 2335586,
+            "busy_s": 11.267,
+            "end_s": 11.268
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 9372957,
+            "busy_s": 4.289,
+            "end_s": 4.291
+          }
+        },
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "day_maps",
+      "order": 2
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 18.59912653300853,
+      "job": {
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        },
+        "bytes": 27697995,
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2"
+        ],
+        "state": "done",
+        "transfer_s": 18.234018044007826,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "point_series",
+      "order": 0
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 14.634487411996815,
+      "job": {
+        "id": "c5eecff1",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 5,
+        "done": 5,
+        "bytes": 27697995,
+        "missing": 0,
+        "per_peer": {
+          "fc34b769c3008d9f6799109e3fa0e24d6bc69ebc": 15237773,
+          "5aa9a1d864beea100aaee0428238c19b0662a11c": 12460222
+        },
+        "t0": 1791150179.726075,
+        "t1": 1791150194.2058504,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2"
+        ],
+        "cover": {
+          "covers": 4,
+          "layouts": [
+            "168x91x180+144"
+          ],
+          "cover": "jlps",
+          "est_T": 16.81,
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 14.48
+        },
+        "plan_T": 16.72,
+        "pred": {
+          "fc34b769c3008d9f6799109e3fa0e24d6bc69ebc": {
+            "bytes": 15237773,
+            "bw": 921665,
+            "via": null
+          },
+          "5aa9a1d864beea100aaee0428238c19b0662a11c": {
+            "bytes": 12460222,
+            "bw": 745031,
+            "via": null
+          }
+        },
+        "actual": {
+          "fc34b769c3008d9f6799109e3fa0e24d6bc69ebc": {
+            "bytes": 15237773,
+            "busy_s": 14.333,
+            "end_s": 14.333
+          },
+          "5aa9a1d864beea100aaee0428238c19b0662a11c": {
+            "bytes": 12460222,
+            "busy_s": 14.478,
+            "end_s": 14.479
+          }
+        },
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "point_series",
+      "order": 1
+    },
+    {
+      "arm": "native-min",
+      "seconds": 14.615381165000144,
+      "job": {
+        "id": "c14076f3",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 5,
+        "done": 5,
+        "bytes": 27697995,
+        "missing": 0,
+        "per_peer": {
+          "fc34b769c3008d9f6799109e3fa0e24d6bc69ebc": 15237773,
+          "5aa9a1d864beea100aaee0428238c19b0662a11c": 12460222
+        },
+        "t0": 1791150197.790922,
+        "t1": 1791150212.3405294,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 14.55
+        },
+        "plan_T": 16.72,
+        "pred": {
+          "fc34b769c3008d9f6799109e3fa0e24d6bc69ebc": {
+            "bytes": 15237773,
+            "bw": 921665,
+            "via": null
+          },
+          "5aa9a1d864beea100aaee0428238c19b0662a11c": {
+            "bytes": 12460222,
+            "bw": 745031,
+            "via": null
+          }
+        },
+        "actual": {
+          "fc34b769c3008d9f6799109e3fa0e24d6bc69ebc": {
+            "bytes": 15237773,
+            "busy_s": 14.337,
+            "end_s": 14.337
+          },
+          "5aa9a1d864beea100aaee0428238c19b0662a11c": {
+            "bytes": 12460222,
+            "busy_s": 14.547,
+            "end_s": 14.548
+          }
+        },
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "point_series",
+      "order": 2
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 46.86475076399802,
+      "job": {
+        "id": "9f1a1abc",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 124,
+        "done": 124,
+        "bytes": 290705287,
+        "missing": 0,
+        "per_peer": {
+          "92a4a7602575d41f6367a998f7b241a511b17d43": 107821634,
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": 150146317,
+          "bd685722af0297b24a997b7032acb28822714c57": 23393519,
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": 9343817
+        },
+        "t0": 1791150216.1814961,
+        "t1": 1791150262.8716063,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0"
+        ],
+        "cover": {
+          "covers": 4,
+          "layouts": [
+            "1x721x1440+0"
+          ],
+          "cover": "jlps",
+          "est_T": 55.31,
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 46.69
+        },
+        "plan_T": 54.57,
+        "pred": {
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 147802950,
+            "bw": 2713816,
+            "via": null
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 110165001,
+            "bw": 2018744,
+            "via": null
+          },
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 23393519,
+            "bw": 467284,
+            "via": null
+          },
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 9343817,
+            "bw": 172322,
+            "via": null
+          }
+        },
+        "actual": {
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 9343817,
+            "busy_s": 45.278,
+            "end_s": 45.279
+          },
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 150146317,
+            "busy_s": 46.62,
+            "end_s": 46.622
+          },
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 23393519,
+            "busy_s": 43.599,
+            "end_s": 43.601
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 107821634,
+            "busy_s": 46.683,
+            "end_s": 46.685
+          }
+        },
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "month_6h",
+      "order": 0
+    },
+    {
+      "arm": "native-min",
+      "seconds": 47.361423306007055,
+      "job": {
+        "id": "948307a6",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 124,
+        "done": 124,
+        "bytes": 290705287,
+        "missing": 0,
+        "per_peer": {
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": 150146317,
+          "92a4a7602575d41f6367a998f7b241a511b17d43": 110156601,
+          "bd685722af0297b24a997b7032acb28822714c57": 21058552,
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": 9343817
+        },
+        "t0": 1791150268.4650993,
+        "t1": 1791150315.7800143,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 47.31
+        },
+        "plan_T": 54.57,
+        "pred": {
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 147802950,
+            "bw": 2713816,
+            "via": null
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 110165001,
+            "bw": 2018744,
+            "via": null
+          },
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 23393519,
+            "bw": 467284,
+            "via": null
+          },
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 9343817,
+            "bw": 172322,
+            "via": null
+          }
+        },
+        "actual": {
+          "13a3ff0c5f5e17ce0b2d924aa87c302d6719cb59": {
+            "bytes": 9343817,
+            "busy_s": 45.284,
+            "end_s": 45.284
+          },
+          "bd685722af0297b24a997b7032acb28822714c57": {
+            "bytes": 21058552,
+            "busy_s": 41.954,
+            "end_s": 41.955
+          },
+          "b5d1bc2055a5a87a9ff8f36f2716fcf384365c57": {
+            "bytes": 150146317,
+            "busy_s": 47.308,
+            "end_s": 47.31
+          },
+          "92a4a7602575d41f6367a998f7b241a511b17d43": {
+            "bytes": 110156601,
+            "busy_s": 46.361,
+            "end_s": 46.363
+          }
+        },
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "month_6h",
+      "order": 1
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 66.22995526999875,
+      "job": {
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        },
+        "bytes": 290705287,
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0"
+        ],
+        "state": "done",
+        "transfer_s": 66.14348812999378,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "924654deff9c31cc44ecabca2c1cdf1d0d287e641a44b55eee48815b4d2453bb",
+      "rep": 1,
+      "query": "month_6h",
+      "order": 2
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 12.411702874000184,
+      "job": {
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        },
+        "bytes": 56221460,
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0"
+        ],
+        "state": "done",
+        "transfer_s": 12.329144177987473,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "day_maps",
+      "order": 0
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 9.302974299993366,
+      "job": {
+        "id": "7fcfa6cf",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 24,
+        "done": 24,
+        "bytes": 56221460,
+        "missing": 0,
+        "per_peer": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": 39830461,
+          "27e0131db9138e710612082483c3dab43f568109": 11702127,
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": 2347925,
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": 2340947
+        },
+        "t0": 1791150470.8719485,
+        "t1": 1791150480.1233947,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0"
+        ],
+        "cover": {
+          "covers": 4,
+          "layouts": [
+            "1x721x1440+0"
+          ],
+          "cover": "jlps",
+          "est_T": 9.634,
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 9.25
+        },
+        "plan_T": 9.37,
+        "pred": {
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 2347925,
+            "bw": 404340,
+            "via": null
+          },
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 14036468,
+            "bw": 1530635,
+            "via": null
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 2340947,
+            "bw": 308426,
+            "via": null
+          },
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 37496120,
+            "bw": 4000000,
+            "via": null
+          }
+        },
+        "actual": {
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 11702127,
+            "busy_s": 9.249,
+            "end_s": 9.249
+          },
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 2347925,
+            "busy_s": 5.44,
+            "end_s": 5.441
+          },
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 39830461,
+            "busy_s": 8.759,
+            "end_s": 8.76
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 2340947,
+            "busy_s": 6.446,
+            "end_s": 6.448
+          }
+        },
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "day_maps",
+      "order": 1
+    },
+    {
+      "arm": "native-min",
+      "seconds": 9.207137129007606,
+      "job": {
+        "id": "00b8d012",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 24,
+        "done": 24,
+        "bytes": 56221460,
+        "missing": 0,
+        "per_peer": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": 37494387,
+          "27e0131db9138e710612082483c3dab43f568109": 14038201,
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": 2347925,
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": 2340947
+        },
+        "t0": 1791150483.9046283,
+        "t1": 1791150493.0826793,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438332.0.0",
+          "2m_temperature@1x721x1440+0/438329.0.0",
+          "2m_temperature@1x721x1440+0/438333.0.0",
+          "2m_temperature@1x721x1440+0/438331.0.0",
+          "2m_temperature@1x721x1440+0/438334.0.0",
+          "2m_temperature@1x721x1440+0/438325.0.0",
+          "2m_temperature@1x721x1440+0/438335.0.0",
+          "2m_temperature@1x721x1440+0/438313.0.0",
+          "2m_temperature@1x721x1440+0/438328.0.0",
+          "2m_temperature@1x721x1440+0/438327.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438314.0.0",
+          "2m_temperature@1x721x1440+0/438315.0.0",
+          "2m_temperature@1x721x1440+0/438323.0.0",
+          "2m_temperature@1x721x1440+0/438326.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438322.0.0",
+          "2m_temperature@1x721x1440+0/438317.0.0",
+          "2m_temperature@1x721x1440+0/438316.0.0",
+          "2m_temperature@1x721x1440+0/438319.0.0",
+          "2m_temperature@1x721x1440+0/438321.0.0",
+          "2m_temperature@1x721x1440+0/438320.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438312,
+            "g_hi": 438336,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 9.18
+        },
+        "plan_T": 9.37,
+        "pred": {
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 2347925,
+            "bw": 404340,
+            "via": null
+          },
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 14036468,
+            "bw": 1530635,
+            "via": null
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 2340947,
+            "bw": 308426,
+            "via": null
+          },
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 37496120,
+            "bw": 4000000,
+            "via": null
+          }
+        },
+        "actual": {
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 14038201,
+            "busy_s": 9.175,
+            "end_s": 9.175
+          },
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 37494387,
+            "busy_s": 8.678,
+            "end_s": 8.68
+          },
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 2347925,
+            "busy_s": 5.525,
+            "end_s": 5.527
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 2340947,
+            "busy_s": 6.494,
+            "end_s": 6.497
+          }
+        },
+        "coverage": {
+          "requested_samples": 24,
+          "covered_samples": 24,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "day_maps",
+      "order": 2
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 217.31546625800547,
+      "job": {
+        "id": "03278426",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 5,
+        "done": 5,
+        "bytes": 27697995,
+        "missing": 0,
+        "per_peer": {
+          "cd19bbd3b1523f575c338e433030d008d033038c": 27697995
+        },
+        "t0": 1791150506.5382977,
+        "t1": 1791150723.7011282,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2",
+          "2m_temperature@168x91x180+144/2612.3.2"
+        ],
+        "cover": {
+          "covers": 5,
+          "layouts": [
+            "168x91x180+144"
+          ],
+          "cover": "jlps",
+          "est_T": 8.97,
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 217.16
+        },
+        "plan_T": 8.87,
+        "pred": {
+          "cd19bbd3b1523f575c338e433030d008d033038c": {
+            "bytes": 27697995,
+            "bw": 3123986,
+            "via": null
+          }
+        },
+        "actual": {
+          "cd19bbd3b1523f575c338e433030d008d033038c": {
+            "bytes": 27697995,
+            "busy_s": 217.161,
+            "end_s": 217.161
+          }
+        },
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "point_series",
+      "order": 0
+    },
+    {
+      "arm": "native-min",
+      "seconds": 8.122903649011278,
+      "job": {
+        "id": "d555ab21",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 5,
+        "done": 5,
+        "bytes": 27697995,
+        "missing": 0,
+        "per_peer": {
+          "cd19bbd3b1523f575c338e433030d008d033038c": 27697995
+        },
+        "t0": 1791150727.5798473,
+        "t1": 1791150735.654462,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2",
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 8.07
+        },
+        "plan_T": 8.87,
+        "pred": {
+          "cd19bbd3b1523f575c338e433030d008d033038c": {
+            "bytes": 27697995,
+            "bw": 3123986,
+            "via": null
+          }
+        },
+        "actual": {
+          "cd19bbd3b1523f575c338e433030d008d033038c": {
+            "bytes": 27697995,
+            "busy_s": 8.072,
+            "end_s": 8.073
+          }
+        },
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "point_series",
+      "order": 1
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 20.964593982993392,
+      "job": {
+        "coverage": {
+          "requested_samples": 744,
+          "covered_samples": 744,
+          "missing_samples": 0
+        },
+        "bytes": 27697995,
+        "done_keys": [
+          "2m_temperature@168x91x180+144/2612.3.2",
+          "2m_temperature@168x91x180+144/2611.3.2",
+          "2m_temperature@168x91x180+144/2610.3.2",
+          "2m_temperature@168x91x180+144/2609.3.2",
+          "2m_temperature@168x91x180+144/2608.3.2"
+        ],
+        "state": "done",
+        "transfer_s": 20.538228353005252,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            1,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": {
+              "latitude": [
+                300,
+                301
+              ],
+              "longitude": [
+                500,
+                501
+              ]
+            }
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "point_series",
+      "order": 2
+    },
+    {
+      "arm": "native-min",
+      "seconds": 44.52605466400564,
+      "job": {
+        "id": "394af76e",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 124,
+        "done": 124,
+        "bytes": 290705287,
+        "missing": 0,
+        "per_peer": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": 187715739,
+          "27e0131db9138e710612082483c3dab43f568109": 74931132,
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": 14035347,
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": 14023069
+        },
+        "t0": 1791150773.4547005,
+        "t1": 1791150817.9174287,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0"
+        ],
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 44.46
+        },
+        "plan_T": 46.93,
+        "pred": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 187715739,
+            "bw": 4000000,
+            "via": null
+          },
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 70263221,
+            "bw": 1530635,
+            "via": null
+          },
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 18703258,
+            "bw": 404340,
+            "via": null
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 14023069,
+            "bw": 308426,
+            "via": null
+          }
+        },
+        "actual": {
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 14023069,
+            "busy_s": 44.458,
+            "end_s": 44.458
+          },
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 14035347,
+            "busy_s": 43.439,
+            "end_s": 43.441
+          },
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 74931132,
+            "busy_s": 41.255,
+            "end_s": 41.257
+          },
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 187715739,
+            "busy_s": 40.122,
+            "end_s": 40.124
+          }
+        },
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "month_6h",
+      "order": 0
+    },
+    {
+      "arm": "aria2-min",
+      "seconds": 58.21245481699589,
+      "job": {
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        },
+        "bytes": 290705287,
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0"
+        ],
+        "state": "done",
+        "transfer_s": 58.129487396989134,
+        "cover": {
+          "cover": "bytes",
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "month_6h",
+      "order": 1
+    },
+    {
+      "arm": "native-jlps",
+      "seconds": 43.23793262599793,
+      "job": {
+        "id": "fbdcb786",
+        "grid": "a0e8dd785b5fcb8f9b2777564c68fb89db9def76",
+        "label": "",
+        "state": "done",
+        "total": 124,
+        "done": 124,
+        "bytes": 290705287,
+        "missing": 0,
+        "per_peer": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": 187716028,
+          "27e0131db9138e710612082483c3dab43f568109": 72596121,
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": 18703258,
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": 11689880
+        },
+        "t0": 1791150887.7001705,
+        "t1": 1791150930.7495177,
+        "order": "optimal",
+        "done_keys": [
+          "2m_temperature@1x721x1440+0/439026.0.0",
+          "2m_temperature@1x721x1440+0/439020.0.0",
+          "2m_temperature@1x721x1440+0/438786.0.0",
+          "2m_temperature@1x721x1440+0/438618.0.0",
+          "2m_temperature@1x721x1440+0/438594.0.0",
+          "2m_temperature@1x721x1440+0/438498.0.0",
+          "2m_temperature@1x721x1440+0/439002.0.0",
+          "2m_temperature@1x721x1440+0/438978.0.0",
+          "2m_temperature@1x721x1440+0/438882.0.0",
+          "2m_temperature@1x721x1440+0/438810.0.0",
+          "2m_temperature@1x721x1440+0/438930.0.0",
+          "2m_temperature@1x721x1440+0/438972.0.0",
+          "2m_temperature@1x721x1440+0/438408.0.0",
+          "2m_temperature@1x721x1440+0/438360.0.0",
+          "2m_temperature@1x721x1440+0/438954.0.0",
+          "2m_temperature@1x721x1440+0/438906.0.0",
+          "2m_temperature@1x721x1440+0/438912.0.0",
+          "2m_temperature@1x721x1440+0/438834.0.0",
+          "2m_temperature@1x721x1440+0/438690.0.0",
+          "2m_temperature@1x721x1440+0/438984.0.0",
+          "2m_temperature@1x721x1440+0/438642.0.0",
+          "2m_temperature@1x721x1440+0/438738.0.0",
+          "2m_temperature@1x721x1440+0/438888.0.0",
+          "2m_temperature@1x721x1440+0/438522.0.0",
+          "2m_temperature@1x721x1440+0/438570.0.0",
+          "2m_temperature@1x721x1440+0/438612.0.0",
+          "2m_temperature@1x721x1440+0/438948.0.0",
+          "2m_temperature@1x721x1440+0/438960.0.0",
+          "2m_temperature@1x721x1440+0/438666.0.0",
+          "2m_temperature@1x721x1440+0/438858.0.0",
+          "2m_temperature@1x721x1440+0/438816.0.0",
+          "2m_temperature@1x721x1440+0/438672.0.0",
+          "2m_temperature@1x721x1440+0/438762.0.0",
+          "2m_temperature@1x721x1440+0/438792.0.0",
+          "2m_temperature@1x721x1440+0/438600.0.0",
+          "2m_temperature@1x721x1440+0/439008.0.0",
+          "2m_temperature@1x721x1440+0/438768.0.0",
+          "2m_temperature@1x721x1440+0/438552.0.0",
+          "2m_temperature@1x721x1440+0/438744.0.0",
+          "2m_temperature@1x721x1440+0/438624.0.0",
+          "2m_temperature@1x721x1440+0/438330.0.0",
+          "2m_temperature@1x721x1440+0/438480.0.0",
+          "2m_temperature@1x721x1440+0/438876.0.0",
+          "2m_temperature@1x721x1440+0/438714.0.0",
+          "2m_temperature@1x721x1440+0/438558.0.0",
+          "2m_temperature@1x721x1440+0/438312.0.0",
+          "2m_temperature@1x721x1440+0/438648.0.0",
+          "2m_temperature@1x721x1440+0/438546.0.0",
+          "2m_temperature@1x721x1440+0/438936.0.0",
+          "2m_temperature@1x721x1440+0/438492.0.0",
+          "2m_temperature@1x721x1440+0/438420.0.0",
+          "2m_temperature@1x721x1440+0/438474.0.0",
+          "2m_temperature@1x721x1440+0/438396.0.0",
+          "2m_temperature@1x721x1440+0/438348.0.0",
+          "2m_temperature@1x721x1440+0/438780.0.0",
+          "2m_temperature@1x721x1440+0/438840.0.0",
+          "2m_temperature@1x721x1440+0/438528.0.0",
+          "2m_temperature@1x721x1440+0/438540.0.0",
+          "2m_temperature@1x721x1440+0/438402.0.0",
+          "2m_temperature@1x721x1440+0/438966.0.0",
+          "2m_temperature@1x721x1440+0/438384.0.0",
+          "2m_temperature@1x721x1440+0/438576.0.0",
+          "2m_temperature@1x721x1440+0/438804.0.0",
+          "2m_temperature@1x721x1440+0/438450.0.0",
+          "2m_temperature@1x721x1440+0/438426.0.0",
+          "2m_temperature@1x721x1440+0/438864.0.0",
+          "2m_temperature@1x721x1440+0/438444.0.0",
+          "2m_temperature@1x721x1440+0/438660.0.0",
+          "2m_temperature@1x721x1440+0/438378.0.0",
+          "2m_temperature@1x721x1440+0/438456.0.0",
+          "2m_temperature@1x721x1440+0/438354.0.0",
+          "2m_temperature@1x721x1440+0/438996.0.0",
+          "2m_temperature@1x721x1440+0/438654.0.0",
+          "2m_temperature@1x721x1440+0/438468.0.0",
+          "2m_temperature@1x721x1440+0/438564.0.0",
+          "2m_temperature@1x721x1440+0/438750.0.0",
+          "2m_temperature@1x721x1440+0/438846.0.0",
+          "2m_temperature@1x721x1440+0/438336.0.0",
+          "2m_temperature@1x721x1440+0/438516.0.0",
+          "2m_temperature@1x721x1440+0/439014.0.0",
+          "2m_temperature@1x721x1440+0/438504.0.0",
+          "2m_temperature@1x721x1440+0/438726.0.0",
+          "2m_temperature@1x721x1440+0/438606.0.0",
+          "2m_temperature@1x721x1440+0/438918.0.0",
+          "2m_temperature@1x721x1440+0/438696.0.0",
+          "2m_temperature@1x721x1440+0/438432.0.0",
+          "2m_temperature@1x721x1440+0/438852.0.0",
+          "2m_temperature@1x721x1440+0/438756.0.0",
+          "2m_temperature@1x721x1440+0/438822.0.0",
+          "2m_temperature@1x721x1440+0/438990.0.0",
+          "2m_temperature@1x721x1440+0/438732.0.0",
+          "2m_temperature@1x721x1440+0/438828.0.0",
+          "2m_temperature@1x721x1440+0/438924.0.0",
+          "2m_temperature@1x721x1440+0/438636.0.0",
+          "2m_temperature@1x721x1440+0/438798.0.0",
+          "2m_temperature@1x721x1440+0/438588.0.0",
+          "2m_temperature@1x721x1440+0/438534.0.0",
+          "2m_temperature@1x721x1440+0/438870.0.0",
+          "2m_temperature@1x721x1440+0/438942.0.0",
+          "2m_temperature@1x721x1440+0/438894.0.0",
+          "2m_temperature@1x721x1440+0/438900.0.0",
+          "2m_temperature@1x721x1440+0/438582.0.0",
+          "2m_temperature@1x721x1440+0/438288.0.0",
+          "2m_temperature@1x721x1440+0/438774.0.0",
+          "2m_temperature@1x721x1440+0/438390.0.0",
+          "2m_temperature@1x721x1440+0/438720.0.0",
+          "2m_temperature@1x721x1440+0/438510.0.0",
+          "2m_temperature@1x721x1440+0/438306.0.0",
+          "2m_temperature@1x721x1440+0/438324.0.0",
+          "2m_temperature@1x721x1440+0/438366.0.0",
+          "2m_temperature@1x721x1440+0/438372.0.0",
+          "2m_temperature@1x721x1440+0/438462.0.0",
+          "2m_temperature@1x721x1440+0/438342.0.0",
+          "2m_temperature@1x721x1440+0/438318.0.0",
+          "2m_temperature@1x721x1440+0/438414.0.0",
+          "2m_temperature@1x721x1440+0/438678.0.0",
+          "2m_temperature@1x721x1440+0/438294.0.0",
+          "2m_temperature@1x721x1440+0/438486.0.0",
+          "2m_temperature@1x721x1440+0/438702.0.0",
+          "2m_temperature@1x721x1440+0/438438.0.0",
+          "2m_temperature@1x721x1440+0/438684.0.0",
+          "2m_temperature@1x721x1440+0/438300.0.0",
+          "2m_temperature@1x721x1440+0/438630.0.0",
+          "2m_temperature@1x721x1440+0/438708.0.0"
+        ],
+        "cover": {
+          "covers": 4,
+          "layouts": [
+            "1x721x1440+0"
+          ],
+          "cover": "jlps",
+          "est_T": 48.229,
+          "lattice": [
+            6,
+            0
+          ],
+          "request": {
+            "var": "2m_temperature",
+            "g_lo": 438288,
+            "g_hi": 439032,
+            "isel": null
+          }
+        },
+        "cancel": false,
+        "pause": false,
+        "failed": 0,
+        "phases": {
+          "view": 0.0,
+          "round0": 43.05
+        },
+        "plan_T": 46.93,
+        "pred": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 187715739,
+            "bw": 4000000,
+            "via": null
+          },
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 70263221,
+            "bw": 1530635,
+            "via": null
+          },
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 18703258,
+            "bw": 404340,
+            "via": null
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 14023069,
+            "bw": 308426,
+            "via": null
+          }
+        },
+        "actual": {
+          "4e0c32f5a50eae090cee5d0b6218fb52384865ac": {
+            "bytes": 187716028,
+            "busy_s": 41.587,
+            "end_s": 41.587
+          },
+          "412154f1aabafd33df07e5c6e1d79b3cd39a6f7c": {
+            "bytes": 18703258,
+            "busy_s": 40.214,
+            "end_s": 40.215
+          },
+          "8f7afd8a2e47e613f1f8a6924a0c8b852701ecc5": {
+            "bytes": 11689880,
+            "busy_s": 43.043,
+            "end_s": 43.044
+          },
+          "27e0131db9138e710612082483c3dab43f568109": {
+            "bytes": 72596121,
+            "busy_s": 39.911,
+            "end_s": 39.914
+          }
+        },
+        "coverage": {
+          "requested_samples": 124,
+          "covered_samples": 124,
+          "missing_samples": 0
+        }
+      },
+      "value_check": "exact",
+      "catalogue_sha256": "a7ab71890e910dcbe78e1601ca9e27102970ff1af64dd74e0d7e86a28262f4a8",
+      "rep": 2,
+      "query": "month_6h",
+      "order": 2
+    }
+  ]
+}

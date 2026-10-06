@@ -1,0 +1,16 @@
+{
+  "normalized_catalogue_match": {
+    "grid": true,
+    "placement": true,
+    "rates": true,
+    "arrays": true,
+    "pinfo": true,
+    "best": true
+  },
+  "catalogue_sha256": {
+    "diagnostic/rep2/catalogue.json": "ad0bf0238091c49b93a9a5670333b654ed950c0f3b87d49a2f4dae2f29fed3dc",
+    "fixed/rep2/catalogue.json": "e3edcd434149cb4de0462c42d02c3830234402a627b19d186adfc847f1e4e701"
+  },
+  "verified_before_rows": 10,
+  "verified_fixed_rows": 24
+}

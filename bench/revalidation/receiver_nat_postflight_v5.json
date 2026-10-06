@@ -1,0 +1,12 @@
+{
+  "recorded_utc": "2026-10-05T01:45:49.894160+00:00",
+  "root": "/home/jovyan/zt_ms/external_nat_latency_20261005",
+  "own_active_processes": [],
+  "receiver_or_node_or_partial_scratch_remaining": [],
+  "unique_new_allocated_bytes": 168693760,
+  "reused_prior_allocated_bytes": 47001600,
+  "unique_inodes": 22270,
+  "disk_free_bytes": 3173777408,
+  "large_dataset_reused": "/home/jovyan/zt_ms/variants_month",
+  "old_crash_stack_remaining": false
+}

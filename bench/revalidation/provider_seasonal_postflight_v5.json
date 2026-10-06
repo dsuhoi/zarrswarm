@@ -1,0 +1,10 @@
+{
+  "recorded_utc": "2026-10-05T03:10:54.606985+00:00",
+  "root": "/home/d.sukhorukov/zt_ms/provider_seasonal_20261005",
+  "active_processes": [],
+  "unique_allocated_bytes": 134053888,
+  "apparent_bytes": 133919161,
+  "field_files_retained": 32,
+  "free_bytes": 95909818368,
+  "note": "Cached source fields retained for reproducibility; existing datasets, services and other jobs unchanged."
+}

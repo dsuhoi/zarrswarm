@@ -1,0 +1,80 @@
+# E7 real multi-site run (sim/multisite.py). Holders: [[holders]] in order; the first one alone is the "mirror".
+week_start = "2020-01-01T00:00"                    # hour 0 of the HTTP mirrors
+truth = "~/.cache/zt_variants_month/V1-arco-1h.zarr"   # same ARCO values, read locally for the comparison
+
+[sites.fib]   # 256-core shared university server
+host = "fibonacci"
+jump = "panel"
+python = "~/zt_venv/bin/python"
+work = "~/zt_ms/revalidation_v5_final_20261003/wan"
+src = "~/zt_ms/revalidation_v5_final_20261003/src"
+env = { ZT_SCAN_WORKERS = "1", OPENBLAS_NUM_THREADS = "1", OMP_NUM_THREADS = "1" }
+
+[sites.panel] # 1-vCPU VPS running production services: lowest priority
+host = "panel"
+python = "~/zt_venv/bin/python"
+work = "~/zt_ms/revalidation_v5_final_20261003/wan"
+src = "~/zt_ms/revalidation_v5_final_20261003/src"
+env = { ZT_SCAN_WORKERS = "1", OPENBLAS_NUM_THREADS = "1", OMP_NUM_THREADS = "1" }
+nice = "nice -n 19"
+
+[sites.cloudru] # GPU cloud container: no inbound connections, no PyPI (portable CPython + packages)
+host = "cloudru"
+jump = "panel"
+python = "~/ztpkg/py/cpython-3.12.14-linux-x86_64-gnu/bin/python3.12"
+pythonpath = "~/ztpkg/site:~/zt_ms/revalidation_v5_final_20261003/src"
+work = "~/zt_ms/revalidation_v5_final_20261003/wan"
+src = "~/zt_ms/revalidation_v5_final_20261003/src"
+env = { ZT_SCAN_WORKERS = "1", OPENBLAS_NUM_THREADS = "1", OMP_NUM_THREADS = "1" }
+
+[[holders]]
+site = "fib"
+data = "~/zt_ms/variants/V1-arco-1h.zarr"     # public layout, whole week (the single mirror)
+[[holders]]
+site = "fib"
+data = "~/zt_ms/variants/V3-ts-1h.zarr"       # time-series chunks, whole week
+[[holders]]
+site = "panel"
+data = "~/zt_ms/V5_d1-2.zarr"                 # station tiles, days 1-2
+[[holders]]
+site = "fib"
+data = "~/zt_ms/rep/V5_d1-4.zarr"
+[[holders]]
+site = "fib"
+data = "~/zt_ms/rep/V5_d4-7.zarr"
+[[holders]]
+site = "fib"
+data = "~/zt_ms/variants/V2-wb2-6h.zarr"
+[[holders]]
+site = "fib"
+data = "~/zt_ms/variants/V4-tile-6h.zarr"
+
+[[holders]]
+site = "cloudru"
+data = "~/zt_ms/V1_d4-7.zarr"                 # public layout, days 4-7 (second map mirror)
+
+[queries.map_day_1h]
+t0 = "2020-01-02"
+t1 = "2020-01-02"
+step = 3600
+[queries.series_point_1h]
+t0 = "2020-01-01T00:00:00"
+t1 = "2020-01-07T23:00:00"
+step = 3600
+isel = { latitude = [300, 301], longitude = [500, 501] }
+[queries.week_6h]
+t0 = "2020-01-01T00:00:00"
+t1 = "2020-01-07T23:00:00"
+step = 21600
+
+# baseline: plain HTTP mirrors of the public layout, known from a catalog (hours relative to week_start)
+[[http_mirrors]]
+site = "fib"
+data = "~/zt_ms/variants/V1-arco-1h.zarr"
+first_hour = 0
+hours = 168
+[[http_mirrors]]
+site = "cloudru"
+data = "~/zt_ms/V1_d4-7.zarr"
+first_hour = 72
+hours = 96

@@ -23,8 +23,8 @@ import zarr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import simulate as S  # noqa: E402
-import zarr_torrent as zt  # noqa: E402
 from zarr_torrent import scan as scanmod  # noqa: E402
+from zarr_torrent import codec  # noqa: E402
 from zarr_torrent.store import http, wait_job  # noqa: E402
 
 VAR = "2m_temperature"
@@ -147,38 +147,6 @@ def build(sw, variants: dict, rng, frac=(0.2, 0.6)):
     return holders
 
 
-def requested_samples(view: dict, region: dict) -> set[int]:
-    """Grid quanta the query asks for: its time window on its step lattice. The window is the query's own t0/t1
-    (every query names it): clipping it to the chosen swarm's extent would let a byte swarm that holds part of the
-    month report a complete answer."""
-    t = view["grid"]["time"]
-    S = int(region["step"]) // t["dt"]
-    lo, hi = -10 ** 18, 10 ** 18
-    sec = lambda x: int(np.datetime64(x, "s").astype("int64"))
-    if region.get("t0"):
-        lo = max(lo, -(-(sec(region["t0"]) - t["rphase"]) // t["dt"]))
-    if region.get("t1"):
-        end = sec(str(np.datetime64(region["t1"], "D") + 1)) if len(region["t1"]) == 10 else sec(region["t1"]) + 1
-        hi = min(hi, -(-(end - t["rphase"]) // t["dt"]))
-    first = -(-lo // S) * S
-    return set(range(first, hi, S))
-
-
-def obtained_samples(view: dict, keys: list[str], S: int) -> set[int]:
-    """Lattice samples (step S) whose data arrived: union of the time samples of the received chunks
-    (spatial tiles of a chunk family count once they are all in - approximated per time chunk)."""
-    got = set()
-    for k in keys:
-        n, lay, co = scanmod.split_key(k)
-        li = view["arrays"][n]["layouts"].get(lay)
-        if li is None:
-            continue
-        s, _ = scanmod.tstride(li)
-        a, b = scanmod.chunk_g(li, 0, co[0])
-        got.update(range(a, b, s))  # the chunk's own samples; the caller intersects with the requested lattice
-    return got
-
-
 def run_query(sw, tag, link, region, cover="jlps", tries=3, deadline=1800):
     """run_query_once with a fresh client per attempt: a client that fails to start or to answer is replaced, and
     the attempt is counted. A job that outlives `deadline` is not retried: it is reported as censored (TimeoutError)."""
@@ -195,6 +163,13 @@ def run_query(sw, tag, link, region, cover="jlps", tries=3, deadline=1800):
                 raise
 
 
+def candidate_deadline(best):
+    """An incomplete answer cannot set the time budget for finding a complete one."""
+    if best is None or best.get("coverage", 0) < 1 or best.get("state") != "done":
+        return 1800
+    return max(120.0, 3 * best["seconds"])
+
+
 def run_query_once(sw, tag, link, region, cover="jlps", deadline=1800):
     """Fresh client (empty cache) -> one download job; seconds, job, completeness of the answer."""
     client = S.fresh_client(sw, tag, "maxflow")
@@ -203,21 +178,60 @@ def run_query_once(sw, tag, link, region, cover="jlps", deadline=1800):
     grids = http(ctl, "GET", "/api/resolve?link=" + link)["grid"].split("+")
     grid = next(g for g in grids if VAR in http(ctl, "GET", f"/api/view/{g}?refresh=1")["arrays"])
     view = http(ctl, "GET", f"/api/view/{grid}")
-    t = time.time()
+    started = time.monotonic()
     try:
         jid = http(ctl, "POST", "/api/download", {"grid": grid, "region": dict(region, var=VAR),
                                                    "cover": cover, "label": "q"}, timeout=400)["job"]
-        wait_job(ctl, jid, deadline=deadline)
-    except Exception:
-        sw.kill(client)
-        raise
-    secs = time.time() - t
-    job = http(ctl, "GET", f"/api/job/{jid}")
-    full_view = http(ctl, "GET", f"/api/view/{grid}")  # layouts incl. stride info
-    want = requested_samples(view, region)
-    got = obtained_samples(full_view, job["done_keys"], int(region["step"]) // view["grid"]["time"]["dt"]) & want
-    sw.kill(client)  # a finished client would seed what it fetched (uncapped) to the next query: remove it
-    return job, secs, len(got) / max(len(want), 1)
+        job = wait_job(ctl, jid, deadline=deadline)
+        secs = time.monotonic() - started
+        if "coverage" not in job:
+            raise RuntimeError(f"download job {jid}: {job['state']}; no query coverage reported")
+        coverage = job["coverage"]
+        cov = coverage["covered_samples"] / max(coverage["requested_samples"], 1)
+        job["value_check"] = "not_checked_partial"
+        if cov == 1 and job["state"] == "done":
+            # Cover selection can refresh the catalogue and select a newly discovered layout.
+            download_view = http(ctl, "GET", f"/api/view/{grid}")
+            verify_downloaded_chunks(ctl, grid, download_view, http(ctl, "GET", f"/api/job/{jid}")["done_keys"], sw.truth_path)
+            job["value_check"] = "exact"
+        return job, secs, cov
+    finally:
+        sw.kill(client)  # a client must never become a free seeder for subsequent comparisons
+        shutil.rmtree(sw.root / f"h_{client}", ignore_errors=True)
+
+
+def verify_downloaded_chunks(ctl, grid, view, keys, truth_path):
+    """Compare the downloaded payloads themselves; validation must never fetch extra peer data."""
+    import xarray as xr
+    with xr.open_zarr(truth_path, consolidated=False) as ds:
+        truth = ds[VAR]
+        checked = 0
+        for key in keys:
+            name, layout, co = scanmod.split_key(key)
+            if name != VAR:
+                continue
+            arr = view["arrays"][name]
+            li, axis = arr["layouts"][layout], arr["taxis"]
+            raw = http(ctl, "POST", "/api/read", {"grid": grid, "key": key}, raw=True)
+            values = codec.decode(li["docs"], raw)
+            lo, _ = scanmod.chunk_g(li, axis, co[axis])
+            stride, _ = scanmod.tstride(li)
+            epochs = view["grid"]["time"]["rphase"] + (lo + np.arange(li["chunks"][axis]) * stride) * view["grid"]["time"]["dt"]
+            valid_time = (epochs >= truth.time.values[0].astype("datetime64[s]").astype("i8")) & \
+                         (epochs <= truth.time.values[-1].astype("datetime64[s]").astype("i8"))
+            if not valid_time.any():
+                raise AssertionError(f"downloaded chunk {key} has no samples in the reference")
+            epochs, values = epochs[valid_time], np.take(values, np.flatnonzero(valid_time), axis=axis)
+            reference = truth.sel(time=epochs.astype("datetime64[s]"))
+            for i, dim in enumerate(arr["dims"]):
+                if i != axis:
+                    start = co[i] * li["chunks"][i]
+                    reference = reference.isel({dim: slice(start, start + li["chunks"][i])})
+            valid = tuple(slice(0, n) for n in reference.shape)  # exclude physical edge padding
+            np.testing.assert_array_equal(values[valid], reference.values)
+            checked += 1
+        if not checked:
+            raise AssertionError("complete answer contains no checked data chunks")
 
 
 def main():
@@ -254,6 +268,12 @@ def main():
     }
     queries = {q: queries[q] for q in a.queries.split(",")}
     root = Path(os.environ.get("ZT_SIM_ROOT", "~/.cache/zt_sim")).expanduser()
+    from zarr_torrent.codec import ESTIMATOR
+    import hashlib
+    metadata = {"estimator": ESTIMATOR, "source_sha256": {
+        str(p.relative_to(Path(__file__).resolve().parents[1])): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in sorted(Path(__file__).resolve().parents[1].joinpath("zarr_torrent").glob("*.py"))},
+        "started_utc": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()}
     rows = []
     for rep in range(a.rep_start, a.reps):
         for mode in a.modes.split(","):
@@ -272,6 +292,7 @@ def main():
             else:
                 sw = S.Swarm(root / f"ehet_{mode}_{rep}", a.peers, a.boot, a.nat, seed=100 + rep)
             try:
+                sw.truth_path = variants[next(k for k in variants if "V1" in k)]
                 holders = build(sw, variants, rng) if a.placement == "random" else \
                     build_sat(sw, variants, rng, json.load(open(a.traces)), a.stations)
                 links = {}
@@ -289,7 +310,7 @@ def main():
                     for i, g in enumerate(cands):
                         # the oracle needs the best byte swarm, not how slow the others are: once one result exists,
                         # a later candidate gets three times its time (at least 2 min) and is otherwise just worse
-                        dl = 1800 if best is None else max(120.0, 3 * best["seconds"])
+                        dl = candidate_deadline(best)
                         try:
                             job, secs, cov = run_query(sw, f"{mode}{qn[:3]}{cover[:2]}{i}", "zt://" + g, reg, cover,
                                                        deadline=dl)
@@ -302,9 +323,11 @@ def main():
                         cand = {"mode": mode, "select": cover, "rep": rep, "query": qn, "swarm_holders": len(links[g]),
                                 "swarms": len(links), "seconds": round(secs, 2), "bytes": job["bytes"],
                                 "chunks": job["done"], "total": job["total"], "missing": job["missing"],
-                                "coverage": round(cov, 3), "peers_used": len(job["per_peer"]),
+                                "coverage": cov, "peers_used": len(job["per_peer"]),
+                                "state": job["state"], "sample_coverage": job["coverage"], "value_check": job["value_check"],
                                 "plan_T": job.get("plan_T"), "est_T": (job.get("cover") or {}).get("est_T"),
                                 "attempts": job.get("attempts", 1),
+                                "catalogue_refreshes": job.get("cover", {}).get("catalogue_refresh", 0),
                                 "phases": job.get("phases"),
                                 "peer_detail": {p[:8]: {"pred_MB": round((job.get("pred") or {}).get(p, {}).get("bytes", 0) / 1e6, 2),
                                                         "bw_MBps": round((job.get("pred") or {}).get(p, {}).get("bw", 0) / 1e6, 2),
@@ -318,10 +341,10 @@ def main():
                             break
                     rows.append(best)
                     print("EHET", json.dumps(best), flush=True)
-                    json.dump({"args": vars(a), "rows": rows}, open(a.out, "w"), indent=1)  # a killed run keeps its rows
+                    json.dump({"args": vars(a), "metadata": metadata, "rows": rows}, open(a.out, "w"), indent=1)  # a killed run keeps its rows
             finally:
                 sw.stop()
-    json.dump({"args": vars(a), "rows": rows}, open(a.out, "w"), indent=1)
+    json.dump({"args": vars(a), "metadata": metadata, "rows": rows}, open(a.out, "w"), indent=1)
 
 
 if __name__ == "__main__":

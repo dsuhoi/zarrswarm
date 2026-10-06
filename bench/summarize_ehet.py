@@ -6,6 +6,7 @@ python bench/summarize_ehet.py sim/results_ehet_meteor.json [--csv paper/figs/pl
 import argparse
 import json
 import statistics as st
+import numpy as np
 
 CONF = {("values", "jlps"): "lattice_jlps", ("values", "bytes"): "lattice_minbytes", ("bytes", "jlps"): "bytes_jlps"}
 QUERIES = ("map_day_1h", "series_point_1h", "period_6h")
@@ -15,6 +16,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("results")
     ap.add_argument("--csv", default="paper/figs/plots/e1e2.csv")
+    ap.add_argument("--stats", help="paired bootstrap statistics, complete answers only")
     a = ap.parse_args()
     rows = json.load(open(a.results))["rows"]
     out = {}
@@ -22,7 +24,9 @@ def main():
     if failed:
         print(f"{len(failed)} failed queries (no answer within the deadline):", [(r["query"], r["mode"], r["rep"]) for r in failed])
     for r in rows:
-        if r.get("seconds") is None:
+        if r.get("seconds") is None or r.get("coverage", 0) != 1 or r.get("missing", 0) or \
+                r.get("state", "done") != "done" or r.get("value_check") != "exact" or \
+                r.get("sample_coverage", {}).get("missing_samples", 0):
             continue
         c = CONF.get((r["mode"], r.get("select", "jlps")))
         if c:
@@ -42,6 +46,21 @@ def main():
         lines.append(f"{q},{qi}," + ",".join(cells))
     open(a.csv, "w").write("\n".join(lines) + "\n")
     print("->", a.csv)
+    if a.stats:
+        rng, stats = np.random.default_rng(0), {}
+        for q in QUERIES:
+            base = {r["rep"]: r["seconds"] for r in out.get((q, "lattice_jlps"), [])}
+            for name, c in (("bytes", "bytes_jlps"), ("minbytes", "lattice_minbytes")):
+                other = {r["rep"]: r["seconds"] for r in out.get((q, c), [])}
+                pairs = sorted(base.keys() & other.keys())
+                ratios = np.array([other[r] / base[r] for r in pairs])
+                if not len(ratios):
+                    continue
+                boot = np.median(rng.choice(ratios, (10000, len(ratios)), replace=True), axis=1)
+                stats[f"{q} vs {name}"] = {"median_ratio": float(np.median(ratios)),
+                    "ci95": list(np.quantile(boot, [.025, .975])), "complete_pairs": len(pairs),
+                    "faster_runs": int(np.sum(ratios > 1)), "reps": pairs}
+        json.dump(stats, open(a.stats, "w"), indent=1)
 
 
 if __name__ == "__main__":

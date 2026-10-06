@@ -1,0 +1,39 @@
+{
+  "recorded_utc": "2026-10-05T01:57:34.211478+00:00",
+  "split": {
+    "primary_reps": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "tail_reps": [
+      7,
+      8,
+      9
+    ]
+  },
+  "overlapping_batches": true,
+  "source_archive": "process_receiver_fixed_source_v5.tgz",
+  "source_archive_sha256": "af52134835c1be45979a5b5aeaf36a9a1bd6cb924b581e4c0cf8636524145c53",
+  "orchestration_sha256": {
+    "zt_start_fib_receiver.sh": "b7d96ef85bc020cf66fd5b56e28f2a048d59bb8e0e4df5ce4e1a4bad1e1fd5b2",
+    "zt_start_fib_receiver_tail.sh": "67cab9e03209c0236653fff4a5cd829674eaca7f2d0626202ced0a08b698b118",
+    "zt_stop_fib_receiver_at7.py": "554b2d77e977f0e6338d56d491ab4302c4fe8f2ecf4a72362867a3cc41bc8a12"
+  },
+  "prelaunch_resource_snapshot": {
+    "recorded_utc_approx": "2026-10-05T01:53:22+00:00",
+    "cpus": 256,
+    "cpu_busy_percent_one_second": 13.95,
+    "mem_available_kB": 809235024,
+    "load_average": [
+      43.34,
+      44.41,
+      42.48
+    ]
+  },
+  "stop_rule": "Primary controller stops after 63 full/exact selected answers for reps 0..6, regardless of timing; only exact task-home child processes are signalled. Tail source/parameters unchanged; existing --rep-start 7 --reps 10 arguments select remaining placements."
+}

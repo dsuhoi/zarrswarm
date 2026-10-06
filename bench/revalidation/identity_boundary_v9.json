@@ -1,0 +1,843 @@
+{
+  "started_utc": "2026-10-05T13:01:58.299143+00:00",
+  "estimator": "lattice-v5",
+  "numpy": "2.5.3",
+  "source_sha256": {
+    "zarr_torrent/codec.py": "0eeee2dba9dabb344c4a274e162cb0dd8f317cba792f97958bedbe0833d1ad57",
+    "bench/identity_boundary.py": "0087fc8f0e05b525ec54af28d8e005c72c01fc5c55c2c9f2c206bfaa1dfb691f"
+  },
+  "packing_protocol_sha256": "9cf8c170b28ad767159aa21930e0f1c3745ce12dd9acc6f13226499a6c8dd1f5",
+  "packing_protocol": {
+    "phase": "declared_before_implementation_and_runs",
+    "question": "Can a trusted source step/origin and bounded decoder residual prevent sparse-code false merges without losing legitimate decoded copies?",
+    "strict_rule": "Round only against a caller-provided source step and origin; reject residual outside a positive error budget smaller than half a source step. Hash absolute integer codes and the common step/origin. No independent refitting.",
+    "synthetic_development": {
+      "source_step": 1,
+      "source_origin": 0,
+      "strides": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "sizes": [
+        2,
+        4,
+        16,
+        256
+      ],
+      "negative": "Change the first source code by +1; unchanged decoded values are exact source centers.",
+      "positive": "Same codes decoded with a deterministic error bounded by 0.4 source steps; accept budget 0.45 steps."
+    },
+    "synthetic_transfer": {
+      "steps": [
+        0.125,
+        1.25,
+        3.0
+      ],
+      "origin": -37.5,
+      "strides": [
+        3,
+        5,
+        7
+      ],
+      "sizes": [
+        3,
+        8,
+        64,
+        1024
+      ],
+      "negative_directions": [
+        -1,
+        1
+      ],
+      "decoder_error_bound_steps": 0.4,
+      "acceptance_budget_steps": 0.45,
+      "selection": "All 36 source arrays, 72 negative controls. Fixed before running; no threshold tuning."
+    },
+    "real_fields": "Use the same eight retained GFS fields and both native precision paths from gfs_pipelines_v7.json; GRIB reference, binary and decimal scales provide each common source lattice. Budget 0.45 source steps. No new downloads or station claims.",
+    "scope": "Prototype numeric API using externally supplied source metadata; current automatic Zarr ingest does not authenticate or propagate this contract. Legacy value-only lattice identifiers and measured network paths remain the baseline."
+  },
+  "protocol": {
+    "source_quantum": 1,
+    "observed_code_strides": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "distinct_values": [
+      2,
+      4,
+      16,
+      256
+    ],
+    "dtype": "float32",
+    "values": "arange(distinct_values) * observed_code_stride",
+    "change": "add exactly one source count to the first cell",
+    "selection": "All 20 combinations; no fitting changes or omitted cases."
+  },
+  "cases": [
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 2,
+      "fit_before": [
+        1.0,
+        0.0,
+        1
+      ],
+      "fit_after": null,
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[1.0,1.0,1]]",
+      "identity_after": "L3:284d8d57aed9ca3de73c4ee42c117f37:[null]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 4,
+      "fit_before": [
+        1.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        1
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[2.0,1.0,2]]",
+      "identity_after": "L3:74bd3f39ad454e62cd434415cb8b4ab5:[[2.0,1.0,1]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 16,
+      "fit_before": [
+        1.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        7
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[8.0,1.0,8]]",
+      "identity_after": "L3:d25170b73e628f5616a9d5860e6c706d:[[8.0,1.0,7]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 256,
+      "fit_before": [
+        1.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        127
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[128.0,1.0,128]]",
+      "identity_after": "L3:fb2f38dd4b120437bffd61d7962e279e:[[128.0,1.0,127]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 2,
+      "fit_before": [
+        2.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        2.0,
+        0.5,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[2.0,2.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[2.5,2.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 4,
+      "fit_before": [
+        2.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        3
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[4.0,2.0,2]]",
+      "identity_after": "L3:abefdb6e10327431d784110e5c14612c:[[4.0,1.0,3]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 16,
+      "fit_before": [
+        2.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        15
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[16.0,2.0,8]]",
+      "identity_after": "L3:2dd046c80c984b747b683a9d02bc626e:[[16.0,1.0,15]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 256,
+      "fit_before": [
+        2.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        255
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[256.0,2.0,128]]",
+      "identity_after": "L3:037e15c6da69eda24c3eaaca4f2fbc93:[[256.0,1.0,255]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 2,
+      "fit_before": [
+        4.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        4.0,
+        0.5,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[4.0,4.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[4.5,4.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 4,
+      "fit_before": [
+        4.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        4.0,
+        0.20483276469913345,
+        2
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[8.0,4.0,2]]",
+      "identity_after": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[8.204832764699134,4.0,2]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 16,
+      "fit_before": [
+        4.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        4.0,
+        0.04237860926989283,
+        8
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[32.0,4.0,8]]",
+      "identity_after": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[32.042378609269896,4.0,8]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 256,
+      "fit_before": [
+        4.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        4.0,
+        0.0024965353291611365,
+        128
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[512.0,4.0,128]]",
+      "identity_after": "L3:672b8af49acfbb81254b6735154289af:[[512.0024965353292,4.0,128]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 2,
+      "fit_before": [
+        8.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        8.0,
+        0.5,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[8.0,8.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[8.5,8.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 4,
+      "fit_before": [
+        8.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        8.0,
+        0.23997956648547158,
+        2
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[16.0,8.0,2]]",
+      "identity_after": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[16.23997956648547,8.0,2]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 16,
+      "fit_before": [
+        8.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        8.0,
+        0.057280367422490326,
+        8
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[64.0,8.0,8]]",
+      "identity_after": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[64.05728036742249,8.0,8]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 256,
+      "fit_before": [
+        8.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        8.0,
+        0.003520879934193903,
+        128
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[1024.0,8.0,128]]",
+      "identity_after": "L3:672b8af49acfbb81254b6735154289af:[[1024.0035208799343,8.0,128]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 2,
+      "fit_before": [
+        16.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        16.0,
+        0.5000000000000001,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[16.0,16.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[16.5,16.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 4,
+      "fit_before": [
+        16.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        16.0,
+        0.24756704005606944,
+        2
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[32.0,16.0,2]]",
+      "identity_after": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[32.24756704005607,16.0,2]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 16,
+      "fit_before": [
+        16.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        16.0,
+        0.061185329760229404,
+        8
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[128.0,16.0,8]]",
+      "identity_after": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[128.06118532976024,16.0,8]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 256,
+      "fit_before": [
+        16.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        16.0,
+        0.003807751874835571,
+        128
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[2048.0,16.0,128]]",
+      "identity_after": "L3:672b8af49acfbb81254b6735154289af:[[2048.003807751875,16.0,128]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false,
+      "packing_accepts_changed_cell": false,
+      "packing_accepts_valid_decoder": true
+    }
+  ],
+  "transfer_cases": [
+    {
+      "step": 0.125,
+      "stride": 3,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 3,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 3,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 3,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 5,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 5,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 5,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 5,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 7,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 7,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 7,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 0.125,
+      "stride": 7,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 3,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 3,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 3,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 3,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 5,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 5,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 5,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 5,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 7,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 7,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 7,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 1.25,
+      "stride": 7,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 3,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 3,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 3,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 3,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 5,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 5,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 5,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 5,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 7,
+      "size": 3,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 7,
+      "size": 8,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 7,
+      "size": 64,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    },
+    {
+      "step": 3.0,
+      "stride": 7,
+      "size": 1024,
+      "accepts_valid_decoder": true,
+      "accepts_changed_codes": [
+        false,
+        false
+      ]
+    }
+  ],
+  "completed_utc": "2026-10-05T13:01:58.365627+00:00"
+}

@@ -17,6 +17,7 @@ import os
 import random
 import re
 import secrets
+import shlex
 import shutil
 import subprocess
 import sys
@@ -30,8 +31,7 @@ import xarray as xr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import simulate as S  # noqa: E402
-import zarr_torrent as zt  # noqa: E402
-from e_hetero import obtained_samples, requested_samples  # noqa: E402
+from e_hetero import verify_downloaded_chunks  # noqa: E402
 from procswarm import ProcSwarm  # noqa: E402
 from zarr_torrent.store import http, wait_job  # noqa: E402
 
@@ -48,10 +48,12 @@ class Tunnel:
     """One reverse tunnel per site: the remote port equals the bootstrap port here, so the relay URL a remote node
     announces (http://127.0.0.1:BP/r/<id>) is valid on both ends."""
 
-    def __init__(self, host: str, bp: int, log: Path):
+    def __init__(self, host: str, bp: int, log: Path, jump=None):
         self.args = ["ssh", "-N", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", "-o", "ServerAliveInterval=15",
                      "-o", "ExitOnForwardFailure=yes", "-R", f"{bp}:127.0.0.1:{bp}", host]
         self.log, self.proc = log, None
+        if jump:
+            self.args[1:1] = ["-J", jump]
 
     def start(self, tries=25):
         for _ in range(tries):
@@ -68,7 +70,7 @@ class Tunnel:
 
 
 class Remote:
-    """One holder node on a remote site, alive as long as its ssh session (pty: SIGHUP kills the process group)."""
+    """One remote holder, stopped by a recorded PID only after verifying its node home."""
 
     def __init__(self, site: dict, name: str, data: str, boot_port: int, env: dict, log: Path):
         self.name, self.site, self.log = name, site, log
@@ -77,21 +79,42 @@ class Remote:
         tport = boot_port  # the site's tunnel
         py, src = site["python"], site.get("src", "~/zt_src")
         exports = " ".join(f"{k}={v}" for k, v in dict(env, PYTHONPATH=site.get("pythonpath", src)).items())
-        home = f"{site.get('work', '~/zt_ms')}/h_{name}"
+        work = site.get('work', '~/zt_ms')
+        home = f"{work}/h_{name}"
         q = (f"from zarr_torrent.store import http; import json; "
              f"print('GRIDS', json.dumps([s['grid'] for s in http('http://127.0.0.1:{ctl}','GET','/api/status')['seeds']]))")
         # page-cache the replica first: otherwise whichever configuration runs first pays the site's cold disk
         # (measured: 9.3 s vs 2.1 s for the same 56 MB from the same peers)
-        cmd = (f"trap 'kill 0' EXIT HUP TERM; cd {src}; export {exports}; rm -rf {home}; "
+        cmd = (f"trap 'kill 0' EXIT HUP TERM; cd {src}; export {exports}; mkdir -p {work}; rm -rf {home}; "
                f"find {data} -type f -exec cat {{}} + > /dev/null; "
                f"{site.get('nice', 'nice -n 10')} {py} -m zarr_torrent.cli node --home {home} --host 127.0.0.1 "
                f"--port {port} --ctl-port {ctl} --bootstrap http://127.0.0.1:{tport} --relay http://127.0.0.1:{tport} "
-               f"> {home}.log 2>&1 & "
+               f"> {home}.log 2>&1 & echo $! > {home}.pid; "
                f"for i in $(seq 90); do sleep 2; {py} -m zarr_torrent.cli --ctl http://127.0.0.1:{ctl} seed {data} "
                f">/dev/null 2>&1 && break; done; {py} -c \"{q}\"; echo SEEDED; wait")
         self.args = ["ssh", "-tt", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", "-o", "ServerAliveInterval=15",
                      site["host"], cmd]
+        if site.get("jump"):
+            self.args[1:1] = ["-J", site["jump"]]
         self.grids = None
+        self.proc = None
+        cleanup = '''import os, signal, sys, time
+from pathlib import Path
+home = Path(sys.argv[1]).expanduser()
+try:
+    pid = int(Path(str(home) + ".pid").read_text())
+    args = Path(f"/proc/{pid}/cmdline").read_bytes().decode().split("\\0")
+    if "--home" in args and Path(args[args.index("--home") + 1]).expanduser() == home:
+        os.kill(pid, signal.SIGTERM)
+        time.sleep(5)
+        args = Path(f"/proc/{pid}/cmdline").read_bytes().decode().split("\\0")
+        if "--home" in args and Path(args[args.index("--home") + 1]).expanduser() == home:
+            os.kill(pid, signal.SIGKILL)
+except (OSError, ValueError):
+    pass
+'''
+        self.cleanup_args = [a for a in self.args[:-1] if a != "-tt"] + [
+            f"{py} -c {shlex.quote(cleanup)} {shlex.quote(home)}"]
 
     def start(self, tries=25, wait_s=300):
         for _ in range(tries):  # sshd on a loaded host drops some connections at the banner: retry
@@ -109,7 +132,12 @@ class Remote:
         raise RuntimeError(f"{self.name}: no start: {self.log.read_text(errors='replace')[-600:]}")
 
     def stop(self):
-        if self.proc.poll() is None:
+        try:
+            subprocess.run(self.cleanup_args, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL, timeout=30, check=True)
+        except (OSError, subprocess.SubprocessError) as e:
+            print(f"remote cleanup {self.name}: {e}", flush=True)
+        if self.proc and self.proc.poll() is None:
             self.proc.terminate()
             try:
                 self.proc.wait(15)
@@ -151,24 +179,22 @@ def query(side, link, region, cover, truth, tag):
         wait_job(ctl, jid)
         secs = time.time() - t
         job = http(ctl, "GET", f"/api/job/{jid}")
-        S_ = int(region["step"]) // view["grid"]["time"]["dt"]
-        want = requested_samples(view, region)
-        got = obtained_samples(http(ctl, "GET", f"/api/view/{grid}"), job["done_keys"], S_) & want
+        if "coverage" not in job:
+            raise RuntimeError(f"download job {jid}: {job['state']}; no query coverage reported")
+        coverage = job["coverage"]
         err = None
-        if job["missing"] == 0:
-            ds = zt.open_dataset(link, ctl=ctl, step=None if region["step"] == 3600 else f"{region['step']}s")[VAR]
-            got_v = ds.sel(time=slice(region["t0"], region["t1"]))
-            for d, (lo, hi) in region.get("isel", {}).items():
-                got_v = got_v.isel({d: slice(lo, hi)})
-            got_v = got_v.values
-            err = float(np.nanmax(np.abs(got_v - truth))) if got_v.shape == truth.shape else f"shape {got_v.shape}"
+        if job["state"] == "done" and coverage["missing_samples"] == 0:
+            verify_downloaded_chunks(ctl, grid, view, job["done_keys"], side.truth_path)
+            err = 0.0
         return {"seconds": round(secs, 2), "MB": round(job["bytes"] / 1e6, 2), "chunks": job["done"],
-                "missing": job["missing"], "coverage": round(len(got) / max(len(want), 1), 3),
+                "missing": job["missing"], "state": job["state"], "sample_coverage": coverage,
+                "coverage": round(coverage["covered_samples"] / max(coverage["requested_samples"], 1), 3),
                 "peers_used": len(job["per_peer"]), "layouts": (job.get("cover") or {}).get("layouts"),
                 "plan_T": job.get("plan_T"), "max_abs_err": err, "phases": job.get("phases"), "t_view": round(t - t_v, 2),
                 "per_peer_MB": {p[:8]: round(x["bytes"] / 1e6, 2) for p, x in (job.get("actual") or {}).items()}}
     finally:
         side.kill(client)
+        shutil.rmtree(side.root / f"h_{client}", ignore_errors=True)
         shutil.copy(side.root / f"{client}.log", side.root.parent / "logs" / f"{client}.log")
 
 
@@ -194,17 +220,19 @@ def main():
     ap.add_argument("--phases", default="cloud,mirror,swarm,bytes")
     ap.add_argument("--out", default="sim/results_multisite.json")
     ap.add_argument("--queries", help="comma-separated subset of the configured queries")
+    ap.add_argument("--work", default="~/.cache/zt_ms")
     a = ap.parse_args()
     cfg = tomllib.load(open(a.config, "rb"))
     queries = {q: r for q, r in cfg["queries"].items() if not a.queries or q in a.queries.split(",")}
     truth_src = Path(cfg["truth"]).expanduser()
     truths = {q: truth_of(truth_src, r) for q, r in queries.items()}
     key = secrets.token_urlsafe(16)  # closed network: only our nodes speak to each other
-    root = Path("~/.cache/zt_ms").expanduser()
+    root = Path(a.work).expanduser()
     logs = root / "logs"
     logs.mkdir(parents=True, exist_ok=True)
     rows = []
-    out = lambda: json.dump({"config": cfg, "reps": a.reps, "rows": rows}, open(a.out, "w"), indent=1)
+    from zarr_torrent.codec import ESTIMATOR
+    out = lambda: json.dump({"config": cfg, "reps": a.reps, "estimator": ESTIMATOR, "rows": rows}, open(a.out, "w"), indent=1)
 
     def emit(row):
         rows.append(row)
@@ -237,6 +265,7 @@ def main():
             continue
         env = {"ZT_IDENTITY": mode, "ZT_NETWORK_KEY": key}
         side = LocalSide(root / f"local_{mode}", 1, 1, 0.0, seed=7, env=env, relay_rate=None)
+        side.truth_path = truth_src
         boot_port = side.nodes["boot0"].port
         remotes, tunnels = [], {}
         try:
@@ -249,9 +278,11 @@ def main():
                                             f"m{rep}{qn[:3]}"), phase="mirror", query=qn, rep=rep, holders=1))
                 site = cfg["sites"][h["site"]]
                 if h["site"] not in tunnels:
-                    tunnels[h["site"]] = Tunnel(site["host"], boot_port, logs / f"tunnel_{h['site']}.log").start()
-                remotes.append(Remote(site, f"{h['site']}{i}_{mode}", h["data"], boot_port,
-                                      dict(env, **site.get("env", {})), logs / f"{h['site']}{i}_{mode}.log").start())
+                    tunnels[h["site"]] = Tunnel(site["host"], boot_port, logs / f"tunnel_{h['site']}.log", site.get("jump")).start()
+                remote = Remote(site, f"{h['site']}{i}_{mode}", h["data"], boot_port,
+                                dict(env, **site.get("env", {})), logs / f"{h['site']}{i}_{mode}.log")
+                remotes.append(remote)  # clean up even if startup is interrupted
+                remote.start()
                 print("up", remotes[-1].name, remotes[-1].grids, flush=True)
             if not {"swarm", "bytes"} & set(names):
                 continue

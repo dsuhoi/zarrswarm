@@ -1,0 +1,30 @@
+{
+ "estimator": "lattice-v5",
+ "variants": {
+  "V1-arco-1h": {
+   "slices_per_chunk": 1,
+   "mean_identifier_bytes": 75.4,
+   "max_identifier_bytes": 76
+  },
+  "V2-wb2-6h": {
+   "slices_per_chunk": 1,
+   "mean_identifier_bytes": 75.2,
+   "max_identifier_bytes": 76
+  },
+  "V3-ts-1h": {
+   "slices_per_chunk": 168,
+   "mean_identifier_bytes": 6436.6,
+   "max_identifier_bytes": 6540
+  },
+  "V4-tile-6h": {
+   "slices_per_chunk": 4,
+   "mean_identifier_bytes": 191.0,
+   "max_identifier_bytes": 193
+  },
+  "V5-tiles-1h": {
+   "slices_per_chunk": 1,
+   "mean_identifier_bytes": 75.5,
+   "max_identifier_bytes": 76
+  }
+ }
+}

@@ -1,0 +1,6 @@
+{
+  "bench/gfs_native_precision.py": "fba437c41109113b127507e1ac7cbc31d7b4c757bcc649a73f13ca81ea0a1535",
+  "bench/identity_boundary.py": "eef8b1849b8a16b870c3cb359559c332e9d90d3248424c2b9b7a178ab5cbd96b",
+  "tests/test_identity.py": "c1d87b4a7e6d02c6ad32635af0c66a490517384dac83be2c6a64fd1c35a49270",
+  "zarr_torrent/codec.py": "d1a91f447f7aea60537ac7387d77ceb15903308c7da8c7e9c3d8c5d7d129859b"
+}

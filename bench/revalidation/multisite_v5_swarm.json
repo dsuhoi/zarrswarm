@@ -1,0 +1,254 @@
+{
+ "config": {
+  "week_start": "2020-01-01T00:00",
+  "truth": "~/.cache/zt_variants_month/V1-arco-1h.zarr",
+  "sites": {
+   "fib": {
+    "host": "fibonacci",
+    "jump": "panel",
+    "python": "~/zt_venv/bin/python",
+    "work": "~/zt_ms/revalidation_v5_20261003/wan",
+    "src": "~/zt_ms/revalidation_v5_20261003/src",
+    "env": {
+     "ZT_SCAN_WORKERS": "1",
+     "OPENBLAS_NUM_THREADS": "1",
+     "OMP_NUM_THREADS": "1"
+    }
+   },
+   "panel": {
+    "host": "panel",
+    "python": "~/zt_venv/bin/python",
+    "work": "~/zt_ms/revalidation_v5_20261003/wan",
+    "src": "~/zt_ms/revalidation_v5_20261003/src",
+    "env": {
+     "ZT_SCAN_WORKERS": "1",
+     "OPENBLAS_NUM_THREADS": "1",
+     "OMP_NUM_THREADS": "1"
+    },
+    "nice": "nice -n 19"
+   },
+   "cloudru": {
+    "host": "cloudru",
+    "jump": "panel",
+    "python": "~/ztpkg/py/cpython-3.12.14-linux-x86_64-gnu/bin/python3.12",
+    "pythonpath": "~/ztpkg/site:~/zt_ms/revalidation_v5_20261003/src",
+    "work": "~/zt_ms/revalidation_v5_20261003/wan",
+    "src": "~/zt_ms/revalidation_v5_20261003/src",
+    "env": {
+     "ZT_SCAN_WORKERS": "1",
+     "OPENBLAS_NUM_THREADS": "1",
+     "OMP_NUM_THREADS": "1"
+    }
+   }
+  },
+  "holders": [
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V1-arco-1h.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V3-ts-1h.zarr"
+   },
+   {
+    "site": "panel",
+    "data": "~/zt_ms/V5_d1-2.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/rep/V5_d1-4.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/rep/V5_d4-7.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V2-wb2-6h.zarr"
+   },
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V4-tile-6h.zarr"
+   },
+   {
+    "site": "cloudru",
+    "data": "~/zt_ms/V1_d4-7.zarr"
+   }
+  ],
+  "queries": {
+   "map_day_1h": {
+    "t0": "2020-01-02",
+    "t1": "2020-01-02",
+    "step": 3600
+   },
+   "series_point_1h": {
+    "t0": "2020-01-01T00:00:00",
+    "t1": "2020-01-07T23:00:00",
+    "step": 3600,
+    "isel": {
+     "latitude": [
+      300,
+      301
+     ],
+     "longitude": [
+      500,
+      501
+     ]
+    }
+   },
+   "week_6h": {
+    "t0": "2020-01-01T00:00:00",
+    "t1": "2020-01-07T23:00:00",
+    "step": 21600
+   }
+  },
+  "http_mirrors": [
+   {
+    "site": "fib",
+    "data": "~/zt_ms/variants/V1-arco-1h.zarr",
+    "first_hour": 0,
+    "hours": 168
+   },
+   {
+    "site": "cloudru",
+    "data": "~/zt_ms/V1_d4-7.zarr",
+    "first_hour": 72,
+    "hours": 96
+   }
+  ]
+ },
+ "reps": 3,
+ "estimator": "lattice-v5",
+ "rows": [
+  {
+   "phase": "http",
+   "query": "map_day_1h",
+   "rep": 0,
+   "seconds": 3.97,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 24,
+    "http://127.0.0.1:57617": 0
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "series_point_1h",
+   "rep": 0,
+   "seconds": 80.48,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 120,
+    "http://127.0.0.1:57617": 48
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "week_6h",
+   "rep": 0,
+   "seconds": 12.58,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 20,
+    "http://127.0.0.1:57617": 8
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "map_day_1h",
+   "rep": 1,
+   "seconds": 22.93,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 24,
+    "http://127.0.0.1:57617": 0
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "series_point_1h",
+   "rep": 1,
+   "seconds": 102.98,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 120,
+    "http://127.0.0.1:57617": 48
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "week_6h",
+   "rep": 1,
+   "seconds": 18.42,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 20,
+    "http://127.0.0.1:57617": 8
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "map_day_1h",
+   "rep": 2,
+   "seconds": 21.59,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 24,
+    "http://127.0.0.1:57617": 0
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "series_point_1h",
+   "rep": 2,
+   "seconds": 86.66,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 120,
+    "http://127.0.0.1:57617": 48
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "week_6h",
+   "rep": 2,
+   "seconds": 21.12,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 20,
+    "http://127.0.0.1:57617": 8
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "seconds": 11.54,
+   "MB": 56.22,
+   "chunks": 24,
+   "missing": 0,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "coverage": 1.0,
+   "peers_used": 1,
+   "layouts": [
+    "1x721x1440+0"
+   ],
+   "plan_T": 2.81,
+   "max_abs_err": 0.0,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.37
+   },
+   "t_view": 0.0,
+   "per_peer_MB": {
+    "cfafb58e": 56.22
+   },
+   "phase": "mirror",
+   "query": "map_day_1h",
+   "rep": 0,
+   "holders": 1
+  }
+ ]
+}

@@ -1,0 +1,163 @@
+{
+  "recorded_utc": "2026-10-05T02:10:29.668460+00:00",
+  "predetermined_split": [
+    [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    [
+      7,
+      8,
+      9
+    ]
+  ],
+  "primary_full_exact_answers": 63,
+  "primary_controller_pid": 1163847,
+  "primary_args": [
+    "/home/d.sukhorukov/zt_venv/bin/python",
+    "sim/e_hetero.py",
+    "/home/d.sukhorukov/zt_ms/variants_month",
+    "--procs",
+    "--peers",
+    "36",
+    "--boot",
+    "3",
+    "--nat",
+    "0.3",
+    "--rate-mbps",
+    "1",
+    "--placement",
+    "sat",
+    "--stations",
+    "22",
+    "--traces",
+    "bench/sat_traces_meteor.json",
+    "--covers",
+    "jlps,bytes",
+    "--reps",
+    "10",
+    "--out",
+    "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/results.json"
+  ],
+  "task_children_signalled": [
+    {
+      "pid": 1888892,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p05"
+    },
+    {
+      "pid": 1889012,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p06"
+    },
+    {
+      "pid": 1889111,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p07"
+    },
+    {
+      "pid": 1889136,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p08"
+    },
+    {
+      "pid": 1889350,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p09"
+    },
+    {
+      "pid": 1889481,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p10"
+    },
+    {
+      "pid": 1889964,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p11"
+    },
+    {
+      "pid": 1890250,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p12"
+    },
+    {
+      "pid": 1890260,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p13"
+    },
+    {
+      "pid": 1890338,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p14"
+    },
+    {
+      "pid": 1890342,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p15"
+    },
+    {
+      "pid": 1890448,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p16"
+    },
+    {
+      "pid": 1890477,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p17"
+    },
+    {
+      "pid": 1890575,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p18"
+    },
+    {
+      "pid": 1890633,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p19"
+    },
+    {
+      "pid": 1890751,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p20"
+    },
+    {
+      "pid": 1890902,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p21"
+    },
+    {
+      "pid": 1890930,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p22"
+    },
+    {
+      "pid": 1891035,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p23"
+    },
+    {
+      "pid": 1891059,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p24"
+    },
+    {
+      "pid": 1891192,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p25"
+    },
+    {
+      "pid": 1891220,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p26"
+    },
+    {
+      "pid": 1891282,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p27"
+    },
+    {
+      "pid": 1891394,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p28"
+    },
+    {
+      "pid": 1891429,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p29"
+    },
+    {
+      "pid": 1891526,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p30"
+    },
+    {
+      "pid": 1891548,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p31"
+    },
+    {
+      "pid": 1891631,
+      "home": "/home/d.sukhorukov/zt_ms/receiver_fix_20261005/work/ehet_bytes_6/h_p32"
+    }
+  ],
+  "interrupted_raw": "results_primary_interrupted.json",
+  "completed_prefix": "results_primary_complete.json"
+}

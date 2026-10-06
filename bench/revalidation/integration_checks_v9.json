@@ -1,0 +1,46 @@
+{
+  "recorded_utc": "2026-10-05T13:21:05.713494+00:00",
+  "source_snapshot": "source_sha256_integration_v9.json",
+  "source_files_verified": 40,
+  "source_archive": "source_integration_v9.tgz",
+  "source_archive_entries": 42,
+  "source_archive_sha256": "82f0cbfef4e9b6b7143b6fa2e3d32c97df87ab3964f074ee81772ec79d478b78",
+  "default_identity_controls_unchanged_from_v8": true,
+  "native_GFS_numeric_statistics_unchanged_from_v8": true,
+  "legacy_false_accepts": 13,
+  "source_contract_false_accepts": 0,
+  "valid_decoded_copies_matched": 20,
+  "transfer_valid_copies_matched": 36,
+  "transfer_source_code_changes_rejected": 72,
+  "GFS_numeric_matched_pairs": 64,
+  "GFS_source_quantum_changes_accepted": 0,
+  "GFS_max_residual_source_steps": 0.015625000014551915,
+  "GFS_protocol_pooling": {
+    "processes": 6,
+    "paired_chunks": 64,
+    "pooled_native_pairs": 64,
+    "accepted_source_count_changes": 0,
+    "default_shared_variable_families": 0,
+    "publisher_offline_source_codes": 65536,
+    "cache_only_restart": true,
+    "all_processes_stopped": true,
+    "same_host_loopback": true,
+    "station_or_WAN_performance_measurement": false
+  },
+  "tests_passed": 108,
+  "test_library_warnings": 44,
+  "test_seconds": 146.55,
+  "test_evidence": "pytest_integration_v9.txt",
+  "failed_runs_retained": [
+    "packing_network_v9_attempt1.json",
+    "packing_network_v9_attempt2.json",
+    "packing_network_v9_attempt3.json",
+    "pytest_integration_v9_first_failed.txt"
+  ],
+  "other_successful_checks_retained": [
+    "pytest_integration_v9_107_passed.txt",
+    "packing_network_v9.json",
+    "packing_network_v9_before_cli_scan.json"
+  ],
+  "scope": "Signed caller-supplied source contracts verified at scan, native-dtype pooling, receiver/re-encoding/cache/prefix/repair; unchanged default fit, existing timing snapshots preserved. Trusted parameters and a valid actual decoder-error bound are necessary; signatures do not authenticate mirror measurements."
+}

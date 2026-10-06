@@ -1,0 +1,91 @@
+{
+  "recorded_utc": "2026-10-05T10:45:24.303581+00:00",
+  "scope": "Illustrative cost model only, no network timing; request two samples, no chunk overhead or relays.",
+  "arrays": {
+    "v": {
+      "taxis": 0,
+      "layouts": {
+        "A": {
+          "chunks": [
+            1
+          ],
+          "phase": 0
+        },
+        "B": {
+          "chunks": [
+            2
+          ],
+          "phase": 0
+        }
+      }
+    }
+  },
+  "best": {
+    "v@A/0": {
+      "src": [
+        [
+          "slow",
+          "a",
+          1000000.0
+        ]
+      ]
+    },
+    "v@A/1": {
+      "src": [
+        [
+          "slow",
+          "b",
+          1000000.0
+        ]
+      ]
+    },
+    "v@B/0": {
+      "src": [
+        [
+          "fast",
+          "c",
+          3000000.0
+        ]
+      ]
+    }
+  },
+  "bandwidth_bytes_s": {
+    "slow": 1000000.0,
+    "fast": 30000000.0
+  },
+  "receiver_bandwidth_bytes_s": 30000000.0,
+  "JLPS": {
+    "keys": [
+      "v@B/0"
+    ],
+    "assignment": {
+      "fast": [
+        "v@B/0"
+      ]
+    },
+    "predicted_seconds": 0.10009765625,
+    "covers": {
+      "covers": 2,
+      "layouts": [
+        "B"
+      ]
+    }
+  },
+  "minimum_bytes": {
+    "keys": [
+      "v@A/0",
+      "v@A/1"
+    ],
+    "assignment": {
+      "slow": [
+        "v@A/0",
+        "v@A/1"
+      ]
+    },
+    "predicted_seconds": 2.0010416666666666
+  },
+  "source_sha256": {
+    "zarr_torrent/jlps.py": "1f7dc3731e48ef06d80d6c58c533150348f12b943e057574d08f0dcd3368594b",
+    "zarr_torrent/plan.py": "85bcfb19ccba568823e1f0447bfdafcdcce5a94362b47c723f1b7192f203a24f"
+  }
+}

@@ -1,0 +1,60 @@
+site_name: ZarrSwarm
+site_description: Проверяемый обмен Zarr-массивами между узлами и чтение через xarray.
+site_url: !ENV [DOCS_SITE_URL, "https://dsuhoi.github.io/zarrswarm/"]
+repo_url: https://github.com/dsuhoi/zarrswarm
+repo_name: dsuhoi/zarrswarm
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: ru
+  font: false
+  palette:
+    primary: teal
+    accent: teal
+  features:
+    - navigation.sections
+    - navigation.footer
+    - content.code.copy
+
+plugins:
+  - search:
+      lang: [ru, en]
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Начало: index.md
+  - Использование:
+      - Пользователю и xarray: user.md
+      - Запуск узлов: operator.md
+      - Сеть и доверие: network.md
+      - Конфигурация: config.md
+  - Эксперименты: experiments.md
+  - Публикация документации: publishing.md
+
+# Датированные отчёты и исходные результаты доступны в репозитории.
+exclude_docs: |
+  /CODECS_AND_PROVIDER_HOLDOUT.md
+  /CORRECTNESS_REVALIDATION.md
+  /EXTERNAL_COMPARISON.md
+  /LATENCY_AND_NAT_REVALIDATION.md
+  /LIVE_INGEST_REVALIDATION.md
+  /PACKING_IDENTITY_V8.md
+  /SOURCE_CONTRACT_INTEGRATION_V9.md
+  /requirements.txt
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn

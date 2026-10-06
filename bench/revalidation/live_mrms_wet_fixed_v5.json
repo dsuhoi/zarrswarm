@@ -1,0 +1,523 @@
+{
+  "started_utc": "2026-10-05T04:25:42.796567+00:00",
+  "status": "complete",
+  "rows": [
+    {
+      "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042400.grib2.gz",
+      "LastModified": "2026-10-05T04:26:57.000Z",
+      "Size": "650268",
+      "ETag": "\"14647542b9931c62dd71e41c28386866\"",
+      "source_url": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042400.grib2.gz",
+      "fetched_utc": "2026-10-05T04:27:03.425694+00:00",
+      "time": "2026-10-05T04:24:00",
+      "grib_sha256": "558e4ad9f60de8ba822d2a2c8eca2bde43f5e48c890e6b87af3a31f395592d0d",
+      "crop_sha256": "b2aaf3ea93335ce4b1198aadc53fa472cab1fead41a5583632aa77d225687660",
+      "decode_fetch_s": 1.484286175109446,
+      "decode_fetch_cpu_s": 0.29179297000000126,
+      "minimum": -3.0,
+      "maximum": 175.0,
+      "nonzero_cells": 308423,
+      "first_observed_utc": "2026-10-05T04:27:01.950725+00:00",
+      "committed_utc": "2026-10-05T04:27:03.597228+00:00",
+      "cached_utc": "2026-10-05T04:28:47.180268+00:00",
+      "commit_to_cache_s": 103.58307259809226,
+      "keys": [
+        "precipitation_rate@4x512x512+2s2o0/3731612.0.1",
+        "precipitation_rate@4x512x512+2s2o0/3731612.0.0",
+        "precipitation_rate@4x512x512+2s2o0/3731612.1.0",
+        "precipitation_rate@4x512x512+2s2o0/3731612.1.1"
+      ],
+      "layouts": [
+        "4x512x512+2s2o0"
+      ],
+      "received_value_check": "exact numerical equality on received payloads"
+    },
+    {
+      "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042600.grib2.gz",
+      "LastModified": "2026-10-05T04:28:38.000Z",
+      "Size": "645809",
+      "ETag": "\"f4581b7882aab5acd6e708e908921a94\"",
+      "source_url": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042600.grib2.gz",
+      "fetched_utc": "2026-10-05T04:28:49.308347+00:00",
+      "time": "2026-10-05T04:26:00",
+      "grib_sha256": "199369850e7b48eddd63fbb05ad48465041ad5b52c4c337260c45559b1347731",
+      "crop_sha256": "f50b3ad554876ea9cb43f48c945d1e8302a5fcbad00fdff0914fc525ee02b023",
+      "decode_fetch_s": 1.3890955420210958,
+      "decode_fetch_cpu_s": 0.2578808109999997,
+      "minimum": -3.0,
+      "maximum": 147.4,
+      "nonzero_cells": 306804,
+      "first_observed_utc": "2026-10-05T04:28:47.928322+00:00",
+      "committed_utc": "2026-10-05T04:28:49.495561+00:00",
+      "cached_utc": "2026-10-05T04:30:47.147724+00:00",
+      "commit_to_cache_s": 117.65221009589732,
+      "keys": [
+        "precipitation_rate@4x512x512+2s2o0/3731612.0.1",
+        "precipitation_rate@4x512x512+2s2o0/3731612.0.0",
+        "precipitation_rate@4x512x512+2s2o0/3731612.1.0",
+        "precipitation_rate@4x512x512+2s2o0/3731612.1.1"
+      ],
+      "layouts": [
+        "4x512x512+2s2o0"
+      ],
+      "received_value_check": "exact numerical equality on received payloads"
+    },
+    {
+      "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042800.grib2.gz",
+      "LastModified": "2026-10-05T04:30:58.000Z",
+      "Size": "645110",
+      "ETag": "\"1eeecec059a9a077d577d748451a767b\"",
+      "source_url": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042800.grib2.gz",
+      "fetched_utc": "2026-10-05T04:30:59.685110+00:00",
+      "time": "2026-10-05T04:28:00",
+      "grib_sha256": "58f96b9d702f390492e50536ba2b37831db9b63ad2a5b1f7c322bccb2678be17",
+      "crop_sha256": "8e71cf25a1d5c8b8dd5e5386b18d1588d67ebe0c7e60cfcb3c15e0f3050661ca",
+      "decode_fetch_s": 1.2876756889745593,
+      "decode_fetch_cpu_s": 0.30057654199999995,
+      "minimum": -3.0,
+      "maximum": 147.4,
+      "nonzero_cells": 306392,
+      "first_observed_utc": "2026-10-05T04:30:58.431917+00:00",
+      "committed_utc": "2026-10-05T04:30:59.887539+00:00",
+      "cached_utc": "2026-10-05T04:32:46.935810+00:00",
+      "commit_to_cache_s": 107.04831136204302,
+      "keys": [
+        "precipitation_rate@4x512x512+2s2o0/3731613.0.1",
+        "precipitation_rate@4x512x512+2s2o0/3731613.0.0",
+        "precipitation_rate@4x512x512+2s2o0/3731613.1.0",
+        "precipitation_rate@4x512x512+2s2o0/3731613.1.1"
+      ],
+      "layouts": [
+        "4x512x512+2s2o0"
+      ],
+      "received_value_check": "exact numerical equality on received payloads"
+    }
+  ],
+  "polls": [
+    {
+      "observed_utc": "2026-10-05T04:25:43.402290+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:25:44 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:25:48.095375+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:25:48 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:25:58.618120+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:25:59 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:26:09.132340+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:26:09 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:26:19.738876+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:26:20 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:26:30.250572+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:26:31 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:26:40.846894+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:26:41 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:26:51.445032+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:26:52 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 132,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+        "LastModified": "2026-10-05T04:24:49.000Z",
+        "Size": "649536",
+        "ETag": "\"1bc24986e999eeba41e67406151067e9\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:27:01.950725+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:27:02 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 133,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042400.grib2.gz",
+        "LastModified": "2026-10-05T04:26:57.000Z",
+        "Size": "650268",
+        "ETag": "\"14647542b9931c62dd71e41c28386866\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:28:47.928322+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:28:48 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 134,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042600.grib2.gz",
+        "LastModified": "2026-10-05T04:28:38.000Z",
+        "Size": "645809",
+        "ETag": "\"f4581b7882aab5acd6e708e908921a94\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:30:47.932721+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:30:48 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 134,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042600.grib2.gz",
+        "LastModified": "2026-10-05T04:28:38.000Z",
+        "Size": "645809",
+        "ETag": "\"f4581b7882aab5acd6e708e908921a94\""
+      }
+    },
+    {
+      "observed_utc": "2026-10-05T04:30:58.431917+00:00",
+      "http_date": "Mon, 05 Oct 2026 04:30:59 GMT",
+      "url": "https://noaa-mrms-pds.s3.amazonaws.com/?list-type=2&prefix=CONUS%2FPrecipRate_00.00%2F20261005%2F&max-keys=1000",
+      "objects": 135,
+      "latest": {
+        "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042800.grib2.gz",
+        "LastModified": "2026-10-05T04:30:58.000Z",
+        "Size": "645110",
+        "ETag": "\"1eeecec059a9a077d577d748451a767b\""
+      }
+    }
+  ],
+  "protocol": {
+    "source": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipRate_00.00/",
+    "initial_fields": 2,
+    "future_updates": 3,
+    "listing_poll_s": 10,
+    "rescan_s": 60.0,
+    "follow_s": 60.0,
+    "crop_indices": [
+      [
+        2048,
+        3072
+      ],
+      [
+        4096,
+        5120
+      ]
+    ],
+    "dtype": "float64 unchanged after gribberish decoding",
+    "scope": "One process with three node instances on one shared host; public live ingestion, loopback replication.",
+    "timing": "Latest-map availability in the subscriber's existing cache; validation never fetches missing source data."
+  },
+  "versions": {
+    "numpy": "2.5.3",
+    "xarray": "2026.7.0",
+    "zarr": "3.4.0",
+    "gribberish": "1.8.0"
+  },
+  "source_sha256": {
+    "zarr_torrent/gf.py": "aaa5fee28ea49a747f03002d249b0f802e53e3a35b77c9b42cd36fd2d82291da",
+    "zarr_torrent/plan.py": "85bcfb19ccba568823e1f0447bfdafcdcce5a94362b47c723f1b7192f203a24f",
+    "zarr_torrent/cli.py": "77d933779c88f442941296dbf4dd7ba033b03ae5a187813aee5e870b37ea095c",
+    "zarr_torrent/capt.py": "f47637ee037b8453546569f613c1f9fe7d5c5032fed14ff7a7c82558bdca4111",
+    "zarr_torrent/pushdown.py": "ca44129d08d3c0df68ac5ac89799dc72b2590c0bd0ef84100ba01a051136accc",
+    "zarr_torrent/parity.py": "650063f950340ddd07c83750d3625564f82a89b31f8fdc317a463146020a8c0d",
+    "zarr_torrent/jlps.py": "1f7dc3731e48ef06d80d6c58c533150348f12b943e057574d08f0dcd3368594b",
+    "zarr_torrent/codec.py": "ce097cfb3f8fe8162ea76151cd3bac7dd69b4eecde14880105a73429b06d743f",
+    "zarr_torrent/node.py": "9a574839deaa2560fb564cf73d0d7bf69838ea026385dc3ac852ed2d8d2c46dc",
+    "zarr_torrent/dht.py": "64206c03be60ff0b2bc09524225148bdf55701f20d801c7e462b603d1f17cf23",
+    "zarr_torrent/aqp.py": "c45f6d5c3de93f059b11c818d7245800c37473178fb26ca0b10a5c1c662b37f3",
+    "zarr_torrent/store.py": "9c8cda9d296ed84065602c214d28ffe64803a716e1cf7dd26ab05d33eff874d2",
+    "zarr_torrent/tui.py": "057e1f34029d30ac167e86edabc4c67a4a983c27b0001d82f9a62c9c9b7c8ef6",
+    "zarr_torrent/scan.py": "7c7b44f3b7dd82e8aa396a0c915dfafca35de1ffae6ba2e97045ebbeac7fa7d8",
+    "zarr_torrent/common.py": "ef5cced662932c65cc839276691d1efd2fb328ddb9abaca86a4e6c42fcd82192",
+    "zarr_torrent/__init__.py": "5ddf76b34f9ea3d83b7099839bb0d785d2488ce706ba497101c354fb5df2c9e4",
+    "bench/live_mrms.py": "a8f23dd5ec01cba9d78ae99b150f8278cde62d057d395e439ca9c1d3c21fdcc0"
+  },
+  "grid": "143a90e66c535cae8e28a58732131a1aa109d9a3",
+  "initial": [
+    {
+      "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042000.grib2.gz",
+      "LastModified": "2026-10-05T04:22:57.000Z",
+      "Size": "649220",
+      "ETag": "\"51be1a16e4dd8399c50c0cbcd861f55d\"",
+      "source_url": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042000.grib2.gz",
+      "fetched_utc": "2026-10-05T04:25:44.826100+00:00",
+      "time": "2026-10-05T04:20:00",
+      "grib_sha256": "285b8a68bbd15d7a8412e3314e9a36467ebaef7aee546b0e59edaf60618b9812",
+      "crop_sha256": "caa4ad0ef9625b94d1a9dc999ae6b397b80d4d5032172d9fdbed44e3ade216c0",
+      "decode_fetch_s": 1.4442755272611976,
+      "decode_fetch_cpu_s": 0.319823551999999,
+      "minimum": -3.0,
+      "maximum": 135.8,
+      "nonzero_cells": 307346
+    },
+    {
+      "Key": "CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+      "LastModified": "2026-10-05T04:24:49.000Z",
+      "Size": "649536",
+      "ETag": "\"1bc24986e999eeba41e67406151067e9\"",
+      "source_url": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipRate_00.00/20261005/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+      "fetched_utc": "2026-10-05T04:25:46.341091+00:00",
+      "time": "2026-10-05T04:22:00",
+      "grib_sha256": "b3f0f6b25359c57be27bb00e08ec13e1ad07ceaa8a740d305eb9cdcc2f153805",
+      "crop_sha256": "223ca33b5cd6196e4b23dbd385dc5cf1de1bca41f379ab26c8980b7c5f59c76e",
+      "decode_fetch_s": 1.5019226474687457,
+      "decode_fetch_cpu_s": 0.2841405269999999,
+      "minimum": -3.0,
+      "maximum": 175.0,
+      "nonzero_cells": 308009
+    }
+  ],
+  "initialized_utc": "2026-10-05T04:25:47.505198+00:00",
+  "warm": {
+    "cached_utc": "2026-10-05T04:25:47.329940+00:00",
+    "commit_to_cache_s": 0.5039399797096848,
+    "keys": [
+      "precipitation_rate@4x512x512+2s2o0/3731612.0.1",
+      "precipitation_rate@4x512x512+2s2o0/3731612.0.0",
+      "precipitation_rate@4x512x512+2s2o0/3731612.1.0",
+      "precipitation_rate@4x512x512+2s2o0/3731612.1.1"
+    ],
+    "layouts": [
+      "4x512x512+2s2o0"
+    ],
+    "received_value_check": "exact numerical equality on received payloads"
+  },
+  "jobs": [
+    {
+      "id": "eb8c6ec2",
+      "grid": "143a90e66c535cae8e28a58732131a1aa109d9a3",
+      "label": "follow precipitation_rate live",
+      "state": "done",
+      "total": 4,
+      "done": 4,
+      "bytes": 717258,
+      "missing": 0,
+      "per_peer": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": 717258
+      },
+      "t0": 1791174346.8258724,
+      "t1": 1791174347.0941207,
+      "order": "optimal",
+      "cover": {},
+      "cancel": false,
+      "pause": false,
+      "failed": 0,
+      "phases": {
+        "view": 0.0,
+        "round0": 0.27
+      },
+      "plan_T": 0.04,
+      "pred": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 717831,
+          "bw": 20000000,
+          "via": null
+        }
+      },
+      "actual": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 717258,
+          "busy_s": 0.267,
+          "end_s": 0.267
+        }
+      }
+    },
+    {
+      "id": "346d69c5",
+      "grid": "143a90e66c535cae8e28a58732131a1aa109d9a3",
+      "label": "follow precipitation_rate live",
+      "state": "done",
+      "total": 4,
+      "done": 4,
+      "bytes": 1063812,
+      "missing": 0,
+      "per_peer": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": 1063812
+      },
+      "t0": 1791174526.6222177,
+      "t1": 1791174527.1363986,
+      "order": "optimal",
+      "cover": {},
+      "cancel": false,
+      "pause": false,
+      "failed": 0,
+      "phases": {
+        "view": 0.0,
+        "round0": 0.51
+      },
+      "plan_T": 0.4,
+      "pred": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 1075674,
+          "bw": 2686810,
+          "via": null
+        }
+      },
+      "actual": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 1063812,
+          "busy_s": 0.513,
+          "end_s": 0.513
+        }
+      }
+    },
+    {
+      "id": "4ce042ab",
+      "grid": "143a90e66c535cae8e28a58732131a1aa109d9a3",
+      "label": "follow precipitation_rate live",
+      "state": "done",
+      "total": 4,
+      "done": 4,
+      "bytes": 948473,
+      "missing": 0,
+      "per_peer": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": 948473
+      },
+      "t0": 1791174646.6773221,
+      "t1": 1791174647.101187,
+      "order": "optimal",
+      "cover": {},
+      "cancel": false,
+      "pause": false,
+      "failed": 0,
+      "phases": {
+        "view": 0.0,
+        "round0": 0.42
+      },
+      "plan_T": 0.6,
+      "pred": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 1429568,
+          "bw": 2380547,
+          "via": null
+        }
+      },
+      "actual": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 948473,
+          "busy_s": 0.423,
+          "end_s": 0.423
+        }
+      }
+    },
+    {
+      "id": "2d74f5a3",
+      "grid": "143a90e66c535cae8e28a58732131a1aa109d9a3",
+      "label": "follow precipitation_rate live",
+      "state": "done",
+      "total": 8,
+      "done": 8,
+      "bytes": 356818,
+      "missing": 0,
+      "per_peer": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": 356818
+      },
+      "t0": 1791174766.7087238,
+      "t1": 1791174766.9328392,
+      "order": "optimal",
+      "cover": {},
+      "cancel": false,
+      "pause": false,
+      "failed": 0,
+      "phases": {
+        "view": 0.0,
+        "round0": 0.22
+      },
+      "plan_T": 0.15,
+      "pred": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 356818,
+          "bw": 2311207,
+          "via": null
+        }
+      },
+      "actual": {
+        "6904e41d34dfa4a3144bab1207edc05e8b32e584": {
+          "bytes": 356818,
+          "busy_s": 0.223,
+          "end_s": 0.223
+        }
+      }
+    }
+  ],
+  "finished_utc": "2026-10-05T04:32:47.063679+00:00",
+  "wall_s": 424.26465530041605,
+  "total_process_cpu_s": 7.983688657,
+  "peak_process_rss_kib": 759796,
+  "served": {
+    "node_maps": {
+      "bytes": 0,
+      "chunks": 0,
+      "relayed_bytes": 0,
+      "dht_rpcs": 44,
+      "manifest_bytes": 7139
+    },
+    "node_series": {
+      "bytes": 3086361,
+      "chunks": 16,
+      "relayed_bytes": 0,
+      "dht_rpcs": 41,
+      "manifest_bytes": 5841,
+      "xt1_chunks": 5
+    },
+    "node_client": {
+      "bytes": 0,
+      "chunks": 0,
+      "relayed_bytes": 0,
+      "dht_rpcs": 32
+    }
+  }
+}

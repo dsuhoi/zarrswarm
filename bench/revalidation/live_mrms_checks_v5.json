@@ -1,0 +1,273 @@
+{
+  "recorded_utc": "2026-10-05T04:45:42.068578+00:00",
+  "cases": {
+    "dry": {
+      "source_files": [
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/main/sources/MRMS_PrecipRate_00.00_20261005-034600.grib2.gz",
+          "sha256": "d8773ed425e439f9f3fc12e9cd4bcf7145015918b2fd36921620b6b110a6d820",
+          "crop_sha256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/main/sources/MRMS_PrecipRate_00.00_20261005-034800.grib2.gz",
+          "sha256": "be9d791b746c492c4a62bf4088afd475d99a8ac96b18b390889871dc3ade2add",
+          "crop_sha256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/main/sources/MRMS_PrecipRate_00.00_20261005-035000.grib2.gz",
+          "sha256": "848f7912bc6ed4deccafd58bbf9ece8e3bc99781cd974da7bdd3f644a2abe3be",
+          "crop_sha256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/main/sources/MRMS_PrecipRate_00.00_20261005-035200.grib2.gz",
+          "sha256": "526c8b67814c99939a8801bfa5c42a8f90b3a976b59c27099bafc2f9e7be71af",
+          "crop_sha256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/main/sources/MRMS_PrecipRate_00.00_20261005-035400.grib2.gz",
+          "sha256": "c3ca2915f29d3098129c6db871bf824de8f07da9d1d853eaa65267af88ca325e",
+          "crop_sha256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74"
+        }
+      ],
+      "verified_source_files": 34,
+      "time_steps_s": 120,
+      "positive_cells_per_field": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "changed_cells_from_previous": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "cache_lags_s": [
+        114.14410495944321,
+        117.3866555923596,
+        117.37165990844369
+      ],
+      "jobs_done": 4,
+      "xt1_served": 0,
+      "unknown_time_padding": "NaN (as encoded by xarray/Zarr)"
+    },
+    "wet": {
+      "source_files": [
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/wet_fixed/sources/MRMS_PrecipRate_00.00_20261005-042000.grib2.gz",
+          "sha256": "285b8a68bbd15d7a8412e3314e9a36467ebaef7aee546b0e59edaf60618b9812",
+          "crop_sha256": "caa4ad0ef9625b94d1a9dc999ae6b397b80d4d5032172d9fdbed44e3ade216c0"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/wet_fixed/sources/MRMS_PrecipRate_00.00_20261005-042200.grib2.gz",
+          "sha256": "b3f0f6b25359c57be27bb00e08ec13e1ad07ceaa8a740d305eb9cdcc2f153805",
+          "crop_sha256": "223ca33b5cd6196e4b23dbd385dc5cf1de1bca41f379ab26c8980b7c5f59c76e"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/wet_fixed/sources/MRMS_PrecipRate_00.00_20261005-042400.grib2.gz",
+          "sha256": "558e4ad9f60de8ba822d2a2c8eca2bde43f5e48c890e6b87af3a31f395592d0d",
+          "crop_sha256": "b2aaf3ea93335ce4b1198aadc53fa472cab1fead41a5583632aa77d225687660"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/wet_fixed/sources/MRMS_PrecipRate_00.00_20261005-042600.grib2.gz",
+          "sha256": "199369850e7b48eddd63fbb05ad48465041ad5b52c4c337260c45559b1347731",
+          "crop_sha256": "f50b3ad554876ea9cb43f48c945d1e8302a5fcbad00fdff0914fc525ee02b023"
+        },
+        {
+          "file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/wet_fixed/sources/MRMS_PrecipRate_00.00_20261005-042800.grib2.gz",
+          "sha256": "58f96b9d702f390492e50536ba2b37831db9b63ad2a5b1f7c322bccb2678be17",
+          "crop_sha256": "8e71cf25a1d5c8b8dd5e5386b18d1588d67ebe0c7e60cfcb3c15e0f3050661ca"
+        }
+      ],
+      "verified_source_files": 35,
+      "time_steps_s": 120,
+      "positive_cells_per_field": [
+        238148,
+        238811,
+        239225,
+        237606,
+        237194
+      ],
+      "changed_cells_from_previous": [
+        33100,
+        162139,
+        124402,
+        9986
+      ],
+      "cache_lags_s": [
+        103.58307259809226,
+        117.65221009589732,
+        107.04831136204302
+      ],
+      "jobs_done": 4,
+      "xt1_served": 5,
+      "unknown_time_padding": "NaN (as encoded by xarray/Zarr)"
+    }
+  },
+  "wet_crop_selection": {
+    "declared_utc": "2026-10-05T03:59:44.048268+00:00",
+    "rule": "Maximize finite positive cells over 1024-square crops starting at latitude indices 0,1024,2048,2476 and longitude indices 0,1024,2048,3072,4096,5120,5976; break ties by first index pair. Freeze the crop before observing future fields.",
+    "source_file": "/home/d.sukhorukov/zt_ms/mrms_live_20261005/main/sources/MRMS_PrecipRate_00.00_20261005-035400.grib2.gz",
+    "selected_utc": "2026-10-05T03:59:44.325158+00:00",
+    "source_sha256": "c3ca2915f29d3098129c6db871bf824de8f07da9d1d853eaa65267af88ca325e",
+    "source_time": "2026-10-05 03:54:00+00:00",
+    "crop": [
+      2048,
+      4096
+    ],
+    "precursor_positive_cells": 244312,
+    "candidate_counts": [
+      [
+        62291,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1024
+      ],
+      [
+        10,
+        0,
+        2048
+      ],
+      [
+        210,
+        0,
+        3072
+      ],
+      [
+        36342,
+        0,
+        4096
+      ],
+      [
+        85570,
+        0,
+        5120
+      ],
+      [
+        32736,
+        0,
+        5976
+      ],
+      [
+        0,
+        1024,
+        0
+      ],
+      [
+        0,
+        1024,
+        1024
+      ],
+      [
+        0,
+        1024,
+        2048
+      ],
+      [
+        0,
+        1024,
+        3072
+      ],
+      [
+        3381,
+        1024,
+        4096
+      ],
+      [
+        48546,
+        1024,
+        5120
+      ],
+      [
+        47741,
+        1024,
+        5976
+      ],
+      [
+        0,
+        2048,
+        0
+      ],
+      [
+        72,
+        2048,
+        1024
+      ],
+      [
+        565,
+        2048,
+        2048
+      ],
+      [
+        69832,
+        2048,
+        3072
+      ],
+      [
+        244312,
+        2048,
+        4096
+      ],
+      [
+        31216,
+        2048,
+        5120
+      ],
+      [
+        0,
+        2048,
+        5976
+      ],
+      [
+        0,
+        2476,
+        0
+      ],
+      [
+        72,
+        2476,
+        1024
+      ],
+      [
+        565,
+        2476,
+        2048
+      ],
+      [
+        58572,
+        2476,
+        3072
+      ],
+      [
+        37438,
+        2476,
+        4096
+      ],
+      [
+        148,
+        2476,
+        5120
+      ],
+      [
+        0,
+        2476,
+        5976
+      ]
+    ]
+  },
+  "postflight": {
+    "root": "/home/d.sukhorukov/zt_ms/mrms_live_20261005",
+    "active_processes": [],
+    "unique_allocated_bytes": 163770368,
+    "apparent_file_bytes": 162446047,
+    "file_count": 470,
+    "free_bytes": 108196462592,
+    "note": "Only this new root counted; raw GRIBs, cropped arrays and failed run retained. Existing datasets/services/jobs unchanged."
+  }
+}

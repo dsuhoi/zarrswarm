@@ -1,0 +1,19 @@
+{
+  "recorded_utc": "2026-10-05T11:08:53.096974+00:00",
+  "common_float32_result": "gfs_pipelines_v7.json",
+  "native_precision_result": "gfs_native_precision_v7.json",
+  "sample_fields": 8,
+  "sample_cells": 65536,
+  "native_accepted_pairs": 63,
+  "native_tile_pairs": 64,
+  "native_accepted_source_quantum_changes": 0,
+  "native_exact_identity_fields": 0,
+  "native_numeric_difference_percent_range": [
+    79.04052734375,
+    96.2158203125
+  ],
+  "common_float32_equal_values": 65536,
+  "failed_native_pair": "gfs_native_split_v7.json",
+  "common_float32_precision_cast": "NOAA ecCodes float64 outputs are converted to float32; Unidata NetCDF native outputs are float32. Earlier protocol phrase Coordinate selection only must be read with this explicit conversion. Native analysis performs no such conversion.",
+  "source_and_input_hashes_match": true
+}

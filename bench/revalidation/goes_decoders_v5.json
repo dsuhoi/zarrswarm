@@ -1,0 +1,28 @@
+{
+ "files": [
+  "OR_ABI-L1b-RadC-M6C13_G16_s20200011801183_e20200011803568_c20200011804039.nc",
+  "OR_ABI-L1b-RadC-M6C13_G16_s20200011806183_e20200011808568_c20200011809005.nc",
+  "OR_ABI-L1b-RadC-M6C13_G16_s20200011811183_e20200011813568_c20200011814093.nc"
+ ],
+ "pairs": {
+  "xarray vs netCDF4": {
+   "tiles": 180,
+   "bit_equal": 1.0,
+   "lattice_equal": 180,
+   "one_count_changed_merged": 0
+  },
+  "xarray vs float64 pipeline": {
+   "tiles": 180,
+   "bit_equal": 0.6692,
+   "lattice_equal": 180,
+   "one_count_changed_merged": 0
+  },
+  "netCDF4 vs float64 pipeline": {
+   "tiles": 180,
+   "bit_equal": 0.6692,
+   "lattice_equal": 180,
+   "one_count_changed_merged": 0
+  }
+ },
+ "step": 0.04572891651145184
+}

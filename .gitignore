@@ -3,3 +3,7 @@
 __pycache__/
 build/
 dist/
+site/
+.pytest_cache/
+paper/*_author_*.zip
+bench/revalidation/reference_audit_ieee_20261006/raw/

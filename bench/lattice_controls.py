@@ -18,7 +18,7 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent.codec import lattice_of, same_vcid, vcid_of  # noqa: E402
+from zarr_torrent.codec import ESTIMATOR, lattice_of, same_vcid, vcid_of  # noqa: E402
 
 VAR, TILE = "2m_temperature", (91, 180)
 
@@ -59,7 +59,23 @@ def main():
             neg["next hour"] += same_vcid(va, vcid_of(tn))
     n["bits_equal"] = round(n["bits_equal"] / n["tiles"], 4)
     res = {"tiles": n["tiles"], "providers_equivalent": n["providers_same"], "mean_bit_equal": n["bits_equal"],
-           "tile_step_equals_field_step": n["step_eq_field"], "false_merges": neg}
+           "tile_step_equals_field_step": n["step_eq_field"], "false_merges": neg, "estimator": ESTIMATOR,
+           "multi_slice": {}}
+    for length in (2, 6, 24):
+        total = equivalent = cancelled = 0
+        for start in range(0, len(A) - length + 1, length):
+            for y in range(0, A.shape[1], TILE[0]):
+                for x in range(0, A.shape[2], TILE[1]):
+                    ta, tb = (arr[start:start + length, y:y + TILE[0], x:x + TILE[1]] for arr in (A, B))
+                    va = vcid_of(ta, 0)
+                    total += 1
+                    equivalent += same_vcid(va, vcid_of(tb, 0))
+                    changed = ta.copy()
+                    changed[0] += lattice_of(ta[0])[0]
+                    changed[1] -= lattice_of(ta[1])[0]
+                    cancelled += same_vcid(va, vcid_of(changed, 0))
+        res["multi_slice"][str(length)] = {"tiles": total, "providers_equivalent": equivalent,
+                                            "opposing_shift_false_merges": cancelled}
     print(json.dumps(res, indent=1))
     json.dump(res, open(a.out, "w"), indent=1)
 

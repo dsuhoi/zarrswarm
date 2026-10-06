@@ -1,0 +1,666 @@
+{
+  "estimator": "lattice-v5",
+  "started_utc": "2026-10-04T15:00:20.129339+00:00",
+  "versions": {
+    "numpy": "2.5.3",
+    "xarray": "2026.7.0",
+    "h5netcdf": "1.8.1",
+    "h5py": "3.16.0"
+  },
+  "source_sha256": {
+    "zarr_torrent/codec.py": "cd3dbcaf4ee811f73f47e480ba15c8c73872de2461d7729b8dab27d032441bc3",
+    "bench/provider_identity_controls.py": "f89cd1a858e8d77ad6d39da37b5409ee1a6ab03d75ad2c5e863c7d5ecbd2f89a",
+    "bench/lattice_probe.py": "dc0fb97425ece06848a6c6f0b43bb8a0c2f043c893d6ead77dbf417cf5eabebb"
+  },
+  "protocol": "Four original survey variables, three January instants; 91x180 tiles; change one cell by one full-field ARCO step. Shared quantizers receive ARCO field parameters. L3 fits each tile independently.",
+  "fields": {
+    "2m_temperature@2020-01-03T18": {
+      "tiles": 64,
+      "ARCO_field_step": 0.001953125,
+      "ARCO_field_phase": 0.0006710512974966822,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0178166897827092,
+      "max_provider_difference_in_field_steps": 0.421875,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 30
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 49
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 32
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 49
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_167_2t.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "534c74e186ed2b4b23ba2ff366ebc7440be34940f590f16e1798ed46f1025899",
+        "NCAR": "f34e4139e067d7b4ea6d8867445aae08137eddc7813fa348e43b49f176f2b99b"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "2m_temperature@2020-01-15T06": {
+      "tiles": 64,
+      "ARCO_field_step": 0.001953125,
+      "ARCO_field_phase": 0.0007762013389663584,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.01947622900292803,
+      "max_provider_difference_in_field_steps": 0.3828125,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 32
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 48
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 29
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 50
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_167_2t.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "903c8a1ae73325dd88db3dbe3cdae47208f2c4f1691256a72f1aa5de40a3fd76",
+        "NCAR": "cd91d06421ac238d865b37b5675d534ee48d7f6fde423cb7c609853eb1a1028a"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "2m_temperature@2020-01-28T00": {
+      "tiles": 64,
+      "ARCO_field_step": 0.001953125,
+      "ARCO_field_phase": 0.0012515094200745177,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.01740926953305594,
+      "max_provider_difference_in_field_steps": 0.421875,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 33
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 45
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 32
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 47
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_167_2t.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "74e6154c0f5c29a10fed7be7ee69e8292e4a78612ce20b48d9cbb9e57a996bc1",
+        "NCAR": "03ecf07cdf7325bc1a49e1c0eaae79026ff34285f806103e12870beaf62aae2f"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "mean_sea_level_pressure@2020-01-03T18": {
+      "tiles": 64,
+      "ARCO_field_step": 0.25,
+      "ARCO_field_phase": 0.06243657816471506,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.05032555093234705,
+      "max_provider_difference_in_field_steps": 0.3125,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 1
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 27
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 49
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 31
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 50
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_151_msl.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "bc77040802ad23aee475b4f3843a91f52da7ed5feccd9001094094aafe7500b0",
+        "NCAR": "ee9ba2d16703eac4c5847ae932d808ec570385bf6fb0ad8f0cdc914acdd764c8"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "mean_sea_level_pressure@2020-01-15T06": {
+      "tiles": 64,
+      "ARCO_field_step": 0.25,
+      "ARCO_field_phase": 0.06462211149552237,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.048661195869933734,
+      "max_provider_difference_in_field_steps": 0.34375,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 32
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 43
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 26
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 44
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_151_msl.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "22bbfac4996efb5280fd5e1022250e674cb59d0c46eb2d8013d497c00304f689",
+        "NCAR": "0719b087396497656c8a2408a99eea531f0be2bd7d07f5bd74317bc59b18e95b"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "mean_sea_level_pressure@2020-01-28T00": {
+      "tiles": 64,
+      "ARCO_field_step": 0.25,
+      "ARCO_field_phase": 0.18403417941689165,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.04802454153182308,
+      "max_provider_difference_in_field_steps": 0.34375,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 3
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 36
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 47
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 30
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 50
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_151_msl.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "22b13e5f69dcef09cece622c3af83fef482cc26c121928a56c2ed55258e191a7",
+        "NCAR": "ddd34fefc40ce9b6e59d474e5cbf4be0b4eada65f6d01c38c6e223642d31351b"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "10m_u_component_of_wind@2020-01-03T18": {
+      "tiles": 64,
+      "ARCO_field_step": 0.0009765625,
+      "ARCO_field_phase": 0.0007051061968476193,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0004170519340422253,
+      "max_provider_difference_in_field_steps": 0.37109375,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 38
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 52
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 28
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 52
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_165_10u.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "57a3fa2e723e4d18519d74cb22c6ae329a3c1524fe51b96502d1d4df7661db20",
+        "NCAR": "4ef983fd7f26227a66707be4b8e80ea9c6307ef9b6fe1ee2cea711d6c9503287"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "10m_u_component_of_wind@2020-01-15T06": {
+      "tiles": 64,
+      "ARCO_field_step": 0.0009765625,
+      "ARCO_field_phase": 0.0005756954766592604,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0005913854214825089,
+      "max_provider_difference_in_field_steps": 0.3515625,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 29
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 49
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 31
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 49
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_165_10u.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "b7bb4b34526cf89d049e7412672df6b53be227cdf2f5caa9e3f4d02f29e6f60e",
+        "NCAR": "f2e4b4bae308888375b8ec2bbba53e2ec2232c82ca80285e427bb7b975531bdf"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "10m_u_component_of_wind@2020-01-28T00": {
+      "tiles": 64,
+      "ARCO_field_step": 0.0009765625,
+      "ARCO_field_phase": 0.0009196212123419641,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0004690630297426414,
+      "max_provider_difference_in_field_steps": 0.42578125,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 31
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 46
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 39
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 44
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_165_10u.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "439c7d534cdcf8d2ba484208ea48e9426efe61a1f2c50d692633a0aba513ffbc",
+        "NCAR": "72caa0bb977a4d6a295024447abb1d045291cd25092eda27d5eb3c1746ae6f22"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "total_column_water_vapour@2020-01-03T18": {
+      "tiles": 64,
+      "ARCO_field_step": 0.001953125,
+      "ARCO_field_phase": 0.0009713312153414188,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0016344968408075204,
+      "max_provider_difference_in_field_steps": 0.30078125,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 1
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 33
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 46
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 32
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 46
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_137_tcwv.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "079f963848ffe5cf103d3029ec29a338c7ebba6ca13b20a3efc09b3fb5bf53c8",
+        "NCAR": "f2561156c20d9d49c881f17967d9841004ee38262533bee6bae45e20acf82dff"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "total_column_water_vapour@2020-01-15T06": {
+      "tiles": 64,
+      "ARCO_field_step": 0.001953125,
+      "ARCO_field_phase": 0.0007225867948272918,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0011952920326706734,
+      "max_provider_difference_in_field_steps": 0.306640625,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 32
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 48
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 32
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 53
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_137_tcwv.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "7066551256c9df69dd351b3fd2f8cbb7154b03979ead147694bd41e0c9d0ea7d",
+        "NCAR": "001d8c047b809e95d03e0d1df86a8d21b6f70ca463d8f1d9e5cccd21f4d8a94c"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    },
+    "total_column_water_vapour@2020-01-28T00": {
+      "tiles": 64,
+      "ARCO_field_step": 0.001953125,
+      "ARCO_field_phase": 0.0007674802609683196,
+      "tile_step_matches_field": 64,
+      "exact_cell_fraction": 0.0008003929727230698,
+      "max_provider_difference_in_field_steps": 0.310546875,
+      "rules": {
+        "exact": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "L3": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-1step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 0
+        },
+        "shared-zero-2step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 36
+        },
+        "shared-zero-4step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 46
+        },
+        "shared-ARCO-phase-1step": {
+          "accepted_provider_tiles": 64,
+          "accepted_changed_tiles": 0
+        },
+        "shared-ARCO-phase-2step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 32
+        },
+        "shared-ARCO-phase-4step": {
+          "accepted_provider_tiles": 0,
+          "accepted_changed_tiles": 46
+        }
+      },
+      "source_urls": {
+        "ARCO": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        "NCAR": "https://nsf-ncar-era5.s3.amazonaws.com/e5.oper.an.sfc/202001/e5.oper.an.sfc.128_137_tcwv.ll025sc.2020010100_2020013123.nc"
+      },
+      "field_sha256": {
+        "ARCO": "388ea7b0ab7fa62b64763ed4445c0bf9f47ddf79c5bf437827582418b1ce9d02",
+        "NCAR": "a9662deacb8e176a39c92cb761bea8da7ce9634e5027d6087b7d3478c3083293"
+      },
+      "dtypes": [
+        "float32",
+        "float32"
+      ]
+    }
+  }
+}

@@ -1,0 +1,161 @@
+{
+ "process": {
+  "map_day_1h": {
+   "median_s": {
+    "lattice+JLPS": 6.01,
+    "lattice+min-bytes": 10.4,
+    "bytes+JLPS": 10.38
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.32,
+    "lattice+min-bytes": 1.07
+   },
+   "complete_runs": {
+    "lattice+JLPS": 3,
+    "lattice+min-bytes": 3,
+    "bytes+JLPS": 3
+   },
+   "complete_pairs": {
+    "bytes+JLPS": 3,
+    "lattice+min-bytes": 3
+   },
+   "rank": [
+    "lattice+JLPS",
+    "bytes+JLPS",
+    "lattice+min-bytes"
+   ],
+   "n": 3
+  },
+  "series_point_1h": {
+   "median_s": {
+    "lattice+JLPS": 13.47,
+    "lattice+min-bytes": 23.81,
+    "bytes+JLPS": 134.02
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.08,
+    "lattice+min-bytes": 1.77
+   },
+   "complete_runs": {
+    "lattice+JLPS": 3,
+    "lattice+min-bytes": 3,
+    "bytes+JLPS": 3
+   },
+   "complete_pairs": {
+    "bytes+JLPS": 3,
+    "lattice+min-bytes": 3
+   },
+   "rank": [
+    "lattice+JLPS",
+    "lattice+min-bytes",
+    "bytes+JLPS"
+   ],
+   "n": 3
+  },
+  "period_6h": {
+   "median_s": {
+    "lattice+JLPS": 17.31,
+    "lattice+min-bytes": 18.74,
+    "bytes+JLPS": 18.83
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.09,
+    "lattice+min-bytes": 1.16
+   },
+   "complete_runs": {
+    "lattice+JLPS": 3,
+    "lattice+min-bytes": 3,
+    "bytes+JLPS": 3
+   },
+   "complete_pairs": {
+    "bytes+JLPS": 3,
+    "lattice+min-bytes": 3
+   },
+   "rank": [
+    "lattice+JLPS",
+    "lattice+min-bytes",
+    "bytes+JLPS"
+   ],
+   "n": 3
+  }
+ },
+ "kernel": {
+  "map_day_1h": {
+   "median_s": {
+    "lattice+JLPS": 5.5,
+    "lattice+min-bytes": 16.74,
+    "bytes+JLPS": null
+   },
+   "speedup_vs": {
+    "bytes+JLPS": null,
+    "lattice+min-bytes": 2.87
+   },
+   "complete_runs": {
+    "lattice+JLPS": 3,
+    "lattice+min-bytes": 3,
+    "bytes+JLPS": 0
+   },
+   "complete_pairs": {
+    "bytes+JLPS": 0,
+    "lattice+min-bytes": 3
+   },
+   "rank": [
+    "lattice+JLPS",
+    "lattice+min-bytes"
+   ],
+   "n": 3
+  },
+  "series_point_1h": {
+   "median_s": {
+    "lattice+JLPS": 25.0,
+    "lattice+min-bytes": 24.91,
+    "bytes+JLPS": 10.25
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 0.96,
+    "lattice+min-bytes": 1.0
+   },
+   "complete_runs": {
+    "lattice+JLPS": 3,
+    "lattice+min-bytes": 3,
+    "bytes+JLPS": 1
+   },
+   "complete_pairs": {
+    "bytes+JLPS": 1,
+    "lattice+min-bytes": 3
+   },
+   "rank": [
+    "bytes+JLPS",
+    "lattice+min-bytes",
+    "lattice+JLPS"
+   ],
+   "n": 3
+  },
+  "period_6h": {
+   "median_s": {
+    "lattice+JLPS": 23.3,
+    "lattice+min-bytes": 42.35,
+    "bytes+JLPS": 36.08
+   },
+   "speedup_vs": {
+    "bytes+JLPS": 1.65,
+    "lattice+min-bytes": 2.04
+   },
+   "complete_runs": {
+    "lattice+JLPS": 3,
+    "lattice+min-bytes": 3,
+    "bytes+JLPS": 2
+   },
+   "complete_pairs": {
+    "bytes+JLPS": 2,
+    "lattice+min-bytes": 3
+   },
+   "rank": [
+    "lattice+JLPS",
+    "bytes+JLPS",
+    "lattice+min-bytes"
+   ],
+   "n": 3
+  }
+ }
+}

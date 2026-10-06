@@ -12,14 +12,20 @@ import pandas as pd
 import xarray as xr
 
 ZT = [sys.executable, "-m", "zarr_torrent.cli"]
+_ports = iter(range(10000, 30000, 2))
 
 
 def port():
-    s = socket.socket()
-    s.bind(("127.0.0.1", 0))
-    p = s.getsockname()[1]
-    s.close()
-    return p
+    # Both CLI ports must be free; stay below Linux's outgoing ephemeral range.
+    for p in _ports:
+        with socket.socket() as data, socket.socket() as control:
+            try:
+                data.bind(("127.0.0.1", p))
+                control.bind(("127.0.0.1", p + 1))
+                return p
+            except OSError:
+                continue
+    raise RuntimeError("no free test port pair")
 
 
 def zt(home, ctl_port, *args, check=True):

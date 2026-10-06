@@ -1,0 +1,61 @@
+{
+  "recorded_utc": "2026-10-05T03:10:54.547203+00:00",
+  "fields": 16,
+  "tiles": 1024,
+  "rules": {
+    "exact": {
+      "accepted_provider_tiles": 0,
+      "accepted_changed_tiles": 0
+    },
+    "L3": {
+      "accepted_provider_tiles": 896,
+      "accepted_changed_tiles": 0
+    },
+    "shared-zero-1step": {
+      "accepted_provider_tiles": 128,
+      "accepted_changed_tiles": 5
+    },
+    "shared-zero-2step": {
+      "accepted_provider_tiles": 192,
+      "accepted_changed_tiles": 511
+    },
+    "shared-zero-4step": {
+      "accepted_provider_tiles": 192,
+      "accepted_changed_tiles": 758
+    },
+    "shared-ARCO-phase-1step": {
+      "accepted_provider_tiles": 896,
+      "accepted_changed_tiles": 0
+    },
+    "shared-ARCO-phase-2step": {
+      "accepted_provider_tiles": 0,
+      "accepted_changed_tiles": 454
+    },
+    "shared-ARCO-phase-4step": {
+      "accepted_provider_tiles": 0,
+      "accepted_changed_tiles": 779
+    }
+  },
+  "by_variable": {
+    "2m_temperature": {
+      "tiles": 256,
+      "L3_accepted": 128
+    },
+    "mean_sea_level_pressure": {
+      "tiles": 256,
+      "L3_accepted": 256
+    },
+    "10m_u_component_of_wind": {
+      "tiles": 256,
+      "L3_accepted": 256
+    },
+    "total_column_water_vapour": {
+      "tiles": 256,
+      "L3_accepted": 256
+    }
+  },
+  "verified_source_files": 32,
+  "verified_field_files": 32,
+  "source_archive_sha256": "dab8d791e037aeb45d6982af8e6b166512a832347da0659f2efefcbcc1590777",
+  "result_sha256": "2e636af00a8d57ac3047fc9041210fca009380f3b9c340558b720c95cbe10a30"
+}

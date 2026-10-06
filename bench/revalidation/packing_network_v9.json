@@ -1,0 +1,153 @@
+{
+  "started_utc": "2026-10-05T13:00:49.030604+00:00",
+  "sample": "bench/revalidation/gfs_pipelines_v7.json",
+  "sample_sha256": "a157545a540865d1ac8bcedab16a053ea38a245f4635c13036069c2e88111b79",
+  "protocol_sha256": "17ebe73fce5f459d9d7eda47ce9e252e563c9c4023525a286b9db338ed257a89",
+  "scope": "Six independent processes on one host, loopback sockets; retained native ecCodes float64 and Unidata float32, source publisher signs extracted GRIB parameters, 0.45-step common bound. Not a station or WAN throughput test.",
+  "layouts": [
+    [
+      1,
+      32,
+      32
+    ],
+    [
+      2,
+      16,
+      64
+    ]
+  ],
+  "formats": [
+    2,
+    3
+  ],
+  "default_shared_value_families": 0,
+  "source_sha256": {
+    "bench/packing_network.py": "d739f6ea326410a47b53f07fee13c91c5a43c12273581a2ea70e9e291fad1158",
+    "bench/gfs_native_precision.py": "06e7583377fce13ad8b5ebc20cf0c001398142d407bb770011aa9280410cdc4e",
+    "sim/procswarm.py": "20cc13059a6c719f1ba37ac233181a67221aeecabb455efa6817a48aa63f223d",
+    "zarr_torrent/codec.py": "0eeee2dba9dabb344c4a274e162cb0dd8f317cba792f97958bedbe0833d1ad57",
+    "zarr_torrent/scan.py": "7082572ee1ed7c13f250adb8dcbe51907d3b4d25bb1684ab35fa604087c5ec16",
+    "zarr_torrent/node.py": "cf986828b57172262fe9d86e64f864e563377f9986433cddbebc2ad53abaedc5",
+    "zarr_torrent/cli.py": "adfd6549e49ffac95970b88bb4fcf0b159873d7e592dbc77718f4fac20cc1012"
+  },
+  "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+  "publisher_pk": "7949617afbccd3993cacd6a9d1e28c2d5a06025c6c94425c7100009f5382550f",
+  "signed_contracts": {
+    "PRMSL": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "PRMSL",
+      "units": "Pa",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.4,
+            93213.2875,
+            0.18000000000000002
+          ],
+          "1791180000": [
+            0.2,
+            93578.725,
+            0.09000000000000001
+          ]
+        }
+      },
+      "pk": "7949617afbccd3993cacd6a9d1e28c2d5a06025c6c94425c7100009f5382550f",
+      "sig": "4ae57740fff42a9ae9ea0aea0325ceefa09470bb836c48681674ca7cfaef90bc2ab84b67c8bc303b3d649719e8c960746867a03c87213738a4d00e4c39294709"
+    },
+    "TMP": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "TMP",
+      "units": "K",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.1,
+            204.565869140625,
+            0.045000000000000005
+          ],
+          "1791180000": [
+            0.1,
+            210.86503906250002,
+            0.045000000000000005
+          ]
+        }
+      },
+      "pk": "7949617afbccd3993cacd6a9d1e28c2d5a06025c6c94425c7100009f5382550f",
+      "sig": "8be629b06a1567de53089d093c22094024393d388922964ebf225a35c53d6c790ca081d54643305a847103d7b90bd7bebb369ba3ef1175bc9829957f66ded705"
+    },
+    "UGRD": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "UGRD",
+      "units": "m/s",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.01,
+            -42.497802734375,
+            0.0045000000000000005
+          ],
+          "1791180000": [
+            0.01,
+            -42.4615087890625,
+            0.0045000000000000005
+          ]
+        }
+      },
+      "pk": "7949617afbccd3993cacd6a9d1e28c2d5a06025c6c94425c7100009f5382550f",
+      "sig": "317190b557cbf4dbe64178e1f963874b5a90c7a630e30f0ead26d00477b3ebc35cc195521f7a618acb6536ab204d9d81536ea967f3775d787722a6bfe013cf0d"
+    },
+    "VGRD": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "VGRD",
+      "units": "m/s",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.01,
+            -40.13969482421875,
+            0.0045000000000000005
+          ],
+          "1791180000": [
+            0.01,
+            -38.415126953125004,
+            0.0045000000000000005
+          ]
+        }
+      },
+      "pk": "7949617afbccd3993cacd6a9d1e28c2d5a06025c6c94425c7100009f5382550f",
+      "sig": "8dcac97463412adcefa3215bbad45a3be5b60abf628a2869cc8d68dbf3ca0b18b54b2028fc1325f93655595432f589a31b69c315657c8b4254b9891b57c31b08"
+    }
+  },
+  "paired_chunks": 64,
+  "pooled_native_pairs": 64,
+  "accepted_source_count_changes": 0,
+  "publisher_offline": {
+    "TMP": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 1.2207031261368684e-05
+    },
+    "UGRD": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 4.5776367230132564e-07
+    },
+    "VGRD": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 4.5776367230132564e-07
+    },
+    "PRMSL": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 0.003125000002910383
+    }
+  },
+  "cache_only_restart": true,
+  "completed_utc": "2026-10-05T13:00:57.021018+00:00",
+  "all_processes_stopped": true
+}

@@ -1,0 +1,153 @@
+{
+  "started_utc": "2026-10-05T13:14:25.564508+00:00",
+  "sample": "bench/revalidation/gfs_pipelines_v7.json",
+  "sample_sha256": "a157545a540865d1ac8bcedab16a053ea38a245f4635c13036069c2e88111b79",
+  "protocol_sha256": "17ebe73fce5f459d9d7eda47ce9e252e563c9c4023525a286b9db338ed257a89",
+  "scope": "Six independent processes on one host, loopback sockets; retained native ecCodes float64 and Unidata float32, source publisher signs extracted GRIB parameters, 0.45-step common bound. Not a station or WAN throughput test.",
+  "layouts": [
+    [
+      1,
+      32,
+      32
+    ],
+    [
+      2,
+      16,
+      64
+    ]
+  ],
+  "formats": [
+    2,
+    3
+  ],
+  "default_shared_value_families": 0,
+  "source_sha256": {
+    "bench/packing_network.py": "d739f6ea326410a47b53f07fee13c91c5a43c12273581a2ea70e9e291fad1158",
+    "bench/gfs_native_precision.py": "06e7583377fce13ad8b5ebc20cf0c001398142d407bb770011aa9280410cdc4e",
+    "sim/procswarm.py": "20cc13059a6c719f1ba37ac233181a67221aeecabb455efa6817a48aa63f223d",
+    "zarr_torrent/codec.py": "0eeee2dba9dabb344c4a274e162cb0dd8f317cba792f97958bedbe0833d1ad57",
+    "zarr_torrent/scan.py": "7082572ee1ed7c13f250adb8dcbe51907d3b4d25bb1684ab35fa604087c5ec16",
+    "zarr_torrent/node.py": "4ff7e3ffbc698995b78ec686c34d332f3a3c8a1566a8f7e89d86251b09fa0f7b",
+    "zarr_torrent/cli.py": "1d374ba5352af802fedd96d44ca7d77f6f5f4c288367e2ad7eb0f8e05ae54c1f"
+  },
+  "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+  "publisher_pk": "21b66d2921c4d38b2f39c06599139f81e0631f316536cbc3df5dad8a602c3d33",
+  "signed_contracts": {
+    "PRMSL": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "PRMSL",
+      "units": "Pa",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.4,
+            93213.2875,
+            0.18000000000000002
+          ],
+          "1791180000": [
+            0.2,
+            93578.725,
+            0.09000000000000001
+          ]
+        }
+      },
+      "pk": "21b66d2921c4d38b2f39c06599139f81e0631f316536cbc3df5dad8a602c3d33",
+      "sig": "ff01535751ccab3f09af039cef01fe6df44c984dbdd759f3fd875004150b90ead4a730bff7bc97f9918e7207b258d63ca10de36b7988eab62b6dd134f37cc00b"
+    },
+    "TMP": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "TMP",
+      "units": "K",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.1,
+            204.565869140625,
+            0.045000000000000005
+          ],
+          "1791180000": [
+            0.1,
+            210.86503906250002,
+            0.045000000000000005
+          ]
+        }
+      },
+      "pk": "21b66d2921c4d38b2f39c06599139f81e0631f316536cbc3df5dad8a602c3d33",
+      "sig": "5aed4550693df8177af69c127b61f1bc057afb0d54a524a2923e88c918c638b6fdc5893d97c1cd059926461518dcc0c4d0c107b8b6fd4fcdbc5516cd4aefc70d"
+    },
+    "UGRD": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "UGRD",
+      "units": "m/s",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.01,
+            -42.497802734375,
+            0.0045000000000000005
+          ],
+          "1791180000": [
+            0.01,
+            -42.4615087890625,
+            0.0045000000000000005
+          ]
+        }
+      },
+      "pk": "21b66d2921c4d38b2f39c06599139f81e0631f316536cbc3df5dad8a602c3d33",
+      "sig": "19c39c29482f54976bb3d074b3c06ff327bf4231842e42346696cfd0a890b2a9d334a8ec50216412d2b3a11617b75d688907a90ad439816a7681459f097ee004"
+    },
+    "VGRD": {
+      "version": 1,
+      "grid_id": "f335e0a4f5e526bb31e0e305841723981fd85b8b",
+      "variable": "VGRD",
+      "units": "m/s",
+      "parameters": {
+        "time": {
+          "1791158400": [
+            0.01,
+            -40.13969482421875,
+            0.0045000000000000005
+          ],
+          "1791180000": [
+            0.01,
+            -38.415126953125004,
+            0.0045000000000000005
+          ]
+        }
+      },
+      "pk": "21b66d2921c4d38b2f39c06599139f81e0631f316536cbc3df5dad8a602c3d33",
+      "sig": "d8167fec5be7c18f5f7ebd62198edc57e8449b971d6777cd350fd0aea4e43d8741a54c06090c5e35ca5cbb4de907c2f692deebd17883db4a382225035cc9110f"
+    }
+  },
+  "paired_chunks": 64,
+  "pooled_native_pairs": 64,
+  "accepted_source_count_changes": 0,
+  "publisher_offline": {
+    "TMP": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 1.2207031261368684e-05
+    },
+    "UGRD": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 4.5776367230132564e-07
+    },
+    "VGRD": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 4.5776367230132564e-07
+    },
+    "PRMSL": {
+      "cells": 16384,
+      "matching_source_codes": 16384,
+      "max_abs_difference": 0.003125000002910383
+    }
+  },
+  "cache_only_restart": true,
+  "completed_utc": "2026-10-05T13:14:33.780070+00:00",
+  "all_processes_stopped": true
+}

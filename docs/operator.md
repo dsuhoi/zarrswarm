@@ -17,6 +17,7 @@
 ```bash
 uv venv -p 3.12 .venv && uv pip install -p .venv -e .       # или pip install -e . в любом venv с Python ≥ 3.11
                                                              # или Docker, см. ниже
+source .venv/bin/activate
 zt init --bootstrap-node --public-host data.example.org --service
 #   node id   3f9c…
 #   config    ~/.zt/config.toml
@@ -44,12 +45,12 @@ zt init --join ztnet://3f9c…@data.example.org:7881 --listen-public --service  
 ### Docker
 
 ```bash
-docker build -t zarr-torrent .
+docker build -t zarrswarm .
 mkdir -p ~/zt-home
 U="--user $(id -u):$(id -g)"                    # файлы узла принадлежат вам, а не root
-docker run --rm $U -v ~/zt-home:/zt zarr-torrent init --join ztnet://3f9c…@data.example.org:7881
+docker run --rm $U -v ~/zt-home:/zt zarrswarm init --join ztnet://3f9c…@data.example.org:7881
 docker run -d --name zt --restart unless-stopped $U --network host \
-       -v ~/zt-home:/zt -v /data:/data:ro zarr-torrent node
+       -v ~/zt-home:/zt -v /data:/data:ro zarrswarm node
 docker exec zt zt status
 ```
 

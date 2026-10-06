@@ -45,7 +45,7 @@ from zarr.storage import MemoryStore
 
 from . import codec
 from .jlps import complete_for
-from .scan import chunk_g, chunks_for, natural_stride, sample_of, split_key, tstride
+from .scan import available_layouts, chunk_g, chunks_for, natural_stride, sample_of, split_key, tstride
 
 CTL = os.environ.get("ZT_CTL", "http://127.0.0.1:7882")
 BATCH_WINDOW = 0.005
@@ -171,7 +171,7 @@ class View:
         self.arrays = {n: a for n, a in v["arrays"].items() if a["layouts"]}
         self.G0, self.n_time, self.S, self.O = 0, None, 1, 0
         if self.t:
-            tl = [li for a in self.arrays.values() if a["taxis"] is not None for li in a["layouts"].values()]
+            tl = [li for a in self.arrays.values() if a["taxis"] is not None for li in available_layouts(a).values()]
             if step:
                 self.S = int(step) // self.t["dt"]
                 if self.S < 1 or int(step) % self.t["dt"]:
@@ -180,14 +180,14 @@ class View:
                 self.O = offs[0] if offs else 0
             elif tl:
                 nat = [natural_stride(li, a["taxis"]) for a in self.arrays.values() if a["taxis"] is not None
-                       for li in a["layouts"].values()]
+                       for li in available_layouts(a).values()]
                 self.S, self.O = min(nat)
                 self.O %= self.S
         lat = (self.S, self.O)
         # native layout = the most common one among those serving the view's lattice directly
         # native layout = the most common one among those whose REAL sample spacing is the view's step (a single-sample
         # layout is keyed at stride 1 but holds 2 s volumes: judged by natural_stride, not by its key stride)
-        self.native = {n: max(a["layouts"], key=lambda l: (a["taxis"] is None or complete_for(a["layouts"][l], lat)
+        self.native = {n: max(available_layouts(a), key=lambda l: (a["taxis"] is None or complete_for(a["layouts"][l], lat)
                                                              and natural_stride(a["layouts"][l], a["taxis"])[0] == self.S,
                                                              a["layouts"][l]["n"], l))
                        for n, a in self.arrays.items()}
@@ -219,7 +219,7 @@ class View:
                 i = a["dims"].index(d)
                 vch[i] = max(1, min(size if size and size > 0 else shape[i], max(shape[i], 1)))
         direct = None
-        for lay in sorted(a["layouts"], key=lambda l: l != self.native[n]):
+        for lay in sorted(available_layouts(a), key=lambda l: l != self.native[n]):
             li = a["layouts"][lay]
             same_fmt = ("zarr.json" in li["docs"]) == (self.fmt == 3)
             if same_fmt and li["chunks"] == vch and (a["taxis"] is None or (
@@ -286,7 +286,7 @@ class View:
         T = a["taxis"]
         if any(hi <= lo for lo, hi in region):
             return []
-        order = sorted(a["layouts"], key=lambda l: self._cost(a, a["layouts"][l], region))
+        order = sorted(available_layouts(a), key=lambda l: self._cost(a, a["layouts"][l], region))
         out = []
         if T is None:
             return self._emit(n, a, order[0], region, region)

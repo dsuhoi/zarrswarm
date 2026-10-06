@@ -1,0 +1,102 @@
+{
+  "recorded_utc": "2026-10-05T03:05:05.201586+00:00",
+  "fields": {
+    "2m_temperature@2020-01-03T18": {
+      "bit_equal_fraction": 0.0178166897827092,
+      "numeric_equal_fraction": 0.0178166897827092,
+      "field_sha256": {
+        "ARCO": "534c74e186ed2b4b23ba2ff366ebc7440be34940f590f16e1798ed46f1025899",
+        "NCAR": "f34e4139e067d7b4ea6d8867445aae08137eddc7813fa348e43b49f176f2b99b"
+      }
+    },
+    "2m_temperature@2020-01-15T06": {
+      "bit_equal_fraction": 0.01947622900292803,
+      "numeric_equal_fraction": 0.01947622900292803,
+      "field_sha256": {
+        "ARCO": "903c8a1ae73325dd88db3dbe3cdae47208f2c4f1691256a72f1aa5de40a3fd76",
+        "NCAR": "cd91d06421ac238d865b37b5675d534ee48d7f6fde423cb7c609853eb1a1028a"
+      }
+    },
+    "2m_temperature@2020-01-28T00": {
+      "bit_equal_fraction": 0.01740926953305594,
+      "numeric_equal_fraction": 0.01740926953305594,
+      "field_sha256": {
+        "ARCO": "74e6154c0f5c29a10fed7be7ee69e8292e4a78612ce20b48d9cbb9e57a996bc1",
+        "NCAR": "03ecf07cdf7325bc1a49e1c0eaae79026ff34285f806103e12870beaf62aae2f"
+      }
+    },
+    "mean_sea_level_pressure@2020-01-03T18": {
+      "bit_equal_fraction": 0.05032555093234705,
+      "numeric_equal_fraction": 0.05032555093234705,
+      "field_sha256": {
+        "ARCO": "bc77040802ad23aee475b4f3843a91f52da7ed5feccd9001094094aafe7500b0",
+        "NCAR": "ee9ba2d16703eac4c5847ae932d808ec570385bf6fb0ad8f0cdc914acdd764c8"
+      }
+    },
+    "mean_sea_level_pressure@2020-01-15T06": {
+      "bit_equal_fraction": 0.048661195869933734,
+      "numeric_equal_fraction": 0.048661195869933734,
+      "field_sha256": {
+        "ARCO": "22bbfac4996efb5280fd5e1022250e674cb59d0c46eb2d8013d497c00304f689",
+        "NCAR": "0719b087396497656c8a2408a99eea531f0be2bd7d07f5bd74317bc59b18e95b"
+      }
+    },
+    "mean_sea_level_pressure@2020-01-28T00": {
+      "bit_equal_fraction": 0.04802454153182308,
+      "numeric_equal_fraction": 0.04802454153182308,
+      "field_sha256": {
+        "ARCO": "22b13e5f69dcef09cece622c3af83fef482cc26c121928a56c2ed55258e191a7",
+        "NCAR": "ddd34fefc40ce9b6e59d474e5cbf4be0b4eada65f6d01c38c6e223642d31351b"
+      }
+    },
+    "10m_u_component_of_wind@2020-01-03T18": {
+      "bit_equal_fraction": 0.0004170519340422253,
+      "numeric_equal_fraction": 0.0004170519340422253,
+      "field_sha256": {
+        "ARCO": "57a3fa2e723e4d18519d74cb22c6ae329a3c1524fe51b96502d1d4df7661db20",
+        "NCAR": "4ef983fd7f26227a66707be4b8e80ea9c6307ef9b6fe1ee2cea711d6c9503287"
+      }
+    },
+    "10m_u_component_of_wind@2020-01-15T06": {
+      "bit_equal_fraction": 0.0005913854214825089,
+      "numeric_equal_fraction": 0.0005913854214825089,
+      "field_sha256": {
+        "ARCO": "b7bb4b34526cf89d049e7412672df6b53be227cdf2f5caa9e3f4d02f29e6f60e",
+        "NCAR": "f2e4b4bae308888375b8ec2bbba53e2ec2232c82ca80285e427bb7b975531bdf"
+      }
+    },
+    "10m_u_component_of_wind@2020-01-28T00": {
+      "bit_equal_fraction": 0.0004690630297426414,
+      "numeric_equal_fraction": 0.0004690630297426414,
+      "field_sha256": {
+        "ARCO": "439c7d534cdcf8d2ba484208ea48e9426efe61a1f2c50d692633a0aba513ffbc",
+        "NCAR": "72caa0bb977a4d6a295024447abb1d045291cd25092eda27d5eb3c1746ae6f22"
+      }
+    },
+    "total_column_water_vapour@2020-01-03T18": {
+      "bit_equal_fraction": 0.0016344968408075204,
+      "numeric_equal_fraction": 0.0016344968408075204,
+      "field_sha256": {
+        "ARCO": "079f963848ffe5cf103d3029ec29a338c7ebba6ca13b20a3efc09b3fb5bf53c8",
+        "NCAR": "f2561156c20d9d49c881f17967d9841004ee38262533bee6bae45e20acf82dff"
+      }
+    },
+    "total_column_water_vapour@2020-01-15T06": {
+      "bit_equal_fraction": 0.0011952920326706734,
+      "numeric_equal_fraction": 0.0011952920326706734,
+      "field_sha256": {
+        "ARCO": "7066551256c9df69dd351b3fd2f8cbb7154b03979ead147694bd41e0c9d0ea7d",
+        "NCAR": "001d8c047b809e95d03e0d1df86a8d21b6f70ca463d8f1d9e5cccd21f4d8a94c"
+      }
+    },
+    "total_column_water_vapour@2020-01-28T00": {
+      "bit_equal_fraction": 0.0008003929727230698,
+      "numeric_equal_fraction": 0.0008003929727230698,
+      "field_sha256": {
+        "ARCO": "388ea7b0ab7fa62b64763ed4445c0bf9f47ddf79c5bf437827582418b1ce9d02",
+        "NCAR": "a9662deacb8e176a39c92cb761bea8da7ce9634e5027d6087b7d3478c3083293"
+      }
+    }
+  },
+  "numeric_and_bit_comparisons_equal": true
+}

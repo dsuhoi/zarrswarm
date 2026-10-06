@@ -49,13 +49,63 @@ def time_chunks(var: str, arrays: dict, best: dict, g_lo: int, g_hi: int, isel: 
         if not complete_for(li, lattice):
             continue
         s, e = chunk_g(li, T, co[T])
+        if b.get("nv"):
+            e = min(e, s + b["nv"] * li.get("stride", 1))
         if e <= g_lo or s >= g_hi:
             continue
         if any(co[i] * li["chunks"][i] >= hi or (co[i] + 1) * li["chunks"][i] <= lo for i, (lo, hi) in box.items()):
             continue
         tc = out.setdefault((lay, co[T]), {"a": max(s, g_lo), "b": min(e, g_hi), "tiles": {}})
+        tc["b"] = min(tc["b"], e, g_hi)
         tc["tiles"][k] = (b["src"][0][2], tuple(sorted(p for p, _, _ in b["src"])))
-    return out
+    # One tile is not a global map. Only complete spatial families may cover a time interval.
+    return {key: tc for key, tc in out.items()
+            if len(tc["tiles"]) == _required_tiles(a, a["layouts"][key[0]], isel)}
+
+
+def _required_tiles(a, li, isel=None):
+    docs = li.get("docs", {})
+    meta = docs.get("zarr.json", docs.get(".zarray", {}))
+    shape = meta.get("shape", li["chunks"])
+    dims = a.get("dims", [str(i) for i in range(len(shape))])
+    count = 1
+    for i, (sz, cs) in enumerate(zip(shape, li["chunks"])):
+        if i == a["taxis"]:
+            continue
+        lo, hi = (isel or {}).get(dims[i], (0, sz))
+        if not 0 <= lo < hi <= sz:
+            raise ValueError(f"invalid selection for {dims[i]}: {(lo, hi)}")
+        count *= (hi - 1) // cs - lo // cs + 1
+    return count
+
+
+def region_coverage(var, arrays, best, keys, g_lo, g_hi, isel=None, lattice=(1, 0)):
+    """Count requested time samples covered by complete spatial families, using valid lengths, not plan status.
+
+    Complementary partial tiles from different layouts are conservatively reported incomplete.
+    """
+    a = arrays[var]
+    selected = {k: dict(best[k], src=best[k].get("src") or [("local", "", 0)])
+                for k in set(keys) if k in best and split_key(k)[0] == var}
+    if a["taxis"] is None:
+        counts = defaultdict(int)
+        for k in selected:
+            _, lay, _ = split_key(k)
+            counts[lay] += 1
+        covered = any(n == _required_tiles(a, a["layouts"][lay], isel) for lay, n in counts.items())
+        return {"requested_samples": 1, "covered_samples": int(covered), "missing_samples": int(not covered)}
+    S, O = lattice
+    if S <= 0 or g_hi < g_lo:
+        raise ValueError("invalid query interval or sample step")
+    lo, hi = -(-(g_lo - O) // S), -(-(g_hi - O) // S)
+    ivs = sorted((-(-(tc["a"] - O) // S), -(-(tc["b"] - O) // S))
+                 for tc in time_chunks(var, arrays, selected, g_lo, g_hi, isel, lattice).values())
+    covered, end = 0, lo
+    for x, y in ivs:
+        covered += max(0, y - max(end, x))
+        end = max(end, y)
+    requested = max(0, hi - lo)
+    return {"requested_samples": requested, "covered_samples": covered, "missing_samples": requested - covered}
 
 
 def _dp_cover(tcs: dict, g_lo: int, g_hi: int, price, lattice: tuple[int, int] = (1, 0)) -> list:
@@ -103,18 +153,22 @@ def jlps(var: str, arrays: dict, best: dict, g_lo: int, g_hi: int, bw: dict, ite
     tcs = time_chunks(var, arrays, best, g_lo, g_hi, isel, lattice)
     if not tcs:
         return [], {}, 0.0, {"covers": 0}
+    byte_cover = tuple(sorted(_dp_cover(tcs, g_lo, g_hi,
+        lambda t: sum(sz for sz, _ in t["tiles"].values()), lattice)))
+    local = frozenset(p for p, b in bw.items() if b >= 1e11)
     # every chunk also costs a request, a disk read and a verification: charge it as bytes at the median rate, so
     # a cover of hundreds of small reads spread over many peers is not mistaken for a fast one
     rates = sorted(b for b in bw.values() if b < 1e11)
     ovh = CHUNK_OVERHEAD_S * (rates[len(rates) // 2] if rates else 0.0)
     tcs = {key: dict(t, tiles={k: (sz + ovh, hs) for k, (sz, hs) in t["tiles"].items()}) for key, t in tcs.items()}
     lam = {p: 1.0 / bw[p] for p in bw}
-    total_bw = sum(bw.values())
+    holders = {p for t in tcs.values() for _, hs in t["tiles"].values() for p in hs}
+    total_bw = sum(bw[p] for p in holders - local) or 1.0
 
     def price(t):
-        return sum(sz * min(lam[p] for p in hs) for sz, hs in t["tiles"].values())
+        return sum(sz * min(0.0 if p in local else lam[p] for p in hs) for sz, hs in t["tiles"].values())
 
-    covers, seen = [], set()
+    covers, seen = [byte_cover], {byte_cover}
     t_ref = None
     for _ in range(iters):
         cover = tuple(sorted(_dp_cover(tcs, g_lo, g_hi, price, lattice)))
@@ -124,17 +178,19 @@ def jlps(var: str, arrays: dict, best: dict, g_lo: int, g_hi: int, bw: dict, ite
         load = defaultdict(float)
         for key in cover:
             for sz, hs in tcs[key]["tiles"].values():
-                load[min(hs, key=lambda p: lam[p])] += sz
-        tot = sum(load.values())
+                load[min(hs, key=lambda p: 0.0 if p in local else lam[p])] += sz
+        tot = sum(l for p, l in load.items() if p not in local)
         t_ref = t_ref or max(tot / total_bw, 1e-9)
         for p, l in load.items():
-            lam[p] *= 1 + eps * l / (bw[p] * t_ref)
+            if p not in local:
+                lam[p] *= 1 + eps * l / (bw[p] * t_ref)
     def lower_bound(cover):  # no schedule beats all of its holders sending at full rate at once
         vol, hs = 0.0, set()
         for key in cover:
             for sz, h in tcs[key]["tiles"].values():
-                vol += sz
-                hs.update(h)
+                if not local.intersection(h):
+                    vol += sz
+                    hs.update(h)
         cap = sum(bw[p] for p in hs if (via or {}).get(p) not in (via_bw or {})) + \
             sum((via_bw or {})[r] for r in {(via or {}).get(p) for p in hs} if r in (via_bw or {}))
         return vol / max(min(cap, CLIENT_BW) if CLIENT_BW else cap, 1e-9)
@@ -144,7 +200,7 @@ def jlps(var: str, arrays: dict, best: dict, g_lo: int, g_hi: int, bw: dict, ite
             break
         chunks = {k: v for key in cover for k, v in tcs[key]["tiles"].items()}
         asg, T = planmod.plan(chunks, bw, via=via, via_bw=via_bw, client_bw=CLIENT_BW or None,
-                              local=frozenset(p for p, b in bw.items() if b >= 1e11))
+                              local=local)
         best_T = min(best_T, T)
         scored.append((T, sum(sz for sz, _ in chunks.values()), cover, asg))
     # predictions within SLACK of the best are indistinguishable under rate noise; reading fewer bytes from fewer

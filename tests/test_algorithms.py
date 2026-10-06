@@ -60,6 +60,115 @@ def test_plan_against_brute_force():
     assert max(ratios) < 1.6 and sum(r > 1.2 for r in ratios) <= 3, (max(ratios), sum(r > 1.2 for r in ratios))
 
 
+def test_plan_is_invariant_to_catalogue_order():
+    """The same catalogue formerly produced 0.90 or 0.52 s after reversing chunk entries."""
+    from zarr_torrent.plan import plan
+    chunks = {"a": (450000, ("p0", "p1")), "b": (450000, ("p2",)),
+              "c": (650000, ("p0", "p1", "p2"))}
+    bw = {"p0": 1e6, "p1": 0.5e6, "p2": 5e6}
+    expected = plan(chunks, bw, client_bw=3e6)
+    permuted = {k: (size, tuple(reversed(holders)))
+                for k, (size, holders) in reversed(list(chunks.items()))}
+    assert plan(permuted, dict(reversed(list(bw.items()))), client_bw=3e6) == expected
+
+
+def test_idle_holder_survives_until_assigned_worker_starts(tmp_path, monkeypatch):
+    """An initially idle holder must stay available to hedge a stalled primary."""
+    import asyncio
+    import struct
+    from contextlib import asynccontextmanager
+    from types import SimpleNamespace
+    from zarr_torrent import node as mod
+
+    async def run():
+        # Match _download's set construction and put the unassigned holder first.
+        holders = ['holder-a', 'holder-b']
+        idle, primary = list({p for p in holders})
+        payload, key = b'x' * 512, 'v@1/0'
+        n = mod.Node(tmp_path / 'receiver')
+        n.xt1 = False
+        n.hints = {p: 1e6 for p in holders}
+        calls, cancelled = [], asyncio.Event()
+
+        @asynccontextmanager
+        async def post(url, **kwargs):
+            peer = url.split('/')[2]
+            calls.append(peer)
+            async def readexactly(size):
+                if size == 4:
+                    return struct.pack('>I', len(payload))
+                if peer == primary:
+                    await asyncio.Event().wait()  # live request, no completed chunk
+                return payload
+            try:
+                yield SimpleNamespace(status=200, content=SimpleNamespace(readexactly=readexactly))
+            finally:
+                if peer == primary:
+                    cancelled.set()
+
+        async def bandwidth(*args):
+            return {primary: 1e9, idle: 1e6}, {}, {}
+        n.session = SimpleNamespace(post=post)
+        n._bw_model = bandwidth
+        n._verify_store = lambda *args: ('cid', len(payload))
+        n._index = lambda *args: 'verified-path'
+        monkeypatch.setattr(mod.planmod, 'plan', lambda *args, **kwargs: ({primary: [key]}, 0.001))
+        v = {'arrays': {}, 'best': {key: {'src': [(p, 'cid', len(payload)) for p in holders]}},
+             'addrs': {p: 'http://' + p for p in holders}}
+        result = await asyncio.wait_for(n._download('g', v, [key], None), timeout=1)
+        assert result == {key: 'verified-path'}
+        assert calls == [primary, idle]
+        assert cancelled.is_set()
+
+    asyncio.run(run())
+
+
+def test_completed_workers_are_removed_from_wait_set(tmp_path, monkeypatch):
+    """An idle worker finishing must not turn verification into an event-loop spin."""
+    import asyncio
+    import struct
+    import time
+    import aiohttp
+    from contextlib import asynccontextmanager
+    from types import SimpleNamespace
+    from zarr_torrent import node as mod
+
+    async def run():
+        payload, key = b'x' * 512, 'v@1/0'
+        n = mod.Node(tmp_path / 'receiver')
+        n.xt1 = False
+        n.hints = {'a': 1e6, 'b': 1e6}
+        primary, alternative = list({p for p in n.hints})
+        monkeypatch.setitem(n._download.__func__.__globals__, 'PEER_MAX_ERRORS', 1)
+        monkeypatch.setattr(mod.planmod, 'plan', lambda *args, **kwargs: ({primary: [key]}, 0.001))
+        @asynccontextmanager
+        async def post(url, **kwargs):
+            if url.split('/')[2] == primary:
+                raise aiohttp.ClientError('permanent holder failure')
+            async def readexactly(size):
+                return struct.pack('>I', len(payload)) if size == 4 else payload
+            yield SimpleNamespace(status=200, content=SimpleNamespace(readexactly=readexactly))
+        async def bandwidth(*args):
+            return n.hints, {}, {}
+        def verify(*args):
+            time.sleep(0.08)
+            return 'cid', len(payload)
+        n.session = SimpleNamespace(post=post)
+        n._bw_model, n._verify_store = bandwidth, verify
+        n._index = lambda *args: 'verified-path'
+        waits, real_wait = [], asyncio.wait
+        async def wait(tasks, **kwargs):
+            waits.append(len(tasks))
+            return await real_wait(tasks, **kwargs)
+        monkeypatch.setattr(mod.asyncio, 'wait', wait)
+        v = {'arrays': {}, 'best': {key: {'src': [(p, 'cid', len(payload)) for p in n.hints]}},
+             'addrs': {p: 'http://' + p for p in n.hints}}
+        assert await n._download('g', v, [key], None) == {key: 'verified-path'}
+        assert len(waits) <= 9, len(waits)  # at most one retirement per worker plus watcher
+
+    asyncio.run(run())
+
+
 def test_lattice_value_identity():
     """Copies of the same quantized measurements decoded by different software (deviation a deterministic function
     of the code, < half a step) share one value id; shifts by a step or a unit offset, and genuinely different data,

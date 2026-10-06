@@ -41,7 +41,8 @@ def _exact(v):
 def measure(out: Path):
     from zarr_torrent import codec
     from zarr_torrent.common import cid_of
-    res = {"host": platform.node(), "machine": platform.machine(), "python": platform.python_version(), "variants": {}}
+    res = {"host": platform.node(), "machine": platform.machine(), "python": platform.python_version(),
+           "estimator": codec.ESTIMATOR, "time_axis": 0, "variants": {}}
     for d in sorted(p for p in out.iterdir() if p.is_dir()):
         docs = {f: json.loads((d / f).read_text()) for f in ("zarr.json", ".zarray", ".zattrs") if (d / f).exists()}
         raws = [p.read_bytes() for p in sorted(d.glob("chunk*"))]
@@ -49,7 +50,7 @@ def measure(out: Path):
         nb = sum(v.nbytes for v in vals)
         row = {"chunks": len(raws), "stored_MB": round(sum(map(len, raws)) / 1e6, 2), "decoded_MB": round(nb / 1e6, 2)}
         for name, fn, rep in (("decode", lambda: [codec.decode(docs, r) for r in raws], 3),
-                              ("vcid", lambda: [codec.vcid_of(v) for v in vals], 3),  # lattice id (default)
+                              ("vcid", lambda: [codec.vcid_of(v, 0) for v in vals], 3),  # time axis of ERA5 chunks
                               ("vcid_exact", lambda: [_exact(v) for v in vals], 3),
                               ("cid", lambda: [cid_of(r) for r in raws], 3),
                               ("xt1_encode", lambda: [codec.xt1_encode(v) for v in vals], 1)):

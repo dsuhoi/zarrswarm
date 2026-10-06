@@ -1,0 +1,165 @@
+{
+  "started_utc": "2026-10-05T11:04:16.066700+00:00",
+  "sample_sha256": "a157545a540865d1ac8bcedab16a053ea38a245f4635c13036069c2e88111b79",
+  "sample": "bench/revalidation/gfs_pipelines_v7.json",
+  "protocol": "Same eight pinned fields and original payloads; native ecCodes float64 versus NetCDF float32. No target-dtype conversion. Coordinate selection only. One true GRIB-quantum change per tile.",
+  "source_sha256": {
+    "bench/gfs_native_precision.py": "fba437c41109113b127507e1ac7cbc31d7b4c757bcc649a73f13ca81ea0a1535",
+    "zarr_torrent/codec.py": "d1a91f447f7aea60537ac7387d77ceb15903308c7da8c7e9c3d8c5d7d129859b"
+  },
+  "fields": [
+    {
+      "short_name": "TMP",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "K",
+      "cells": 8192,
+      "numerically_equal_cells": 1614,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.1,
+      "max_abs_error": 1.2207031261368684e-05,
+      "max_error_in_source_quanta": 0.00012207031261368684
+    },
+    {
+      "short_name": "UGRD",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 310,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05
+    },
+    {
+      "short_name": "VGRD",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 357,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05
+    },
+    {
+      "short_name": "PRMSL",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "Pa",
+      "cells": 8192,
+      "numerically_equal_cells": 1674,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.4,
+      "max_abs_error": 0.003125000002910383,
+      "max_error_in_source_quanta": 0.007812500007275958
+    },
+    {
+      "short_name": "TMP",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "K",
+      "cells": 8192,
+      "numerically_equal_cells": 1583,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.1,
+      "max_abs_error": 1.2207031261368684e-05,
+      "max_error_in_source_quanta": 0.00012207031261368684
+    },
+    {
+      "short_name": "UGRD",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 336,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05
+    },
+    {
+      "short_name": "VGRD",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 336,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05
+    },
+    {
+      "short_name": "PRMSL",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "Pa",
+      "cells": 8192,
+      "numerically_equal_cells": 1717,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 7,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.2,
+      "max_abs_error": 0.003125000002910383,
+      "max_error_in_source_quanta": 0.015625000014551915
+    }
+  ],
+  "completed_utc": "2026-10-05T11:04:18.625012+00:00"
+}

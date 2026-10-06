@@ -17,7 +17,7 @@ import gribberish
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from zarr_torrent.codec import same_vcid, vcid_of  # noqa: E402
+from zarr_torrent.codec import lattice_of, same_vcid, vcid_of  # noqa: E402
 
 TILE = 256
 
@@ -39,22 +39,30 @@ def decode(path):
 
 
 def compare(A, B):
-    tiles = eq = 0
+    tiles = eq = changed_merged = 0
     for y in range(0, A.shape[0], TILE):
         for x in range(0, A.shape[1], TILE):
             ta, tb = A[y:y + TILE, x:x + TILE], B[y:y + TILE, x:x + TILE]
             if np.isfinite(ta).sum() < 2 or np.unique(ta[np.isfinite(ta)]).size < 2:
                 continue  # empty or constant tile (e.g. no precipitation): nothing to estimate
             tiles += 1
-            eq += same_vcid(vcid_of(ta), vcid_of(tb))
+            va = vcid_of(ta)
+            eq += same_vcid(va, vcid_of(tb))
+            changed = ta.astype("f8").copy()
+            indices = np.flatnonzero(np.isfinite(ta))
+            changed.flat[indices[len(indices) // 2]] += lattice_of(ta)[0]
+            changed_merged += same_vcid(va, vcid_of(changed.astype(ta.dtype)))
     fin = np.isfinite(A)
-    return {"bit_equal": round(float(np.mean(A[fin] == B[fin])), 4), "tiles": tiles, "lattice_equal": eq}
+    return {"bit_equal": round(float(np.mean(A[fin] == B[fin])), 4), "tiles": tiles, "lattice_equal": eq,
+            "one_count_changed_merged": changed_merged}
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("dir")
     ap.add_argument("--out", default="bench/decoder_survey.json")
+    ap.add_argument("--lattice-controls", default="bench/lattice_controls.json")
+    ap.add_argument("--goes", default="bench/goes_decoders.json")
     a = ap.parse_args()
     res = {}
     for f in sorted(Path(a.dir).expanduser().glob("*.grib2")):
@@ -62,11 +70,10 @@ def main():
         res[f.stem] = {"ecCodes vs gribberish": compare(d["ecCodes"], d["gribberish"]),
                        "ecCodes vs float32 scaling": compare(d["ecCodes"], d["float32 scaling"])}
         print(f.stem, json.dumps(res[f.stem]), flush=True)
-    here = Path(__file__).resolve().parent
-    c = json.load(open(here / "lattice_controls.json"))
+    c = json.load(open(a.lattice_controls))
     res["ERA5 2m temperature, ARCO vs NCAR (providers)"] = {"bit_equal": c["mean_bit_equal"], "tiles": c["tiles"],
                                                              "lattice_equal": c["providers_equivalent"]}
-    g = json.load(open(here / "goes_decoders.json"))["pairs"]
+    g = json.load(open(a.goes))["pairs"]
     for k, v in g.items():
         res[f"GOES-16 ABI L1b C13, {k}"] = {"bit_equal": v["bit_equal"], "tiles": v["tiles"], "lattice_equal": v["lattice_equal"]}
     json.dump(res, open(a.out, "w"), indent=1)

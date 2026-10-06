@@ -1,0 +1,23 @@
+{
+  "version": 9,
+  "purpose": "Connect trusted source packing to scan, signed manifests, receiver, cache and repair",
+  "predeclared_controls": [
+    "Native ecCodes float64 and Unidata float32, unchanged retained GFS fields",
+    "Separate layouts and per-time source parameters",
+    "Trusted publisher absent, copied signed contract present",
+    "Changed one source code, forged signature, weakened budget, missing contract and family majority",
+    "Wrong preferred encoding must fail after transcoding",
+    "Metadata change invalidates scan cache; persisted seed and downloaded cache retain contract",
+    "Existing default identity and full test suite remain passing"
+  ],
+  "guarantee": "Recover common source codes only under an authenticated common source lattice and a valid decoder error bound below half a source step; no proof of source measurement truth",
+  "source_before_sha256": {
+    "zarr_torrent/codec.py": "403f1d71b0b9270508d36d9d98b7a9ed7ea5ab45e7e92b9cac7e863d583f28e9",
+    "zarr_torrent/scan.py": "7c7b44f3b7dd82e8aa396a0c915dfafca35de1ffae6ba2e97045ebbeac7fa7d8",
+    "zarr_torrent/node.py": "57f817bb5946147aa582bf0007d5f5f37b12ced6811d33f05b7c975b975719bb",
+    "zarr_torrent/cli.py": "77d933779c88f442941296dbf4dd7ba033b03ae5a187813aee5e870b37ea095c",
+    "tests/test_identity.py": "b335cad425cd4e6a24c6757a7d3e10c91d51013021d836f95c13ed06f496a739",
+    "tests/test_security.py": "d4ce3a137abbbe9b560e177080fdb05ef7d4c3488ff2b95ddb8e651ad76b279f",
+    "tests/test_parity.py": "c30f645b06f1387f6bffae2546306c507b5611504c44a5b1378ee9351c7942ac"
+  }
+}

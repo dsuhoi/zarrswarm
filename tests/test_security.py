@@ -16,14 +16,18 @@ import xarray as xr
 import zarr_torrent as zt
 from zarr_torrent.node import Node
 from zarr_torrent.store import http, wait_job
+_ports = iter(range(10000, 30000))
 
 
 def port():
-    s = socket.socket()
-    s.bind(("127.0.0.1", 0))
-    p = s.getsockname()[1]
-    s.close()
-    return p
+    for p in _ports:
+        with socket.socket() as s:
+            try:
+                s.bind(("127.0.0.1", p))
+                return p
+            except OSError:
+                continue
+    raise RuntimeError("no free test port")
 
 
 def make(path, values, times):
@@ -52,6 +56,76 @@ def net(tmp_path):
 
 def ctl(n):
     return f"http://127.0.0.1:{n.ctl_port}"
+
+
+def test_opposing_slice_poisoning_is_rejected_at_receiver(net):
+    from zarr_torrent.node import merge_view
+    nodes, run, tmp = net
+    times = pd.date_range("2020-01-01", periods=24, freq="h")
+    good = np.tile(np.arange(20, dtype="f4").reshape(1, 4, 5), (24, 1, 1))
+    bad = good.copy()
+    bad[:6] += 1
+    bad[6:12] -= 1
+    for n, data in (("h1", good), ("evil", bad)):
+        run(nodes[n].add_seed(make(tmp / f"{n}_shift.zarr", data, times)))
+    grid = next(g for g, m in nodes["h1"].local.items() if "sec" in m["arrays"])
+    honest, evil = nodes["h1"].local[grid], nodes["evil"].local[grid]
+    key = sorted(k for k in honest["chunks"] if k.startswith("sec@"))[0]
+    raw = Path(evil["files"][key]).read_bytes()
+    # Advertise the honest identity alongside the attacker's genuine byte hash.
+    evil["chunks"][key][1] = honest["chunks"][key][1]
+    ep = nodes["evil"].ident.id
+    view = merge_view(grid, {nodes["h1"].ident.id: honest, ep: evil}, "client")
+    assert nodes["client"]._verify_store(view, key, ep, raw) is None
+
+
+def test_legacy_cached_ids_are_recomputed_without_removing_data(net):
+    from zarr_torrent import codec
+    nodes, run, tmp = net
+    values = np.tile(np.arange(20, dtype="f4").reshape(1, 4, 5), (24, 1, 1))
+    times = pd.date_range("2020-01-01", periods=24, freq="h")
+    link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": make(tmp / "migration.zarr", values, times)})["link"]
+    client = nodes["client"]
+    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(client)).sec.values, values)
+    run(client.stop())
+    blobs = {}
+    for path in (client.home / "cache").glob("*.json"):
+        manifest = json.loads(path.read_text())
+        for key, entry in manifest["chunks"].items():
+            if key.startswith("sec@"):
+                blobs[entry[0]] = client._cas(entry[0]).read_bytes()
+                entry[1] = "L2:" + "a" * 32 + ":[[0,1]]"
+        path.write_text(json.dumps(manifest))
+    assert blobs
+    run(client.start())
+    for manifest in client.caches.values():
+        for key, entry in manifest["chunks"].items():
+            if key.startswith("sec@"):
+                assert entry[1].startswith("L3:") and codec.same_vcid(entry[1], entry[1])
+    assert all(client._cas(cid).read_bytes() == raw for cid, raw in blobs.items())
+
+
+def test_identity_groups_are_independent_of_announcement_order(net):
+    from itertools import permutations
+    from zarr_torrent.codec import vcid_of
+    from zarr_torrent.node import merge_view
+    nodes, run, tmp = net
+    good = np.tile(np.arange(20, dtype="f4").reshape(1, 4, 5), (24, 1, 1))
+    times = pd.date_range("2020-01-01", periods=24, freq="h")
+    run(nodes["h1"].add_seed(make(tmp / "groups.zarr", good, times)))
+    grid = next(g for g, m in nodes["h1"].local.items() if "sec" in m["arrays"])
+    import copy
+    manifests = {}
+    for i, offset in enumerate((0, .2, .4)):
+        m = copy.deepcopy(nodes["h1"].local[grid])
+        for k, ent in m["chunks"].items():
+            if k.startswith("sec@"):
+                ent[1] = vcid_of(good[:12] + offset, 0)
+        manifests[str(i)] = m
+    results = [merge_view(grid, dict(order), "client")["best"] for order in permutations(manifests.items())]
+    # Holder lists are compared as sets; the elected identities and conflict decisions must be identical.
+    normalize = lambda v: {k: (b["vcid"], frozenset(b["src"]), b.get("contested")) for k, b in v.items()}
+    assert all(normalize(v) == normalize(results[0]) for v in results)
 
 
 def test_majority_beats_conflicting_replica_and_tampered_bytes_are_rejected(net):
@@ -207,7 +281,7 @@ def test_closed_network_key(tmp_path):
     boot = Node(boot_home, port=bp, ctl_port=port(), network_key=key, relay_server=True)
     run(boot.start())
     mk = lambda n, k, **kw: Node(tmp_path / n, port=port(), ctl_port=port(), bootstrap=[burl], network_key=k, **kw)
-    a = mk("a", key, relay=burl)  # NAT'd seeder: the relay leg must carry the key too
+    a = mk("a", key, relay=burl, host="127.0.0.2")  # relay must use the bound address and carry the key
     member, outsider, wrong = mk("m", key), mk("o", None), mk("w", "nope")
     for n in (a, member, outsider, wrong):
         run(n.start())

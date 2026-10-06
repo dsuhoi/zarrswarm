@@ -1,0 +1,106 @@
+{
+ "MRMS_MergedReflectivityQCComposite_00.50_20240601-000041": {
+  "ecCodes vs gribberish": {
+   "bit_equal": 1.0,
+   "tiles": 223,
+   "lattice_equal": 223,
+   "one_count_changed_merged": 0
+  },
+  "ecCodes vs float32 scaling": {
+   "bit_equal": 1.0,
+   "tiles": 223,
+   "lattice_equal": 223,
+   "one_count_changed_merged": 0
+  }
+ },
+ "MRMS_MultiSensor_QPE_01H_Pass2_00.00_20240601-000000": {
+  "ecCodes vs gribberish": {
+   "bit_equal": 1.0,
+   "tiles": 164,
+   "lattice_equal": 164,
+   "one_count_changed_merged": 0
+  },
+  "ecCodes vs float32 scaling": {
+   "bit_equal": 0.9931,
+   "tiles": 164,
+   "lattice_equal": 164,
+   "one_count_changed_merged": 0
+  }
+ },
+ "gfs_PRMSL": {
+  "ecCodes vs gribberish": {
+   "bit_equal": 1.0,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  },
+  "ecCodes vs float32 scaling": {
+   "bit_equal": 0.8063,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  }
+ },
+ "gfs_PWAT": {
+  "ecCodes vs gribberish": {
+   "bit_equal": 1.0,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  },
+  "ecCodes vs float32 scaling": {
+   "bit_equal": 0.6941,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  }
+ },
+ "gfs_TMP": {
+  "ecCodes vs gribberish": {
+   "bit_equal": 1.0,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  },
+  "ecCodes vs float32 scaling": {
+   "bit_equal": 0.7671,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  }
+ },
+ "gfs_UGRD": {
+  "ecCodes vs gribberish": {
+   "bit_equal": 1.0,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  },
+  "ecCodes vs float32 scaling": {
+   "bit_equal": 0.7322,
+   "tiles": 18,
+   "lattice_equal": 18,
+   "one_count_changed_merged": 0
+  }
+ },
+ "ERA5 2m temperature, ARCO vs NCAR (providers)": {
+  "bit_equal": 0.0164,
+  "tiles": 1536,
+  "lattice_equal": 1536
+ },
+ "GOES-16 ABI L1b C13, xarray vs netCDF4": {
+  "bit_equal": 1.0,
+  "tiles": 180,
+  "lattice_equal": 180
+ },
+ "GOES-16 ABI L1b C13, xarray vs float64 pipeline": {
+  "bit_equal": 0.6692,
+  "tiles": 180,
+  "lattice_equal": 180
+ },
+ "GOES-16 ABI L1b C13, netCDF4 vs float64 pipeline": {
+  "bit_equal": 0.6692,
+  "tiles": 180,
+  "lattice_equal": 180
+ }
+}

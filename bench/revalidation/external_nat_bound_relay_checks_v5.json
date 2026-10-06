@@ -1,0 +1,52 @@
+{
+  "source_modules_and_driver_verified": 17,
+  "full_exact_answers": 27,
+  "private_holders": {
+    "0": 7,
+    "1": 5,
+    "2": 13
+  },
+  "query_samples": {
+    "day_maps": 24,
+    "point_series": 744,
+    "month_6h": 124
+  },
+  "native_min_aria_keys_and_payload_bytes_equal": true,
+  "preflight_checks": {
+    "0": {
+      "catalogue_sha256": "64ee597deb192fea438548b4a8d6ac2e81793d0afbe2323d9b40c3eeede235b0",
+      "closed_holders": 7,
+      "cid_tunnels_verified": 7,
+      "ports_blocked_from_receiver": [
+        7000,
+        7001,
+        7020
+      ]
+    },
+    "1": {
+      "catalogue_sha256": "10c2ca1db367227cc620b42efb9862f91224d0cfd3ed72cb5d60f279998997bf",
+      "closed_holders": 5,
+      "cid_tunnels_verified": 5,
+      "ports_blocked_from_receiver": [
+        7000,
+        7001,
+        7020
+      ]
+    },
+    "2": {
+      "catalogue_sha256": "a515d7912ffb6d6b75a255a393e1df71ea01ecf14c5d02ee7df37e0bf5381341",
+      "closed_holders": 13,
+      "cid_tunnels_verified": 13,
+      "ports_blocked_from_receiver": [
+        7000,
+        7001,
+        7020
+      ]
+    }
+  },
+  "relay_positive_by_arm": {
+    "native-jlps": 9,
+    "native-min": 9,
+    "aria2-min": 9
+  }
+}

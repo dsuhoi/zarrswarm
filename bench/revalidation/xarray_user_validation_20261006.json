@@ -1,0 +1,35 @@
+{
+  "recorded_utc": "2026-10-06T11:18:59.449383+00:00",
+  "scope": "Local functional validation for user testing instructions; no manuscript-result changes",
+  "python": "3.12.12",
+  "dependencies": {
+    "zarr": "3.4.0",
+    "xarray": "2026.9.0",
+    "numpy": "2.5.3",
+    "dask": "2026.8.0",
+    "aiohttp": "3.14.3",
+    "pytest": "9.1.1"
+  },
+  "test_command": "rtk proxy .venv/bin/python -m pytest -q tests/test_e2e.py tests/test_scenarios.py tests/test_cli.py",
+  "tests_passed": 18,
+  "library_warnings": 17,
+  "test_seconds": 108.54,
+  "test_exit_code": 0,
+  "test_network": "Loopback: two separate CLI processes; scenario node instances use sockets in one process",
+  "local_demo_command": ".venv/bin/python bench/bench_local.py --days 7 --ny 16 --nx 32",
+  "local_demo_exit_code": 0,
+  "local_demo_seconds": 11.9,
+  "local_demo_input_shape": [
+    168,
+    16,
+    32
+  ],
+  "local_demo_checked": "Exact equality of the full received field and assembled point time series; warm reads and prefetch complete",
+  "local_demo_log": "bench/revalidation/xarray_local_smoke_20261006.txt",
+  "local_demo_log_sha256": "bba0c48a3c0044ee2db2a079b7368aba9ea0dfefe8c40ae89b6a5f5b7973e715",
+  "local_demo_temporary_data_removed": true,
+  "performance_claim": "Smoke-run durations only; shared host and unequal baseline extents do not establish scheduler or storage performance",
+  "implementation_inputs_unchanged_from_tested_v9": 40,
+  "environment_sync_dry_run": "uv sync --frozen --extra test --extra netcdf --inexact --dry-run; 46 packages checked, no changes",
+  "documentation": "docs/user.md"
+}

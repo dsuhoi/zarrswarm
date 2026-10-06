@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  push:
+    paths:
+      - zarrswarm/**
+      - zarr_torrent/**
+      - tests/**
+      - pyproject.toml
+      - uv.lock
+      - .github/workflows/tests.yml
+  pull_request:
+    paths:
+      - zarrswarm/**
+      - zarr_torrent/**
+      - tests/**
+      - pyproject.toml
+      - uv.lock
+      - .github/workflows/tests.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        run: python -m pip install uv==0.12.23
+      - name: Install locked dependencies
+        run: uv sync --frozen --extra test --extra netcdf
+      - name: Check package entry points
+        run: |
+          .venv/bin/python -c "import zarrswarm, zarr_torrent; assert zarrswarm.open_dataset is zarr_torrent.open_dataset"
+          .venv/bin/python -m zarrswarm --help
+          .venv/bin/zarrswarm --help
+      - name: Run tests
+        run: .venv/bin/python -m pytest -q tests
+      - name: Build distribution
+        run: uv build

@@ -1,0 +1,388 @@
+{
+  "started_utc": "2026-10-05T10:40:40.306505+00:00",
+  "estimator": "lattice-v5",
+  "numpy": "2.5.3",
+  "source_sha256": {
+    "zarr_torrent/codec.py": "d1a91f447f7aea60537ac7387d77ceb15903308c7da8c7e9c3d8c5d7d129859b",
+    "bench/identity_boundary.py": "eef8b1849b8a16b870c3cb359559c332e9d90d3248424c2b9b7a178ab5cbd96b"
+  },
+  "protocol": {
+    "source_quantum": 1,
+    "observed_code_strides": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "distinct_values": [
+      2,
+      4,
+      16,
+      256
+    ],
+    "dtype": "float32",
+    "values": "arange(distinct_values) * observed_code_stride",
+    "change": "add exactly one source count to the first cell",
+    "selection": "All 20 combinations; no fitting changes or omitted cases."
+  },
+  "cases": [
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 2,
+      "fit_before": [
+        1.0,
+        0.0,
+        1
+      ],
+      "fit_after": null,
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[1.0,1.0,1]]",
+      "identity_after": "L3:284d8d57aed9ca3de73c4ee42c117f37:[null]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 4,
+      "fit_before": [
+        1.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        1
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[2.0,1.0,2]]",
+      "identity_after": "L3:74bd3f39ad454e62cd434415cb8b4ab5:[[2.0,1.0,1]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 16,
+      "fit_before": [
+        1.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        7
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[8.0,1.0,8]]",
+      "identity_after": "L3:d25170b73e628f5616a9d5860e6c706d:[[8.0,1.0,7]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 1,
+      "distinct_values": 256,
+      "fit_before": [
+        1.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        127
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[128.0,1.0,128]]",
+      "identity_after": "L3:fb2f38dd4b120437bffd61d7962e279e:[[128.0,1.0,127]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 2,
+      "fit_before": [
+        2.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        2.0,
+        0.5,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[2.0,2.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[2.5,2.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 4,
+      "fit_before": [
+        2.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        3
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[4.0,2.0,2]]",
+      "identity_after": "L3:abefdb6e10327431d784110e5c14612c:[[4.0,1.0,3]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 16,
+      "fit_before": [
+        2.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        15
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[16.0,2.0,8]]",
+      "identity_after": "L3:2dd046c80c984b747b683a9d02bc626e:[[16.0,1.0,15]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 2,
+      "distinct_values": 256,
+      "fit_before": [
+        2.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        1.0,
+        1.0,
+        255
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[256.0,2.0,128]]",
+      "identity_after": "L3:037e15c6da69eda24c3eaaca4f2fbc93:[[256.0,1.0,255]]",
+      "lattice_accepts_changed_cell": false,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 2,
+      "fit_before": [
+        4.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        4.0,
+        0.5,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[4.0,4.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[4.5,4.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 4,
+      "fit_before": [
+        4.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        4.0,
+        0.20483276469913345,
+        2
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[8.0,4.0,2]]",
+      "identity_after": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[8.204832764699134,4.0,2]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 16,
+      "fit_before": [
+        4.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        4.0,
+        0.04237860926989283,
+        8
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[32.0,4.0,8]]",
+      "identity_after": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[32.042378609269896,4.0,8]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 4,
+      "distinct_values": 256,
+      "fit_before": [
+        4.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        4.0,
+        0.0024965353291611365,
+        128
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[512.0,4.0,128]]",
+      "identity_after": "L3:672b8af49acfbb81254b6735154289af:[[512.0024965353292,4.0,128]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 2,
+      "fit_before": [
+        8.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        8.0,
+        0.5,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[8.0,8.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[8.5,8.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 4,
+      "fit_before": [
+        8.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        8.0,
+        0.23997956648547158,
+        2
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[16.0,8.0,2]]",
+      "identity_after": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[16.23997956648547,8.0,2]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 16,
+      "fit_before": [
+        8.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        8.0,
+        0.057280367422490326,
+        8
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[64.0,8.0,8]]",
+      "identity_after": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[64.05728036742249,8.0,8]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 8,
+      "distinct_values": 256,
+      "fit_before": [
+        8.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        8.0,
+        0.003520879934193903,
+        128
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[1024.0,8.0,128]]",
+      "identity_after": "L3:672b8af49acfbb81254b6735154289af:[[1024.0035208799343,8.0,128]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 2,
+      "fit_before": [
+        16.0,
+        0.0,
+        1
+      ],
+      "fit_after": [
+        16.0,
+        0.5000000000000001,
+        1
+      ],
+      "identity_before": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[16.0,16.0,1]]",
+      "identity_after": "L3:d2cfb903c6a174947734746a3ed9ca9a:[[16.5,16.0,1]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 4,
+      "fit_before": [
+        16.0,
+        0.0,
+        2
+      ],
+      "fit_after": [
+        16.0,
+        0.24756704005606944,
+        2
+      ],
+      "identity_before": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[32.0,16.0,2]]",
+      "identity_after": "L3:b4efd86f5f514983d7b8f24d96b1cf91:[[32.24756704005607,16.0,2]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 16,
+      "fit_before": [
+        16.0,
+        0.0,
+        8
+      ],
+      "fit_after": [
+        16.0,
+        0.061185329760229404,
+        8
+      ],
+      "identity_before": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[128.0,16.0,8]]",
+      "identity_after": "L3:f6e69e1b86f9b812311ab450d6172cd9:[[128.06118532976024,16.0,8]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    },
+    {
+      "observed_code_stride": 16,
+      "distinct_values": 256,
+      "fit_before": [
+        16.0,
+        0.0,
+        128
+      ],
+      "fit_after": [
+        16.0,
+        0.003807751874835571,
+        128
+      ],
+      "identity_before": "L3:672b8af49acfbb81254b6735154289af:[[2048.0,16.0,128]]",
+      "identity_after": "L3:672b8af49acfbb81254b6735154289af:[[2048.003807751875,16.0,128]]",
+      "lattice_accepts_changed_cell": true,
+      "exact_accepts_changed_cell": false
+    }
+  ],
+  "completed_utc": "2026-10-05T10:40:40.370985+00:00"
+}

@@ -1,0 +1,94 @@
+{
+  "rows": 27,
+  "placements": 3,
+  "all_full_exact": true,
+  "queries": {
+    "day_maps": {
+      "median_seconds": {
+        "native-jlps": 14.110096812000847,
+        "native-min": 13.277902680987609,
+        "aria2-min": 18.625203988005524
+      },
+      "range_seconds": {
+        "native-jlps": [
+          9.302974299993366,
+          14.935355524998158
+        ],
+        "native-min": [
+          9.207137129007606,
+          14.034495492000133
+        ],
+        "aria2-min": [
+          12.411702874000184,
+          20.249868920000154
+        ]
+      },
+      "median_bytes": {
+        "native-jlps": 56221460,
+        "native-min": 56221460,
+        "aria2-min": 56221460
+      },
+      "paired_aria2_over_jlps": 1.3341650179565727,
+      "paired_min_over_jlps": 0.9896982225366538,
+      "paired_aria2_over_min": 1.4027218330704156
+    },
+    "point_series": {
+      "median_seconds": {
+        "native-min": 9.955421848004335,
+        "aria2-min": 18.59912653300853,
+        "native-jlps": 14.634487411996815
+      },
+      "range_seconds": {
+        "native-min": [
+          8.122903649011278,
+          14.615381165000144
+        ],
+        "aria2-min": [
+          10.607299619994592,
+          20.964593982993392
+        ],
+        "native-jlps": [
+          10.330944344997988,
+          217.31546625800547
+        ]
+      },
+      "median_bytes": {
+        "native-min": 27697995,
+        "aria2-min": 27697995,
+        "native-jlps": 27697995
+      },
+      "paired_aria2_over_jlps": 1.0267502433241167,
+      "paired_min_over_jlps": 0.9636507095137461,
+      "paired_aria2_over_min": 1.272572115843846
+    },
+    "month_6h": {
+      "median_seconds": {
+        "aria2-min": 58.21245481699589,
+        "native-jlps": 43.23793262599793,
+        "native-min": 44.52605466400564
+      },
+      "range_seconds": {
+        "aria2-min": [
+          48.59054369399382,
+          66.22995526999875
+        ],
+        "native-jlps": [
+          32.73065361000772,
+          46.86475076399802
+        ],
+        "native-min": [
+          32.610484789009206,
+          47.361423306007055
+        ]
+      },
+      "median_bytes": {
+        "aria2-min": 290705287,
+        "native-jlps": 290705287,
+        "native-min": 290705287
+      },
+      "paired_aria2_over_jlps": 1.4132147123436167,
+      "paired_min_over_jlps": 1.0105979981523894,
+      "paired_aria2_over_min": 1.3983945297015288
+    }
+  }
+}

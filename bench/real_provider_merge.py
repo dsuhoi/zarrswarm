@@ -58,12 +58,12 @@ def fetch(w: Path):
         n.to_zarr(w / "ncar.zarr", encoding=enc, consolidated=False, zarr_format=2)
 
 
-def run_case(w: Path, mode: str, holders: list[str]):
+def run_case(w: Path, mode: str, holders: list[str], trusted_a=False):
     codec.VALUE_ID = mode
     loop = asyncio.new_event_loop()
     threading.Thread(target=loop.run_forever, daemon=True).start()
     run = lambda c: asyncio.run_coroutine_threadsafe(c, loop).result(300)
-    root = w / f"run_{mode}_{'-'.join(holders)}"
+    root = w / (f"run_{mode}_{'-'.join(holders)}" + ("_trusted_A" if trusted_a else ""))
     import shutil
     shutil.rmtree(root, ignore_errors=True)  # fresh nodes: caches of an earlier run (other code, other ids) must not leak in
     bp = port()
@@ -72,6 +72,8 @@ def run_case(w: Path, mode: str, holders: list[str]):
         nodes[n] = Node(root / n, port=port(), ctl_port=port(), bootstrap=[f"http://127.0.0.1:{bp}"])
     for n in nodes.values():
         run(n.start())
+    if trusted_a:
+        nodes["client"].trusted.add(nodes["A"].ident.id)
     ctl = lambda n: f"http://127.0.0.1:{nodes[n].ctl_port}"
     src = {"A": w / "arco.zarr", "B": w / "ncar.zarr", "C": w / "arco.zarr"}
     links = {h: http(ctl(h), "POST", "/api/seed", {"path": str(src[h])})["link"] for h in holders}
@@ -83,7 +85,9 @@ def run_case(w: Path, mode: str, holders: list[str]):
     contested = sum(1 for k in keys if view["best"][k].get("contested"))
     jid = http(ctl("client"), "POST", "/api/download", {"grid": grid, "region": {"var": VAR}})["job"]
     job = wait_job(ctl("client"), jid)
-    res = {"mode": mode, "holders": holders, "one_link": len(set(links.values())) == 1, "chunks": len(keys),
+    res = {"mode": mode, "holders": holders, "trusted_a": trusted_a, "state": job["state"],
+           "sample_coverage": job.get("coverage"), "estimator": codec.ESTIMATOR,
+           "one_link": len(set(links.values())) == 1, "chunks": len(keys),
            "usable_holders_per_chunk": round(float(np.mean(usable)), 2) if usable else 0, "contested": contested,
            "done": job["done"], "missing": job["missing"], "per_peer_MB": {p[:6]: round(b / 1e6, 1) for p, b in job["per_peer"].items()}}
     if job["done"]:
@@ -111,6 +115,9 @@ def main():
             r = run_case(w, mode, holders)
             rows.append(r)
             print(json.dumps(r), flush=True)
+    r = run_case(w, "exact", ["A", "B"], trusted_a=True)
+    rows.append(r)
+    print(json.dumps(r), flush=True)
     json.dump(rows, open(a.out, "w"), indent=1)
 
 

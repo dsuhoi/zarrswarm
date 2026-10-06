@@ -83,9 +83,14 @@ def restore_many(blobs: list[bytes], present: dict[int, bytes], missing: list[in
     """Rebuild members `missing` of one stripe from parity rows (`blobs`, distinct rows) and the present members'
     stored bytes. Needs len(blobs) >= len(missing). Returns {i: (bytes, cid, vcid)}."""
     heads = [_parse(b) for b in blobs]
+    if not heads:
+        raise ValueError("no parity rows")
     m = heads[0][0]["m"]
     k = len(m)
     L = len(heads[0][1])
+    if any(h["m"] != m or h.get("mode", "bytes") != heads[0][0].get("mode", "bytes") or len(body) != L
+           for h, body in heads) or len({h["row"] for h, _ in heads}) != len(heads):
+        raise ValueError("inconsistent stripe headers or duplicate rows")
     data = {i: np.frombuffer(b.ljust(L, b"\0"), dtype=np.uint8) for i, b in present.items()}
     for i, (_, _, ln, _, *_x) in enumerate(m):  # members that never existed were encoded as zeros
         if ln < 0 and i not in missing:

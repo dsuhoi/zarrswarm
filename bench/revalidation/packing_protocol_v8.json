@@ -1,0 +1,52 @@
+{
+  "phase": "declared_before_implementation_and_runs",
+  "question": "Can a trusted source step/origin and bounded decoder residual prevent sparse-code false merges without losing legitimate decoded copies?",
+  "strict_rule": "Round only against a caller-provided source step and origin; reject residual outside a positive error budget smaller than half a source step. Hash absolute integer codes and the common step/origin. No independent refitting.",
+  "synthetic_development": {
+    "source_step": 1,
+    "source_origin": 0,
+    "strides": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "sizes": [
+      2,
+      4,
+      16,
+      256
+    ],
+    "negative": "Change the first source code by +1; unchanged decoded values are exact source centers.",
+    "positive": "Same codes decoded with a deterministic error bounded by 0.4 source steps; accept budget 0.45 steps."
+  },
+  "synthetic_transfer": {
+    "steps": [
+      0.125,
+      1.25,
+      3.0
+    ],
+    "origin": -37.5,
+    "strides": [
+      3,
+      5,
+      7
+    ],
+    "sizes": [
+      3,
+      8,
+      64,
+      1024
+    ],
+    "negative_directions": [
+      -1,
+      1
+    ],
+    "decoder_error_bound_steps": 0.4,
+    "acceptance_budget_steps": 0.45,
+    "selection": "All 36 source arrays, 72 negative controls. Fixed before running; no threshold tuning."
+  },
+  "real_fields": "Use the same eight retained GFS fields and both native precision paths from gfs_pipelines_v7.json; GRIB reference, binary and decimal scales provide each common source lattice. Budget 0.45 source steps. No new downloads or station claims.",
+  "scope": "Prototype numeric API using externally supplied source metadata; current automatic Zarr ingest does not authenticate or propagate this contract. Legacy value-only lattice identifiers and measured network paths remain the baseline."
+}

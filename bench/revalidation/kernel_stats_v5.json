@@ -1,0 +1,68 @@
+{
+  "source": "kernel_v5.json",
+  "kernel": {
+    "map_day_1h": {
+      "median_s": {
+        "lattice+JLPS": 6.89,
+        "lattice+min-bytes": 16.15,
+        "bytes+JLPS": 384.37
+      },
+      "speedup_vs": {
+        "bytes+JLPS": 77.41,
+        "lattice+min-bytes": 2.67
+      },
+      "complete_runs": {
+        "lattice+JLPS": 2,
+        "lattice+min-bytes": 2,
+        "bytes+JLPS": 2
+      },
+      "complete_pairs": {
+        "bytes+JLPS": 2,
+        "lattice+min-bytes": 2
+      },
+      "n": 2
+    },
+    "series_point_1h": {
+      "median_s": {
+        "lattice+JLPS": 35.83,
+        "lattice+min-bytes": 25.5,
+        "bytes+JLPS": 10.25
+      },
+      "speedup_vs": {
+        "bytes+JLPS": 0.94,
+        "lattice+min-bytes": 0.81
+      },
+      "complete_runs": {
+        "lattice+JLPS": 2,
+        "lattice+min-bytes": 2,
+        "bytes+JLPS": 1
+      },
+      "complete_pairs": {
+        "bytes+JLPS": 1,
+        "lattice+min-bytes": 2
+      },
+      "n": 2
+    },
+    "period_6h": {
+      "median_s": {
+        "lattice+JLPS": 32.39,
+        "lattice+min-bytes": 61.98,
+        "bytes+JLPS": 46.39
+      },
+      "speedup_vs": {
+        "bytes+JLPS": 2.13,
+        "lattice+min-bytes": 3.11
+      },
+      "complete_runs": {
+        "lattice+JLPS": 2,
+        "lattice+min-bytes": 2,
+        "bytes+JLPS": 2
+      },
+      "complete_pairs": {
+        "bytes+JLPS": 2,
+        "lattice+min-bytes": 2
+      },
+      "n": 2
+    }
+  }
+}

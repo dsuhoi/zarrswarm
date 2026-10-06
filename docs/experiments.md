@@ -5,7 +5,21 @@
 Значение по умолчанию у `--out` — путь, под которым результат лежит в репозитории; чтобы не затереть его, задайте
 свой.
 
-## 1. Карта экспериментов
+## Актуальные результаты рукописи
+
+| Место | Данные / результат |
+|---|---|
+| Таблица 1 | `bench/lattice_probe.json`: binary survey; `bench/revalidation/provider_identity_controls_v5.json`: рабочий L3 на тех же четырёх variables и shared-quantizer controls |
+| Таблица 2 | `bench/revalidation/provider_merge_v5.json`, `decoder_survey_v5.json`, `goes_decoders_v5.json`; контроли в `lattice_controls_v5.json` |
+| Таблица 3 | `bench/revalidation/multisite_v5_final.json`: 54 WAN measurements предыдущего L3 snapshot |
+| Таблица 4 и график ablations | `process_fibonacci_v5.json`, `paired_stats_v5.json`, `kernel_v5.json`, `kernel_stats_v5.json`; source hashes записаны в provenance, kernel comparison содержит два полностью записанных размещения |
+| Таблица 5 | `edge_v5.json`, `metadata_v5.json`; дополнительные identifier lengths в `identifier_size_v5.json` |
+| Joint-cover controls (§3.4) | `planner_cover_oracle_v5.json`: 240 fixed graphs, 120 development и 120 проверочных; полный перебор covers/holders и parameter sensitivity |
+| Assignment correctness | `assignment_controls_v5.json`: существующий exhaustive test, 600 fixed-cover cases |
+
+Ниже сохранены исторические команды и прежние имена файлов. Они не обозначают нынешние номера таблиц и не подменяют результаты L3.
+
+## 1. Историческая карта экспериментов
 
 | эксп. | что | скрипт | результат |
 |---|---|---|---|
@@ -160,5 +174,33 @@ d['rows']=[r for p in f for r in json.load(open(p))['rows']]; json.dump(d, open(
 - `bench/compare_emulators.py PROC EMU [--out bench/emulators.json] [--reps N]` — медианы по конфигурациям на обоих
   стендах, парные ускорения lattice+JLPS и совпадает ли ранжирование конфигураций.
 
-Парную статистику E1/E2 (`sim/results_ehet_v5_stats.json`: медиана отношений, бутстреп-интервал, знаковый тест)
-строящего её скрипта в репозитории нет.
+Парную статистику строит `bench/summarize_ehet.py RESULTS --stats OUTPUT.json`: медиана отношений времени
+в полных парах, 95% bootstrap-интервал (10 000 повторов, seed 0), число полных пар и более быстрых запусков.
+Старый `sim/results_ehet_v5_stats.json` относится к прежней версии оценщика; `v5` в этом имени — версия
+эксперимента, а не актуальный формат `lattice-v5`. Текущие повторные результаты хранятся отдельно в
+`bench/revalidation/`; подробности исправлений — в `docs/CORRECTNESS_REVALIDATION.md`.
+
+
+В повторной проверке `lattice-v5` сетевые строки допускаются в итог только при `state=done`, полном
+покрытии запрошенных samples и `value_check=exact`. Прямая WAN-проверка использует `max_abs_err=0`.
+Источник сравнения — уже скачанные payload через `/api/read`; reference comparison выполняется после
+измерения времени. Кэш завершённого клиента удаляется сразу после проверки, чтобы серия не накапливала
+копии данных до заполнения NFS quota. Remote driver записывает PID узла и сверяет точный `--home`
+перед TERM, а при необходимости — перед KILL после пяти секунд ожидания.
+
+
+## Исправления повторной проверки L3
+
+Рукопись использует файлы `bench/revalidation/`, а не прежние E-серии выше. Текущий драйвер
+не ограничивает поиск полного byte answer временем частичного ответа. После первого полного
+ответа последующие кандидаты получают `max(120 s, 3 × best complete time)`; до него — 1800 s.
+Coverage хранится без округления: частичный длинный ряд не должен округляться до единицы.
+Если выбранный набор чанков не покрывает запрос, Node один раз обновляет каталог и повторяет
+планирование. Время этого повтора входит в query timing; настоящие пробелы остаются `partial`.
+Source snapshots до и после этих изменений сохранены раздельно. Их численные результаты
+нельзя объединять с утверждением, что всё измерено на одной окончательной копии исходников.
+
+JLPS исключает cached chunks из сетевого lower bound и нормировки remote-price loads; минимальный по
+байтам cover всегда входит в кандидаты. Гарантия относится к оценкам одной модели с заданным slack,
+а не к измеренному wall time. Таблицы process/kernel повторяются с исправленным solver; WAN сохраняет
+свою измеренную версию. Файлы прежних снимков не выдаются за замеры текущего solver.

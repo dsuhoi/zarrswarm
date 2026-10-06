@@ -18,7 +18,10 @@ QUERIES = ("map_day_1h", "series_point_1h", "period_6h")
 def table(path, reps=None):
     t = {}
     for r in json.load(open(path))["rows"]:
-        if r.get("seconds") is not None and (reps is None or r["rep"] < reps):
+        if r.get("seconds") is not None and r.get("coverage", 0) == 1 and not r.get("missing", 0) and \
+                r.get("state", "done") == "done" and r.get("value_check") == "exact" and \
+                not r.get("sample_coverage", {}).get("missing_samples", 0) and \
+                (reps is None or r["rep"] < reps):
             t[(r["query"], CONF[(r["mode"], r["select"])], r["rep"])] = r["seconds"]
     return t
 
@@ -36,12 +39,15 @@ def main():
         reps = sorted({k[2] for k in t})
         out = {}
         for q in QUERIES:
-            med = {c: st.median(t[(q, c, r)] for r in reps if (q, c, r) in t) for c in CONF.values()}
-            sp = {b: float(np.median([t[(q, b, r)] / t[(q, "lattice+JLPS", r)] for r in reps
-                                      if (q, b, r) in t and (q, "lattice+JLPS", r) in t]))
-                  for b in ("bytes+JLPS", "lattice+min-bytes")}
-            out[q] = {"median_s": {c: round(v, 2) for c, v in med.items()},
-                      "speedup_vs": {b: round(v, 2) for b, v in sp.items()},
+            times = {c: [t[(q, c, r)] for r in reps if (q, c, r) in t] for c in CONF.values()}
+            med = {c: st.median(v) for c, v in times.items() if v}
+            ratios = {b: [t[(q, b, r)] / t[(q, "lattice+JLPS", r)] for r in reps
+                         if (q, b, r) in t and (q, "lattice+JLPS", r) in t]
+                      for b in ("bytes+JLPS", "lattice+min-bytes")}
+            out[q] = {"median_s": {c: round(med[c], 2) if c in med else None for c in CONF.values()},
+                      "speedup_vs": {b: round(float(np.median(v)), 2) if v else None for b, v in ratios.items()},
+                      "complete_runs": {c: len(v) for c, v in times.items()},
+                      "complete_pairs": {b: len(v) for b, v in ratios.items()},
                       "rank": sorted(med, key=med.get), "n": len(reps)}
         res[name] = out
     for q in QUERIES:

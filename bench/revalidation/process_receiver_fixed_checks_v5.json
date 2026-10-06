@@ -1,0 +1,26 @@
+{
+  "recorded_utc": "2026-10-05T02:30:06.647684+00:00",
+  "full_exact_answers": 90,
+  "unique_configurations": 90,
+  "paired_placements": 10,
+  "source_modules_verified_per_batch": 16,
+  "archived_source_files_verified": 22,
+  "requested_samples": {
+    "map_day_1h": 24,
+    "series_point_1h": 744,
+    "period_6h": 124
+  },
+  "batch_counts": [
+    63,
+    27
+  ],
+  "all_common_arguments_equal": true,
+  "source_current_differences": {
+    "zarr_torrent/node.py": {
+      "measured": "848259581df2ecc18182d9470bd30fd715f58131419b37e343eaf80c9906f176",
+      "current": "fec06c3739e61c37ec2f2ea8a0ba8af6e4088faf9a5334ef760a79583a526620"
+    }
+  },
+  "overlapping_batches": true,
+  "no_selected_answers_excluded": true
+}

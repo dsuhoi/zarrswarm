@@ -1,0 +1,110 @@
+{
+  "day_maps": {
+    "native-jlps": {
+      "median_s": 3.834749230009038,
+      "range_s": [
+        3.608827891992405,
+        6.0074281160050305
+      ],
+      "median_payload_MB": 56.997809,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 12.321359
+    },
+    "native-min": {
+      "median_s": 5.539531564994832,
+      "range_s": [
+        5.255571386995143,
+        7.042159018004895
+      ],
+      "median_payload_MB": 56.22146,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 9.37249
+    },
+    "aria2-min": {
+      "median_s": 8.428186420991551,
+      "range_s": [
+        6.509175660001347,
+        16.76127247000113
+      ],
+      "median_payload_MB": 56.22146,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 7.030139
+    },
+    "paired_ratios": {
+      "native-min": 1.3705124042707628,
+      "aria2-min": 2.197845521432359
+    }
+  },
+  "point_series": {
+    "native-jlps": {
+      "median_s": 12.534616739008925,
+      "range_s": [
+        10.616292760008946,
+        27.545712059989455
+      ],
+      "median_payload_MB": 128.564265,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 26.575582
+    },
+    "native-min": {
+      "median_s": 11.623079520999454,
+      "range_s": [
+        10.074201801995514,
+        17.882062484000926
+      ],
+      "median_payload_MB": 71.793521,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 12.46023
+    },
+    "aria2-min": {
+      "median_s": 17.884535482997308,
+      "range_s": [
+        14.79105049399368,
+        72.69400331399811
+      ],
+      "median_payload_MB": 71.793521,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 12.46023
+    },
+    "paired_ratios": {
+      "native-min": 0.927278413294227,
+      "aria2-min": 1.3932406376085296
+    }
+  },
+  "month_6h": {
+    "native-jlps": {
+      "median_s": 20.28868004299875,
+      "range_s": [
+        18.044892991994857,
+        27.11059785800171
+      ],
+      "median_payload_MB": 293.005373,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 85.787084
+    },
+    "native-min": {
+      "median_s": 25.70175702999404,
+      "range_s": [
+        18.839343820989598,
+        31.088292086002184
+      ],
+      "median_payload_MB": 290.705287,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 75.05127
+    },
+    "aria2-min": {
+      "median_s": 85.84013008899637,
+      "range_s": [
+        50.41549324800144,
+        192.36531479300174
+      ],
+      "median_payload_MB": 290.705287,
+      "relay_positive_queries": 3,
+      "median_relay_MB": 107.820779
+    },
+    "paired_ratios": {
+      "native-min": 0.9480335758220158,
+      "aria2-min": 3.166294249156907
+    }
+  }
+}

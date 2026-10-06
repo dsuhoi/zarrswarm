@@ -30,6 +30,8 @@ class Mirror:
         cmd = f"trap 'kill 0' EXIT HUP TERM; cd {data} && exec {py} -m http.server {self.rport} --bind 127.0.0.1"
         self.args = ["ssh", "-tt", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", "-o", "ServerAliveInterval=15",
                      "-o", "ExitOnForwardFailure=yes", "-L", f"{self.lport}:127.0.0.1:{self.rport}", site["host"], cmd]
+        if site.get("jump"):
+            self.args[1:1] = ["-J", site["jump"]]
         self.log, self.proc = log, None
         self.url = f"http://127.0.0.1:{self.lport}"
 

@@ -1,0 +1,11 @@
+{
+  "cases": 600,
+  "max_ratio": 1.25,
+  "above_1_2": 1,
+  "median_ratio": 1.0,
+  "python_hash_seed": "0",
+  "source_sha256": {
+    "zarr_torrent/plan.py": "85bcfb19ccba568823e1f0447bfdafcdcce5a94362b47c723f1b7192f203a24f",
+    "tests/test_algorithms.py": "2ec100ab8d5fd1bd5a34d5785e4f6df19122d3c60901ac27bc8ec463a604b4e0"
+  }
+}

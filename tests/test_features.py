@@ -6,13 +6,14 @@ import time
 
 import numpy as np
 import pandas as pd
+import pytest
 import xarray as xr
 
 import zarr_torrent as zt
 from zarr_torrent import node as nodemod
 from zarr_torrent.node import Node
 from zarr_torrent.scan import split_key
-from zarr_torrent.store import http
+from zarr_torrent.store import http, wait_job
 
 
 def port():
@@ -49,6 +50,47 @@ def wait(cond, secs=20):
             return True
         time.sleep(0.2)
     return False
+
+
+def test_rescan_checks_first_poll_after_seed(tmp_path, monkeypatch):
+    node = Node(tmp_path / "node")
+    node.seeds[(str(tmp_path / "feed.zarr"), "grid")] = {"chunks": {}}
+    monkeypatch.setattr(node, "_meta_sig", lambda path: ("metadata changed before the first poll",))
+    polls = []
+    async def tick(delay):
+        polls.append(delay)
+    async def scan(path, **kwargs):
+        raise asyncio.CancelledError  # stop as soon as the first rescan is attempted
+    monkeypatch.setattr(asyncio, "sleep", tick)
+    monkeypatch.setattr(node, "add_seed", scan)
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(node._rescan_loop())
+    assert len(polls) == 1  # an early append must not wait for the tenth round
+
+
+def test_region_holes_and_outside_extent_are_partial(tmp_path):
+    run, seed, (cli,) = swarm(tmp_path)
+    ctl = lambda n: f"http://127.0.0.1:{n.ctl_port}"
+    p = tmp_path / "holes.zarr"
+    data = feed(pd.date_range("2024-01-01", periods=24, freq="h"), 8)
+    data.to_zarr(p, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
+    import zarr
+    a = zarr.open_array(str(p / "t2m"), mode="r")
+    (p / "t2m" / a.metadata.encode_chunk_key((1, 0, 0))).unlink()
+    try:
+        grid = http(ctl(seed), "POST", "/api/seed", {"path": str(p)})["link"].removeprefix("zt://")
+        for cover in ("jlps", "bytes"):
+            jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "cover": cover,
+                "region": {"var": "t2m", "t0": "2023-12-31T23", "t1": "2024-01-02T00", "step": 3600}})["job"]
+            job = wait_job(ctl(cli), jid)
+            assert job["state"] == "partial", job
+            assert job["coverage"] == {"requested_samples": 26, "covered_samples": 18, "missing_samples": 8}, job
+        jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "keys": ["t2m@missing/0.0.0"]})["job"]
+        job = wait_job(ctl(cli), jid)
+        assert job["state"] == "partial" and job["total"] == job["missing"] == 1, job
+    finally:
+        for n in (cli, seed):
+            run(n.stop())
 
 
 def test_appended_time_steps_are_picked_up(tmp_path, monkeypatch):
@@ -113,6 +155,108 @@ def test_follow_keeps_newest_window_of_a_growing_feed(tmp_path, monkeypatch):
     assert http(ctl(cli2), "POST", "/api/unfollow", {"id": r["id"]})["ok"] and not cli2.subs
     for n in (cli2, seed):
         run(n.stop())
+
+
+def test_follow_updates_an_existing_partial_chunk(tmp_path, monkeypatch):
+    monkeypatch.setattr(nodemod, "RESCAN_EVERY", 0.2)
+    monkeypatch.setattr(nodemod, "FOLLOW_EVERY", 0.2)
+    run, seed, (cli,) = swarm(tmp_path)
+    ctl = lambda n: f"http://127.0.0.1:{n.ctl_port}"
+    path = tmp_path / "growing.zarr"
+    initial = feed(pd.date_range("2024-01-01", periods=2, freq="h"), 3)
+    initial.to_zarr(path, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
+    try:
+        link = http(ctl(seed), "POST", "/api/seed", {"path": str(path)})["link"]
+        grid = link.removeprefix("zt://")
+        http(ctl(cli), "POST", "/api/follow", {"link": link, "vars": ["t2m"], "last_s": 6 * 3600})
+        assert wait(lambda: bool(cli.caches.get(grid, {}).get("chunks")))
+        key = next(k for k in cli.caches[grid]["chunks"] if k.startswith("t2m@"))
+        old_cid = cli.caches[grid]["chunks"][key][0]
+        added = feed(pd.date_range("2024-01-01T02", periods=2, freq="h"), 4)
+        added.to_zarr(path, append_dim="time", consolidated=False)
+        assert wait(lambda: cli.caches[grid]["chunks"][key][0] != old_cid), "same chunk key remained stale"
+        got = zt.open_dataset(link, ctl=ctl(cli)).t2m.values
+        np.testing.assert_array_equal(got, np.concatenate([initial.t2m.values, added.t2m.values]))
+    finally:
+        for n in (cli, seed):
+            run(n.stop())
+
+
+def test_transport_cache_follows_rewritten_chunk(tmp_path, monkeypatch):
+    monkeypatch.setattr(nodemod, "RESCAN_EVERY", 0.2)
+    monkeypatch.setattr(nodemod, "FOLLOW_EVERY", 0.2)
+    monkeypatch.setattr(nodemod, "XT1_BELOW", 1e12)
+    from zarr.codecs import ZstdCodec
+    run, seed, (cli,) = swarm(tmp_path)
+    ctl = lambda n: f"http://127.0.0.1:{n.ctl_port}"
+    spatial = np.random.default_rng(17).integers(0, 1000, (64, 64)).astype("f8") / 10
+    values = np.stack([spatial, spatial + 0.1, spatial + 0.2])
+    data = xr.Dataset({"t2m": (("time", "y", "x"), values)}, coords={
+        "time": pd.date_range("2024-01-01", periods=3, freq="h"), "y": np.arange(64.), "x": np.arange(64.)})
+    path = tmp_path / "transport.zarr"
+    data.isel(time=slice(0, 2)).to_zarr(path, zarr_format=3, consolidated=False,
+        encoding={"t2m": {"chunks": (4, 64, 64), "compressors": [ZstdCodec(level=3)]}})
+    try:
+        link = http(ctl(seed), "POST", "/api/seed", {"path": str(path)})["link"]
+        grid = link.removeprefix("zt://")
+        http(ctl(cli), "POST", "/api/follow", {"link": link, "vars": ["t2m"], "last_s": 4 * 3600})
+        assert wait(lambda: bool(cli.caches.get(grid, {}).get("chunks")))
+        assert seed.decoded.d, "transport must exercise the decoded cache"
+        key = next(iter(cli.caches[grid]["chunks"]))
+        old_cid = cli.caches[grid]["chunks"][key][0]
+        data.isel(time=slice(2, 3)).to_zarr(path, append_dim="time", consolidated=False)
+        assert wait(lambda: cli.caches[grid]["chunks"][key][0] != old_cid), "transport returned cached old values"
+        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, values)
+    finally:
+        for n in (cli, seed):
+            run(n.stop())
+
+
+def test_refreshed_reader_and_download_reject_old_values_in_same_encoding(tmp_path):
+    run, seed, (cli, mirror) = swarm(tmp_path, 2)
+    ctl = lambda n: f"http://127.0.0.1:{n.ctl_port}"
+    path = tmp_path / "corrected.zarr"
+    initial = feed(pd.date_range("2024-01-01", periods=6, freq="h"), 5)
+    initial.to_zarr(path, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
+    try:
+        link = http(ctl(seed), "POST", "/api/seed", {"path": str(path)})["link"]
+        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, initial.t2m.values)
+        grid = link.removeprefix("zt://")
+        key = next(k for k in cli.local[grid]["chunks"] if k.startswith("t2m@"))
+        request = [{"key": key, "sel": [[0, 6], [0, 3], [0, 4]]}]
+        np.testing.assert_array_equal(np.frombuffer(run(cli.slices(grid, request))[0], dtype="<f4"),
+                                      initial.t2m.values.ravel())
+        corrected = initial.assign(t2m=initial.t2m + np.float32(100))
+        corrected.to_zarr(path, mode="w", encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
+        for n in (seed, mirror):
+            http(ctl(n), "POST", "/api/seed", {"path": str(path)})
+        grid = link.removeprefix("zt://")
+        http(ctl(cli), "GET", f"/api/view/{grid}?refresh=1")
+        np.testing.assert_array_equal(np.frombuffer(run(cli.slices(grid, request))[0], dtype="<f4"),
+                                      corrected.t2m.values.ravel())
+        # The corrected providers outvote the client's stale cache. /api/download
+        # must not count that cache as completed before fetch validates its identity.
+        jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "t2m"}})["job"]
+        assert wait_job(ctl(cli), jid)["state"] == "done"
+        got = zt.open_dataset(link, ctl=ctl(cli)).t2m.values
+        np.testing.assert_array_equal(got, corrected.t2m.values)
+        newest = corrected.assign(t2m=corrected.t2m + np.float32(100))
+        newest.to_zarr(path, mode="w", encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
+        for n in (seed, mirror):
+            http(ctl(n), "POST", "/api/seed", {"path": str(path)})
+        http(ctl(cli), "GET", f"/api/view/{grid}?refresh=1")
+        # This revision uses the ordinary reader, without a download job first.
+        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, newest.t2m.values)
+        own = tmp_path / "own.zarr"
+        initial.to_zarr(own, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
+        http(ctl(cli), "POST", "/api/seed", {"path": str(own)})
+        for view in (run(cli.view(grid, refresh=True)),
+                     run(cli.region_view(grid, "t2m", 0, 10**10))):
+            chunks = [b for k, b in view["best"].items() if k.startswith("t2m@")]
+            assert chunks and all(any(p == cli.ident.id for p, _, _ in b["src"]) for b in chunks)
+    finally:
+        for n in (cli, mirror, seed):
+            run(n.stop())
 
 
 def test_cache_limit_evicts_least_recently_used(tmp_path):

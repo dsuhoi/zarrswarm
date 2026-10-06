@@ -1,0 +1,3676 @@
+{
+ "args": {
+  "variants": "/home/d.sukhorukov/zt_ms/variants_month",
+  "peers": 36,
+  "boot": 3,
+  "nat": 0.3,
+  "reps": 7,
+  "rep_start": 4,
+  "modes": "values,bytes",
+  "out": "../process_planner_4_7.json",
+  "placement": "sat",
+  "procs": true,
+  "emu": false,
+  "rate_mbps": 1.0,
+  "covers": "jlps,bytes",
+  "queries": "map_day_1h,series_point_1h,period_6h",
+  "traces": "bench/sat_traces_meteor.json",
+  "stations": 22
+ },
+ "metadata": {
+  "estimator": "lattice-v5",
+  "source_sha256": {
+   "zarr_torrent/__init__.py": "5ddf76b34f9ea3d83b7099839bb0d785d2488ce706ba497101c354fb5df2c9e4",
+   "zarr_torrent/aqp.py": "c45f6d5c3de93f059b11c818d7245800c37473178fb26ca0b10a5c1c662b37f3",
+   "zarr_torrent/capt.py": "f47637ee037b8453546569f613c1f9fe7d5c5032fed14ff7a7c82558bdca4111",
+   "zarr_torrent/cli.py": "77d933779c88f442941296dbf4dd7ba033b03ae5a187813aee5e870b37ea095c",
+   "zarr_torrent/codec.py": "cd3dbcaf4ee811f73f47e480ba15c8c73872de2461d7729b8dab27d032441bc3",
+   "zarr_torrent/common.py": "ef5cced662932c65cc839276691d1efd2fb328ddb9abaca86a4e6c42fcd82192",
+   "zarr_torrent/dht.py": "64206c03be60ff0b2bc09524225148bdf55701f20d801c7e462b603d1f17cf23",
+   "zarr_torrent/gf.py": "aaa5fee28ea49a747f03002d249b0f802e53e3a35b77c9b42cd36fd2d82291da",
+   "zarr_torrent/jlps.py": "1f7dc3731e48ef06d80d6c58c533150348f12b943e057574d08f0dcd3368594b",
+   "zarr_torrent/node.py": "43efea8b6fc44f50239d701a4523a793db496976748069c97bbd84c2d196c625",
+   "zarr_torrent/parity.py": "650063f950340ddd07c83750d3625564f82a89b31f8fdc317a463146020a8c0d",
+   "zarr_torrent/plan.py": "4d8796d72df64e4adc27ee5ef7759562fafaf37f4e387708705b0510d78d0795",
+   "zarr_torrent/pushdown.py": "e918b4627eff490bdcb7d8ac18e9c6d219432fcc2a1eb2a4edb6c5b36861ce13",
+   "zarr_torrent/scan.py": "7c7b44f3b7dd82e8aa396a0c915dfafca35de1ffae6ba2e97045ebbeac7fa7d8",
+   "zarr_torrent/store.py": "9c8cda9d296ed84065602c214d28ffe64803a716e1cf7dd26ab05d33eff874d2",
+   "zarr_torrent/tui.py": "057e1f34029d30ac167e86edabc4c67a4a983c27b0001d82f9a62c9c9b7c8ef6"
+  },
+  "started_utc": "2026-10-03T22:54:50.804847+00:00"
+ },
+ "rows": [
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 4,
+   "query": "map_day_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 3.21,
+   "bytes": 53760505,
+   "chunks": 36,
+   "total": 36,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 18,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 3.26,
+   "est_T": 3.324,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 2.86
+   },
+   "peer_detail": {
+    "a457f94a": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 0.0,
+     "end_s": 1.733,
+     "via": false
+    },
+    "7b47eba0": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.72,
+     "act_MB": 2.34,
+     "end_s": 2.852,
+     "via": true
+    },
+    "fc3f4fc2": {
+     "pred_MB": 11.72,
+     "bw_MBps": 4.0,
+     "act_MB": 10.99,
+     "end_s": 2.759,
+     "via": false
+    },
+    "7cc77da8": {
+     "pred_MB": 2.34,
+     "bw_MBps": 1.05,
+     "act_MB": 2.2,
+     "end_s": 1.874,
+     "via": false
+    },
+    "6ee9fc6d": {
+     "pred_MB": 11.73,
+     "bw_MBps": 4.0,
+     "act_MB": 11.02,
+     "end_s": 2.755,
+     "via": false
+    },
+    "333085ec": {
+     "pred_MB": 2.44,
+     "bw_MBps": 0.91,
+     "act_MB": 0.56,
+     "end_s": 2.028,
+     "via": false
+    },
+    "ae0cc468": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 2.2,
+     "end_s": 1.012,
+     "via": false
+    },
+    "87c818e7": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 0.53,
+     "end_s": 0.902,
+     "via": false
+    },
+    "dbe92b59": {
+     "pred_MB": 2.44,
+     "bw_MBps": 0.78,
+     "act_MB": 1.13,
+     "end_s": 1.284,
+     "via": false
+    },
+    "b8aa4591": {
+     "pred_MB": 3.64,
+     "bw_MBps": 1.25,
+     "act_MB": 1.09,
+     "end_s": 1.255,
+     "via": false
+    },
+    "c66d1b8a": {
+     "pred_MB": 4.67,
+     "bw_MBps": 1.52,
+     "act_MB": 4.67,
+     "end_s": 2.664,
+     "via": true
+    },
+    "4ff4b546": {
+     "pred_MB": 4.68,
+     "bw_MBps": 1.49,
+     "act_MB": 4.68,
+     "end_s": 2.756,
+     "via": true
+    },
+    "68e67544": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.72,
+     "act_MB": 2.19,
+     "end_s": 2.585,
+     "via": false
+    },
+    "e6d0a9e7": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 0.54,
+     "end_s": 0.8,
+     "via": false
+    },
+    "344a47d7": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.87,
+     "act_MB": 2.19,
+     "end_s": 2.166,
+     "via": false
+    },
+    "c17a85f0": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 1.24,
+     "end_s": 1.834,
+     "via": false
+    },
+    "21e14f60": {
+     "pred_MB": 1.24,
+     "bw_MBps": 1.21,
+     "act_MB": 1.64,
+     "end_s": 1.314,
+     "via": false
+    },
+    "69e25c7f": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.77,
+     "act_MB": 2.34,
+     "end_s": 2.661,
+     "via": true
+    },
+    "54e38f9f": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.84,
+     "act_MB": 2.2,
+     "end_s": 2.27,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 4,
+   "query": "map_day_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 5.2,
+   "bytes": 53770362,
+   "chunks": 24,
+   "total": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 11,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 5.86,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.92
+   },
+   "peer_detail": {
+    "54e38f9f": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.84,
+     "act_MB": 2.2,
+     "end_s": 2.248,
+     "via": false
+    },
+    "68e67544": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.72,
+     "act_MB": 2.19,
+     "end_s": 2.574,
+     "via": false
+    },
+    "c66d1b8a": {
+     "pred_MB": 4.68,
+     "bw_MBps": 1.52,
+     "act_MB": 4.68,
+     "end_s": 2.657,
+     "via": true
+    },
+    "4ff4b546": {
+     "pred_MB": 4.69,
+     "bw_MBps": 1.49,
+     "act_MB": 4.69,
+     "end_s": 2.819,
+     "via": true
+    },
+    "fc3f4fc2": {
+     "pred_MB": 14.06,
+     "bw_MBps": 4.0,
+     "act_MB": 13.2,
+     "end_s": 2.836,
+     "via": false
+    },
+    "cf9e733d": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.4,
+     "act_MB": 2.34,
+     "end_s": 4.914,
+     "via": true
+    },
+    "344a47d7": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.87,
+     "act_MB": 2.19,
+     "end_s": 2.169,
+     "via": false
+    },
+    "6ee9fc6d": {
+     "pred_MB": 14.05,
+     "bw_MBps": 4.0,
+     "act_MB": 13.18,
+     "end_s": 3.601,
+     "via": false
+    },
+    "7cc77da8": {
+     "pred_MB": 4.69,
+     "bw_MBps": 1.05,
+     "act_MB": 4.4,
+     "end_s": 3.52,
+     "via": false
+    },
+    "7b47eba0": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.72,
+     "act_MB": 2.34,
+     "end_s": 2.866,
+     "via": true
+    },
+    "69e25c7f": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.77,
+     "act_MB": 2.35,
+     "end_s": 2.681,
+     "via": true
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 4,
+   "query": "series_point_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 12.92,
+   "bytes": 344797442,
+   "chunks": 339,
+   "total": 339,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 28,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 15.45,
+   "est_T": 16.485,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.9
+   },
+   "peer_detail": {
+    "87c818e7": {
+     "pred_MB": 8.31,
+     "bw_MBps": 0.54,
+     "act_MB": 7.44,
+     "end_s": 11.182,
+     "via": false
+    },
+    "c66d1b8a": {
+     "pred_MB": 7.02,
+     "bw_MBps": 1.52,
+     "act_MB": 14.05,
+     "end_s": 11.841,
+     "via": true
+    },
+    "21e14f60": {
+     "pred_MB": 18.54,
+     "bw_MBps": 1.21,
+     "act_MB": 17.19,
+     "end_s": 11.516,
+     "via": false
+    },
+    "69e25c7f": {
+     "pred_MB": 9.37,
+     "bw_MBps": 0.77,
+     "act_MB": 7.02,
+     "end_s": 9.981,
+     "via": true
+    },
+    "333085ec": {
+     "pred_MB": 13.39,
+     "bw_MBps": 0.91,
+     "act_MB": 12.6,
+     "end_s": 11.7,
+     "via": false
+    },
+    "b8aa4591": {
+     "pred_MB": 19.14,
+     "bw_MBps": 1.25,
+     "act_MB": 17.17,
+     "end_s": 11.449,
+     "via": false
+    },
+    "cf9e733d": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.4,
+     "act_MB": 4.68,
+     "end_s": 10.007,
+     "via": true
+    },
+    "5be31bb8": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 11.72,
+     "end_s": 9.828,
+     "via": false
+    },
+    "7d18fd38": {
+     "pred_MB": 8.31,
+     "bw_MBps": 0.56,
+     "act_MB": 7.45,
+     "end_s": 11.0,
+     "via": false
+    },
+    "4ff4b546": {
+     "pred_MB": 21.06,
+     "bw_MBps": 1.49,
+     "act_MB": 18.72,
+     "end_s": 11.483,
+     "via": true
+    },
+    "ae0cc468": {
+     "pred_MB": 31.96,
+     "bw_MBps": 2.1,
+     "act_MB": 28.63,
+     "end_s": 11.675,
+     "via": false
+    },
+    "68e67544": {
+     "pred_MB": 9.36,
+     "bw_MBps": 0.72,
+     "act_MB": 6.56,
+     "end_s": 9.922,
+     "via": false
+    },
+    "6ee9fc6d": {
+     "pred_MB": 60.99,
+     "bw_MBps": 4.0,
+     "act_MB": 43.99,
+     "end_s": 9.887,
+     "via": false
+    },
+    "0b43230c": {
+     "pred_MB": 12.14,
+     "bw_MBps": 0.8,
+     "act_MB": 10.87,
+     "end_s": 11.463,
+     "via": false
+    },
+    "b8635b0f": {
+     "pred_MB": 7.02,
+     "bw_MBps": 0.5,
+     "act_MB": 4.4,
+     "end_s": 7.779,
+     "via": false
+    },
+    "dbe92b59": {
+     "pred_MB": 11.5,
+     "bw_MBps": 0.78,
+     "act_MB": 10.89,
+     "end_s": 11.266,
+     "via": false
+    },
+    "344a47d7": {
+     "pred_MB": 11.72,
+     "bw_MBps": 0.87,
+     "act_MB": 8.78,
+     "end_s": 10.221,
+     "via": false
+    },
+    "e6d0a9e7": {
+     "pred_MB": 18.53,
+     "bw_MBps": 1.21,
+     "act_MB": 16.61,
+     "end_s": 11.44,
+     "via": false
+    },
+    "302d37e2": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.97,
+     "act_MB": 9.36,
+     "end_s": 9.339,
+     "via": true
+    },
+    "524a1756": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.32,
+     "act_MB": 2.18,
+     "end_s": 6.175,
+     "via": false
+    },
+    "fc3f4fc2": {
+     "pred_MB": 30.43,
+     "bw_MBps": 4.0,
+     "act_MB": 37.36,
+     "end_s": 8.266,
+     "via": false
+    },
+    "8d093064": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.18,
+     "act_MB": 0.0,
+     "end_s": 10.62,
+     "via": true
+    },
+    "2c5ccc4b": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.37,
+     "act_MB": 4.69,
+     "end_s": 10.691,
+     "via": true
+    },
+    "b0a15da1": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 14.05,
+     "end_s": 10.141,
+     "via": false
+    },
+    "c659031b": {
+     "pred_MB": 12.46,
+     "bw_MBps": 1.9,
+     "act_MB": 12.46,
+     "end_s": 11.225,
+     "via": true
+    },
+    "7b47eba0": {
+     "pred_MB": 9.36,
+     "bw_MBps": 0.72,
+     "act_MB": 7.02,
+     "end_s": 10.713,
+     "via": true
+    },
+    "6f442a75": {
+     "pred_MB": 2.73,
+     "bw_MBps": 1.02,
+     "act_MB": 2.53,
+     "end_s": 2.381,
+     "via": false
+    },
+    "c17a85f0": {
+     "pred_MB": 12.79,
+     "bw_MBps": 0.85,
+     "act_MB": 12.15,
+     "end_s": 11.765,
+     "via": true
+    },
+    "a457f94a": {
+     "pred_MB": 8.94,
+     "bw_MBps": 0.58,
+     "act_MB": 7.67,
+     "end_s": 11.556,
+     "via": true
+    }
+   },
+   "cover": [
+    "168x91x180+144",
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 4,
+   "query": "series_point_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 16.18,
+   "bytes": 211749471,
+   "chunks": 339,
+   "total": 339,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 14,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 20.12,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 16.02
+   },
+   "peer_detail": {
+    "b8aa4591": {
+     "pred_MB": 24.93,
+     "bw_MBps": 1.25,
+     "act_MB": 22.35,
+     "end_s": 14.427,
+     "via": false
+    },
+    "6f442a75": {
+     "pred_MB": 2.73,
+     "bw_MBps": 1.02,
+     "act_MB": 2.53,
+     "end_s": 2.292,
+     "via": false
+    },
+    "c659031b": {
+     "pred_MB": 12.46,
+     "bw_MBps": 1.9,
+     "act_MB": 12.46,
+     "end_s": 6.051,
+     "via": true
+    },
+    "6ee9fc6d": {
+     "pred_MB": 2.35,
+     "bw_MBps": 4.0,
+     "act_MB": 2.17,
+     "end_s": 0.612,
+     "via": false
+    },
+    "dbe92b59": {
+     "pred_MB": 15.3,
+     "bw_MBps": 0.78,
+     "act_MB": 14.28,
+     "end_s": 14.718,
+     "via": false
+    },
+    "e6d0a9e7": {
+     "pred_MB": 24.25,
+     "bw_MBps": 1.21,
+     "act_MB": 21.75,
+     "end_s": 15.208,
+     "via": false
+    },
+    "87c818e7": {
+     "pred_MB": 10.19,
+     "bw_MBps": 0.54,
+     "act_MB": 9.14,
+     "end_s": 14.549,
+     "via": false
+    },
+    "c17a85f0": {
+     "pred_MB": 16.63,
+     "bw_MBps": 0.85,
+     "act_MB": 15.35,
+     "end_s": 15.117,
+     "via": true
+    },
+    "7d18fd38": {
+     "pred_MB": 10.85,
+     "bw_MBps": 0.56,
+     "act_MB": 10.3,
+     "end_s": 14.881,
+     "via": false
+    },
+    "333085ec": {
+     "pred_MB": 17.85,
+     "bw_MBps": 0.91,
+     "act_MB": 16.01,
+     "end_s": 15.205,
+     "via": false
+    },
+    "0b43230c": {
+     "pred_MB": 15.94,
+     "bw_MBps": 0.8,
+     "act_MB": 14.31,
+     "end_s": 14.86,
+     "via": false
+    },
+    "ae0cc468": {
+     "pred_MB": 42.21,
+     "bw_MBps": 2.1,
+     "act_MB": 37.82,
+     "end_s": 14.906,
+     "via": false
+    },
+    "21e14f60": {
+     "pred_MB": 24.28,
+     "bw_MBps": 1.21,
+     "act_MB": 21.77,
+     "end_s": 15.266,
+     "via": false
+    },
+    "a457f94a": {
+     "pred_MB": 11.49,
+     "bw_MBps": 0.58,
+     "act_MB": 11.49,
+     "end_s": 15.986,
+     "via": true
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 4,
+   "query": "period_6h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 9.98,
+   "bytes": 278674097,
+   "chunks": 217,
+   "total": 217,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 27,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 11.02,
+   "est_T": 11.221,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 9.0
+   },
+   "peer_detail": {
+    "54e38f9f": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.84,
+     "act_MB": 8.8,
+     "end_s": 8.523,
+     "via": false
+    },
+    "333085ec": {
+     "pred_MB": 9.04,
+     "bw_MBps": 0.91,
+     "act_MB": 7.16,
+     "end_s": 6.435,
+     "via": false
+    },
+    "69e25c7f": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.77,
+     "act_MB": 7.03,
+     "end_s": 7.521,
+     "via": true
+    },
+    "0b43230c": {
+     "pred_MB": 7.2,
+     "bw_MBps": 0.8,
+     "act_MB": 6.07,
+     "end_s": 6.621,
+     "via": false
+    },
+    "68e67544": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.72,
+     "act_MB": 4.39,
+     "end_s": 5.088,
+     "via": false
+    },
+    "ae0cc468": {
+     "pred_MB": 11.46,
+     "bw_MBps": 2.1,
+     "act_MB": 14.35,
+     "end_s": 5.635,
+     "via": false
+    },
+    "21e14f60": {
+     "pred_MB": 12.07,
+     "bw_MBps": 1.21,
+     "act_MB": 8.24,
+     "end_s": 5.972,
+     "via": false
+    },
+    "302d37e2": {
+     "pred_MB": 9.38,
+     "bw_MBps": 0.97,
+     "act_MB": 9.38,
+     "end_s": 7.921,
+     "via": true
+    },
+    "344a47d7": {
+     "pred_MB": 9.37,
+     "bw_MBps": 0.87,
+     "act_MB": 8.78,
+     "end_s": 8.239,
+     "via": false
+    },
+    "5be31bb8": {
+     "pred_MB": 11.74,
+     "bw_MBps": 1.23,
+     "act_MB": 11.74,
+     "end_s": 7.862,
+     "via": true
+    },
+    "6ee9fc6d": {
+     "pred_MB": 42.22,
+     "bw_MBps": 4.0,
+     "act_MB": 37.41,
+     "end_s": 8.907,
+     "via": false
+    },
+    "524a1756": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.32,
+     "act_MB": 2.21,
+     "end_s": 5.63,
+     "via": false
+    },
+    "b8635b0f": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.5,
+     "act_MB": 4.4,
+     "end_s": 7.275,
+     "via": false
+    },
+    "c17a85f0": {
+     "pred_MB": 4.83,
+     "bw_MBps": 0.85,
+     "act_MB": 5.4,
+     "end_s": 6.901,
+     "via": true
+    },
+    "7cc77da8": {
+     "pred_MB": 9.38,
+     "bw_MBps": 1.05,
+     "act_MB": 11.0,
+     "end_s": 8.577,
+     "via": false
+    },
+    "fcf6e217": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.23,
+     "act_MB": 2.2,
+     "end_s": 7.703,
+     "via": false
+    },
+    "b8aa4591": {
+     "pred_MB": 12.75,
+     "bw_MBps": 1.25,
+     "act_MB": 10.51,
+     "end_s": 6.826,
+     "via": false
+    },
+    "87c818e7": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 2.7,
+     "end_s": 6.637,
+     "via": false
+    },
+    "b0a15da1": {
+     "pred_MB": 21.06,
+     "bw_MBps": 2.02,
+     "act_MB": 18.73,
+     "end_s": 8.499,
+     "via": true
+    },
+    "dbe92b59": {
+     "pred_MB": 7.84,
+     "bw_MBps": 0.78,
+     "act_MB": 5.47,
+     "end_s": 6.819,
+     "via": false
+    },
+    "fc3f4fc2": {
+     "pred_MB": 42.22,
+     "bw_MBps": 4.0,
+     "act_MB": 41.78,
+     "end_s": 8.961,
+     "via": false
+    },
+    "e6d0a9e7": {
+     "pred_MB": 9.63,
+     "bw_MBps": 1.21,
+     "act_MB": 8.79,
+     "end_s": 6.998,
+     "via": false
+    },
+    "b648f126": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.26,
+     "act_MB": 2.34,
+     "end_s": 7.421,
+     "via": true
+    },
+    "7b47eba0": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.72,
+     "act_MB": 7.03,
+     "end_s": 8.069,
+     "via": true
+    },
+    "c66d1b8a": {
+     "pred_MB": 16.41,
+     "bw_MBps": 1.52,
+     "act_MB": 16.4,
+     "end_s": 8.84,
+     "via": true
+    },
+    "4ff4b546": {
+     "pred_MB": 16.4,
+     "bw_MBps": 1.49,
+     "act_MB": 14.05,
+     "end_s": 7.76,
+     "via": true
+    },
+    "2c5ccc4b": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.37,
+     "act_MB": 2.34,
+     "end_s": 5.339,
+     "via": true
+    }
+   },
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 4,
+   "query": "period_6h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 11.96,
+   "bytes": 280411620,
+   "chunks": 124,
+   "total": 124,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 19,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 14.17,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.84
+   },
+   "peer_detail": {
+    "6ee9fc6d": {
+     "pred_MB": 56.25,
+     "bw_MBps": 4.0,
+     "act_MB": 50.54,
+     "end_s": 11.526,
+     "via": false
+    },
+    "7cc77da8": {
+     "pred_MB": 14.03,
+     "bw_MBps": 1.05,
+     "act_MB": 13.18,
+     "end_s": 10.239,
+     "via": false
+    },
+    "68e67544": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.72,
+     "act_MB": 4.39,
+     "end_s": 5.018,
+     "via": false
+    },
+    "fcf6e217": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.23,
+     "act_MB": 2.2,
+     "end_s": 7.705,
+     "via": false
+    },
+    "b8635b0f": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.5,
+     "act_MB": 6.59,
+     "end_s": 10.784,
+     "via": false
+    },
+    "8d093064": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.18,
+     "act_MB": 2.35,
+     "end_s": 10.665,
+     "via": true
+    },
+    "b648f126": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.26,
+     "act_MB": 2.35,
+     "end_s": 7.458,
+     "via": true
+    },
+    "344a47d7": {
+     "pred_MB": 11.72,
+     "bw_MBps": 0.87,
+     "act_MB": 10.98,
+     "end_s": 10.242,
+     "via": false
+    },
+    "54e38f9f": {
+     "pred_MB": 11.72,
+     "bw_MBps": 0.84,
+     "act_MB": 11.01,
+     "end_s": 10.629,
+     "via": false
+    },
+    "c66d1b8a": {
+     "pred_MB": 21.11,
+     "bw_MBps": 1.52,
+     "act_MB": 21.11,
+     "end_s": 11.322,
+     "via": true
+    },
+    "b0a15da1": {
+     "pred_MB": 28.14,
+     "bw_MBps": 2.02,
+     "act_MB": 25.79,
+     "end_s": 11.305,
+     "via": true
+    },
+    "524a1756": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.32,
+     "act_MB": 4.4,
+     "end_s": 11.034,
+     "via": false
+    },
+    "7b47eba0": {
+     "pred_MB": 9.38,
+     "bw_MBps": 0.72,
+     "act_MB": 9.38,
+     "end_s": 10.75,
+     "via": true
+    },
+    "69e25c7f": {
+     "pred_MB": 9.4,
+     "bw_MBps": 0.77,
+     "act_MB": 9.4,
+     "end_s": 9.988,
+     "via": true
+    },
+    "4ff4b546": {
+     "pred_MB": 18.77,
+     "bw_MBps": 1.49,
+     "act_MB": 18.77,
+     "end_s": 11.498,
+     "via": true
+    },
+    "2c5ccc4b": {
+     "pred_MB": 4.7,
+     "bw_MBps": 0.37,
+     "act_MB": 4.7,
+     "end_s": 10.512,
+     "via": true
+    },
+    "fc3f4fc2": {
+     "pred_MB": 56.23,
+     "bw_MBps": 4.0,
+     "act_MB": 52.75,
+     "end_s": 11.521,
+     "via": false
+    },
+    "302d37e2": {
+     "pred_MB": 11.72,
+     "bw_MBps": 0.97,
+     "act_MB": 14.07,
+     "end_s": 11.79,
+     "via": true
+    },
+    "5be31bb8": {
+     "pred_MB": 16.44,
+     "bw_MBps": 1.23,
+     "act_MB": 16.44,
+     "end_s": 10.924,
+     "via": true
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 4,
+   "query": "map_day_1h",
+   "swarm_holders": 20,
+   "swarms": 3,
+   "seconds": 5.48,
+   "bytes": 53772733,
+   "chunks": 24,
+   "total": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 11,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 5.86,
+   "est_T": 5.966,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 5.35
+   },
+   "peer_detail": {
+    "bb7e9123": {
+     "pred_MB": 4.69,
+     "bw_MBps": 1.52,
+     "act_MB": 4.69,
+     "end_s": 3.141,
+     "via": true
+    },
+    "975ed898": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.84,
+     "act_MB": 2.2,
+     "end_s": 2.709,
+     "via": false
+    },
+    "0b78b6d2": {
+     "pred_MB": 14.05,
+     "bw_MBps": 4.0,
+     "act_MB": 13.19,
+     "end_s": 3.545,
+     "via": false
+    },
+    "1e619e29": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.77,
+     "act_MB": 2.35,
+     "end_s": 3.086,
+     "via": true
+    },
+    "54f95849": {
+     "pred_MB": 4.67,
+     "bw_MBps": 1.49,
+     "act_MB": 4.67,
+     "end_s": 3.485,
+     "via": true
+    },
+    "99d4ee84": {
+     "pred_MB": 14.05,
+     "bw_MBps": 4.0,
+     "act_MB": 13.19,
+     "end_s": 3.427,
+     "via": false
+    },
+    "caa00547": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.72,
+     "act_MB": 2.19,
+     "end_s": 4.979,
+     "via": false
+    },
+    "17991ac9": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.72,
+     "act_MB": 2.34,
+     "end_s": 3.537,
+     "via": true
+    },
+    "f106442d": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.4,
+     "act_MB": 2.34,
+     "end_s": 5.346,
+     "via": true
+    },
+    "9d55e2c4": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.87,
+     "act_MB": 2.2,
+     "end_s": 2.639,
+     "via": false
+    },
+    "4a344fc1": {
+     "pred_MB": 4.69,
+     "bw_MBps": 1.05,
+     "act_MB": 4.4,
+     "end_s": 4.058,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 4,
+   "query": "series_point_1h",
+   "swarm_holders": 20,
+   "swarms": 3,
+   "seconds": 79.29,
+   "bytes": 1676813351,
+   "chunks": 744,
+   "total": 744,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 20,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 97.92,
+   "est_T": 99.754,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 78.68
+   },
+   "peer_detail": {
+    "32997b22": {
+     "pred_MB": 30.48,
+     "bw_MBps": 0.32,
+     "act_MB": 13.19,
+     "end_s": 49.104,
+     "via": false
+    },
+    "4a344fc1": {
+     "pred_MB": 23.41,
+     "bw_MBps": 1.05,
+     "act_MB": 43.95,
+     "end_s": 35.443,
+     "via": false
+    },
+    "975ed898": {
+     "pred_MB": 82.01,
+     "bw_MBps": 0.84,
+     "act_MB": 43.98,
+     "end_s": 44.012,
+     "via": false
+    },
+    "54f95849": {
+     "pred_MB": 145.25,
+     "bw_MBps": 1.49,
+     "act_MB": 140.56,
+     "end_s": 78.35,
+     "via": true
+    },
+    "9d55e2c4": {
+     "pred_MB": 84.35,
+     "bw_MBps": 0.87,
+     "act_MB": 79.11,
+     "end_s": 72.88,
+     "via": false
+    },
+    "caa00547": {
+     "pred_MB": 68.03,
+     "bw_MBps": 0.72,
+     "act_MB": 68.18,
+     "end_s": 76.184,
+     "via": false
+    },
+    "f6356426": {
+     "pred_MB": 11.71,
+     "bw_MBps": 0.23,
+     "act_MB": 13.19,
+     "end_s": 45.452,
+     "via": false
+    },
+    "17991ac9": {
+     "pred_MB": 70.27,
+     "bw_MBps": 0.72,
+     "act_MB": 70.27,
+     "end_s": 78.576,
+     "via": true
+    },
+    "b9d94146": {
+     "pred_MB": 63.33,
+     "bw_MBps": 1.23,
+     "act_MB": 53.94,
+     "end_s": 36.863,
+     "via": true
+    },
+    "99d4ee84": {
+     "pred_MB": 391.53,
+     "bw_MBps": 4.0,
+     "act_MB": 367.22,
+     "end_s": 73.619,
+     "via": false
+    },
+    "61bca82b": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 53.95,
+     "end_s": 22.982,
+     "via": false
+    },
+    "1e619e29": {
+     "pred_MB": 75.02,
+     "bw_MBps": 0.77,
+     "act_MB": 70.33,
+     "end_s": 78.258,
+     "via": true
+    },
+    "58ad63c0": {
+     "pred_MB": 23.45,
+     "bw_MBps": 0.26,
+     "act_MB": 14.08,
+     "end_s": 50.755,
+     "via": true
+    },
+    "0b78b6d2": {
+     "pred_MB": 389.4,
+     "bw_MBps": 4.0,
+     "act_MB": 369.66,
+     "end_s": 74.926,
+     "via": false
+    },
+    "0d2f148f": {
+     "pred_MB": 35.14,
+     "bw_MBps": 0.37,
+     "act_MB": 35.14,
+     "end_s": 76.783,
+     "via": true
+    },
+    "bb7e9123": {
+     "pred_MB": 147.65,
+     "bw_MBps": 1.52,
+     "act_MB": 147.65,
+     "end_s": 78.053,
+     "via": true
+    },
+    "bf4b0f97": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.97,
+     "act_MB": 18.75,
+     "end_s": 48.327,
+     "via": true
+    },
+    "f4b2d0e7": {
+     "pred_MB": 46.9,
+     "bw_MBps": 0.5,
+     "act_MB": 19.79,
+     "end_s": 35.593,
+     "via": false
+    },
+    "0e0b9155": {
+     "pred_MB": 16.39,
+     "bw_MBps": 0.18,
+     "act_MB": 16.39,
+     "end_s": 72.879,
+     "via": true
+    },
+    "f106442d": {
+     "pred_MB": 37.48,
+     "bw_MBps": 0.4,
+     "act_MB": 37.48,
+     "end_s": 76.694,
+     "via": true
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 4,
+   "query": "period_6h",
+   "swarm_holders": 20,
+   "swarms": 3,
+   "seconds": 11.67,
+   "bytes": 280379301,
+   "chunks": 124,
+   "total": 124,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 19,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 14.19,
+   "est_T": 14.444,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.39
+   },
+   "peer_detail": {
+    "bb7e9123": {
+     "pred_MB": 21.08,
+     "bw_MBps": 1.52,
+     "act_MB": 21.08,
+     "end_s": 11.313,
+     "via": true
+    },
+    "32997b22": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.32,
+     "act_MB": 4.38,
+     "end_s": 11.015,
+     "via": false
+    },
+    "61bca82b": {
+     "pred_MB": 28.13,
+     "bw_MBps": 2.02,
+     "act_MB": 28.14,
+     "end_s": 11.351,
+     "via": true
+    },
+    "0b78b6d2": {
+     "pred_MB": 56.29,
+     "bw_MBps": 4.0,
+     "act_MB": 50.63,
+     "end_s": 11.104,
+     "via": false
+    },
+    "99d4ee84": {
+     "pred_MB": 56.25,
+     "bw_MBps": 4.0,
+     "act_MB": 52.75,
+     "end_s": 11.158,
+     "via": false
+    },
+    "975ed898": {
+     "pred_MB": 11.73,
+     "bw_MBps": 0.84,
+     "act_MB": 10.99,
+     "end_s": 10.591,
+     "via": false
+    },
+    "58ad63c0": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.26,
+     "act_MB": 2.34,
+     "end_s": 7.442,
+     "via": true
+    },
+    "9d55e2c4": {
+     "pred_MB": 11.72,
+     "bw_MBps": 0.87,
+     "act_MB": 10.99,
+     "end_s": 10.257,
+     "via": false
+    },
+    "0d2f148f": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.37,
+     "act_MB": 4.69,
+     "end_s": 10.511,
+     "via": true
+    },
+    "f4b2d0e7": {
+     "pred_MB": 7.04,
+     "bw_MBps": 0.5,
+     "act_MB": 6.6,
+     "end_s": 10.834,
+     "via": false
+    },
+    "17991ac9": {
+     "pred_MB": 9.37,
+     "bw_MBps": 0.72,
+     "act_MB": 9.37,
+     "end_s": 10.758,
+     "via": true
+    },
+    "4a344fc1": {
+     "pred_MB": 14.06,
+     "bw_MBps": 1.05,
+     "act_MB": 13.19,
+     "end_s": 10.27,
+     "via": false
+    },
+    "caa00547": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.72,
+     "act_MB": 4.39,
+     "end_s": 5.05,
+     "via": false
+    },
+    "54f95849": {
+     "pred_MB": 18.77,
+     "bw_MBps": 1.49,
+     "act_MB": 18.77,
+     "end_s": 10.324,
+     "via": true
+    },
+    "f6356426": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.23,
+     "act_MB": 2.2,
+     "end_s": 7.719,
+     "via": false
+    },
+    "1e619e29": {
+     "pred_MB": 9.37,
+     "bw_MBps": 0.77,
+     "act_MB": 9.37,
+     "end_s": 9.99,
+     "via": true
+    },
+    "0e0b9155": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.18,
+     "act_MB": 2.35,
+     "end_s": 10.664,
+     "via": true
+    },
+    "b9d94146": {
+     "pred_MB": 16.42,
+     "bw_MBps": 1.23,
+     "act_MB": 16.42,
+     "end_s": 10.952,
+     "via": true
+    },
+    "bf4b0f97": {
+     "pred_MB": 11.72,
+     "bw_MBps": 0.97,
+     "act_MB": 11.72,
+     "end_s": 9.856,
+     "via": true
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 5,
+   "query": "map_day_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 2.63,
+   "bytes": 54299095,
+   "chunks": 51,
+   "total": 51,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 19,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 2.53,
+   "est_T": 2.594,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 2.18
+   },
+   "peer_detail": {
+    "20efc5f7": {
+     "pred_MB": 0.59,
+     "bw_MBps": 0.36,
+     "act_MB": 0.54,
+     "end_s": 1.328,
+     "via": false
+    },
+    "503e44c2": {
+     "pred_MB": 4.69,
+     "bw_MBps": 2.2,
+     "act_MB": 4.4,
+     "end_s": 1.769,
+     "via": false
+    },
+    "0d83217f": {
+     "pred_MB": 0.59,
+     "bw_MBps": 0.54,
+     "act_MB": 1.07,
+     "end_s": 1.69,
+     "via": false
+    },
+    "8f866a71": {
+     "pred_MB": 2.34,
+     "bw_MBps": 1.03,
+     "act_MB": 2.34,
+     "end_s": 2.04,
+     "via": true
+    },
+    "c9525038": {
+     "pred_MB": 2.34,
+     "bw_MBps": 1.38,
+     "act_MB": 2.34,
+     "end_s": 1.591,
+     "via": true
+    },
+    "d9a5910a": {
+     "pred_MB": 1.85,
+     "bw_MBps": 0.88,
+     "act_MB": 1.66,
+     "end_s": 1.635,
+     "via": false
+    },
+    "c7636585": {
+     "pred_MB": 1.24,
+     "bw_MBps": 0.61,
+     "act_MB": 0.54,
+     "end_s": 1.52,
+     "via": false
+    },
+    "8ac8b5dc": {
+     "pred_MB": 2.44,
+     "bw_MBps": 1.14,
+     "act_MB": 2.21,
+     "end_s": 1.663,
+     "via": false
+    },
+    "6eabd88b": {
+     "pred_MB": 7.02,
+     "bw_MBps": 2.77,
+     "act_MB": 6.6,
+     "end_s": 2.069,
+     "via": false
+    },
+    "50f65d53": {
+     "pred_MB": 3.64,
+     "bw_MBps": 1.54,
+     "act_MB": 2.76,
+     "end_s": 1.799,
+     "via": false
+    },
+    "31efa00d": {
+     "pred_MB": 1.85,
+     "bw_MBps": 0.94,
+     "act_MB": 1.85,
+     "end_s": 1.686,
+     "via": true
+    },
+    "22dc3beb": {
+     "pred_MB": 4.88,
+     "bw_MBps": 2.31,
+     "act_MB": 4.41,
+     "end_s": 2.167,
+     "via": false
+    },
+    "cfcd0e90": {
+     "pred_MB": 0.59,
+     "bw_MBps": 1.18,
+     "act_MB": 1.82,
+     "end_s": 2.012,
+     "via": true
+    },
+    "96db06d1": {
+     "pred_MB": 4.69,
+     "bw_MBps": 2.24,
+     "act_MB": 4.4,
+     "end_s": 1.73,
+     "via": false
+    },
+    "53369738": {
+     "pred_MB": 1.24,
+     "bw_MBps": 0.58,
+     "act_MB": 1.24,
+     "end_s": 1.811,
+     "via": true
+    },
+    "03ace9ff": {
+     "pred_MB": 7.03,
+     "bw_MBps": 3.1,
+     "act_MB": 7.03,
+     "end_s": 2.059,
+     "via": true
+    },
+    "49342ae2": {
+     "pred_MB": 2.34,
+     "bw_MBps": 1.59,
+     "act_MB": 2.19,
+     "end_s": 1.316,
+     "via": false
+    },
+    "d6b125ad": {
+     "pred_MB": 4.68,
+     "bw_MBps": 1.91,
+     "act_MB": 4.68,
+     "end_s": 2.176,
+     "via": true
+    },
+    "cb1d38ac": {
+     "pred_MB": 3.06,
+     "bw_MBps": 1.23,
+     "act_MB": 2.22,
+     "end_s": 1.856,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 5,
+   "query": "map_day_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 3.68,
+   "bytes": 54354756,
+   "chunks": 24,
+   "total": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 8,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 4.18,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 3.59
+   },
+   "peer_detail": {
+    "6eabd88b": {
+     "pred_MB": 9.37,
+     "bw_MBps": 2.77,
+     "act_MB": 11.0,
+     "end_s": 3.57,
+     "via": false
+    },
+    "d6b125ad": {
+     "pred_MB": 7.03,
+     "bw_MBps": 1.91,
+     "act_MB": 7.03,
+     "end_s": 3.466,
+     "via": true
+    },
+    "96db06d1": {
+     "pred_MB": 9.37,
+     "bw_MBps": 2.24,
+     "act_MB": 8.8,
+     "end_s": 3.555,
+     "via": false
+    },
+    "503e44c2": {
+     "pred_MB": 7.03,
+     "bw_MBps": 2.2,
+     "act_MB": 6.59,
+     "end_s": 2.846,
+     "via": false
+    },
+    "49342ae2": {
+     "pred_MB": 4.67,
+     "bw_MBps": 1.59,
+     "act_MB": 4.38,
+     "end_s": 2.662,
+     "via": false
+    },
+    "c9525038": {
+     "pred_MB": 4.68,
+     "bw_MBps": 1.38,
+     "act_MB": 4.68,
+     "end_s": 3.187,
+     "via": true
+    },
+    "03ace9ff": {
+     "pred_MB": 11.72,
+     "bw_MBps": 3.1,
+     "act_MB": 11.72,
+     "end_s": 3.584,
+     "via": true
+    },
+    "8f866a71": {
+     "pred_MB": 2.35,
+     "bw_MBps": 1.03,
+     "act_MB": 2.35,
+     "end_s": 2.436,
+     "via": true
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 5,
+   "query": "series_point_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 31.81,
+   "bytes": 25778944,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 4,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 4.72,
+   "est_T": 4.77,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 31.05
+   },
+   "peer_detail": {
+    "c2dc3b5d": {
+     "pred_MB": 6.27,
+     "bw_MBps": 1.72,
+     "act_MB": 5.81,
+     "end_s": 27.996,
+     "via": false
+    },
+    "82585b74": {
+     "pred_MB": 6.25,
+     "bw_MBps": 1.34,
+     "act_MB": 5.82,
+     "end_s": 27.875,
+     "via": false
+    },
+    "1522bfe0": {
+     "pred_MB": 8.97,
+     "bw_MBps": 1.98,
+     "act_MB": 8.34,
+     "end_s": 29.347,
+     "via": false
+    },
+    "c019e790": {
+     "pred_MB": 6.21,
+     "bw_MBps": 1.31,
+     "act_MB": 5.81,
+     "end_s": 31.047,
+     "via": false
+    },
+    "212b3a5c": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 0.0,
+     "end_s": 8.082,
+     "via": false
+    }
+   },
+   "cover": [
+    "168x91x180+144"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 5,
+   "query": "series_point_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 28.92,
+   "bytes": 25778944,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 4,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 4.72,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 28.59
+   },
+   "peer_detail": {
+    "c2dc3b5d": {
+     "pred_MB": 6.24,
+     "bw_MBps": 1.72,
+     "act_MB": 5.8,
+     "end_s": 20.682,
+     "via": false
+    },
+    "c019e790": {
+     "pred_MB": 6.21,
+     "bw_MBps": 1.31,
+     "act_MB": 5.81,
+     "end_s": 26.204,
+     "via": false
+    },
+    "1522bfe0": {
+     "pred_MB": 9.0,
+     "bw_MBps": 1.98,
+     "act_MB": 8.34,
+     "end_s": 28.591,
+     "via": false
+    },
+    "82585b74": {
+     "pred_MB": 6.25,
+     "bw_MBps": 1.34,
+     "act_MB": 5.82,
+     "end_s": 26.845,
+     "via": false
+    },
+    "47720cf8": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 0.0,
+     "end_s": 9.332,
+     "via": false
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 5,
+   "query": "period_6h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 12.41,
+   "bytes": 279969247,
+   "chunks": 253,
+   "total": 253,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 22,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 14.37,
+   "est_T": 14.716,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 11.88
+   },
+   "peer_detail": {
+    "03ace9ff": {
+     "pred_MB": 44.56,
+     "bw_MBps": 3.1,
+     "act_MB": 39.85,
+     "end_s": 11.662,
+     "via": true
+    },
+    "49342ae2": {
+     "pred_MB": 21.11,
+     "bw_MBps": 1.59,
+     "act_MB": 21.97,
+     "end_s": 11.245,
+     "via": false
+    },
+    "b3b1f44a": {
+     "pred_MB": 7.04,
+     "bw_MBps": 0.5,
+     "act_MB": 6.6,
+     "end_s": 10.711,
+     "via": false
+    },
+    "a0990dbe": {
+     "pred_MB": 9.39,
+     "bw_MBps": 0.75,
+     "act_MB": 11.01,
+     "end_s": 11.851,
+     "via": false
+    },
+    "31efa00d": {
+     "pred_MB": 4.78,
+     "bw_MBps": 0.94,
+     "act_MB": 7.66,
+     "end_s": 10.341,
+     "via": true
+    },
+    "634a3000": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.19,
+     "act_MB": 2.35,
+     "end_s": 10.159,
+     "via": true
+    },
+    "c9525038": {
+     "pred_MB": 18.74,
+     "bw_MBps": 1.38,
+     "act_MB": 18.74,
+     "end_s": 11.097,
+     "via": true
+    },
+    "0268ca03": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.32,
+     "act_MB": 2.35,
+     "end_s": 6.118,
+     "via": true
+    },
+    "50f65d53": {
+     "pred_MB": 19.95,
+     "bw_MBps": 1.54,
+     "act_MB": 15.44,
+     "end_s": 8.963,
+     "via": false
+    },
+    "cb1d38ac": {
+     "pred_MB": 15.78,
+     "bw_MBps": 1.23,
+     "act_MB": 12.76,
+     "end_s": 9.036,
+     "via": false
+    },
+    "d9a5910a": {
+     "pred_MB": 12.07,
+     "bw_MBps": 0.88,
+     "act_MB": 9.92,
+     "end_s": 9.607,
+     "via": false
+    },
+    "0d83217f": {
+     "pred_MB": 7.23,
+     "bw_MBps": 0.54,
+     "act_MB": 5.53,
+     "end_s": 9.056,
+     "via": false
+    },
+    "8477a4ed": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.23,
+     "act_MB": 2.2,
+     "end_s": 7.913,
+     "via": false
+    },
+    "20efc5f7": {
+     "pred_MB": 4.83,
+     "bw_MBps": 0.36,
+     "act_MB": 3.33,
+     "end_s": 8.669,
+     "via": false
+    },
+    "8f866a71": {
+     "pred_MB": 14.06,
+     "bw_MBps": 1.03,
+     "act_MB": 11.72,
+     "end_s": 11.1,
+     "via": true
+    },
+    "6eabd88b": {
+     "pred_MB": 37.54,
+     "bw_MBps": 2.77,
+     "act_MB": 37.4,
+     "end_s": 11.529,
+     "via": false
+    },
+    "53369738": {
+     "pred_MB": 3.61,
+     "bw_MBps": 0.58,
+     "act_MB": 5.36,
+     "end_s": 9.972,
+     "via": true
+    },
+    "22dc3beb": {
+     "pred_MB": 20.44,
+     "bw_MBps": 2.31,
+     "act_MB": 20.29,
+     "end_s": 7.728,
+     "via": false
+    },
+    "c7636585": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 4.89,
+     "end_s": 6.851,
+     "via": false
+    },
+    "d6b125ad": {
+     "pred_MB": 25.8,
+     "bw_MBps": 1.91,
+     "act_MB": 25.81,
+     "end_s": 11.057,
+     "via": true
+    },
+    "8ac8b5dc": {
+     "pred_MB": 15.05,
+     "bw_MBps": 1.14,
+     "act_MB": 10.97,
+     "end_s": 8.97,
+     "via": false
+    },
+    "503e44c2": {
+     "pred_MB": 4.68,
+     "bw_MBps": 2.2,
+     "act_MB": 4.39,
+     "end_s": 1.769,
+     "via": false
+    },
+    "8883f742": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 0.0,
+     "end_s": 0.875,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 5,
+   "query": "period_6h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 17.99,
+   "bytes": 282648402,
+   "chunks": 124,
+   "total": 124,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 14,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 21.18,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 17.83
+   },
+   "peer_detail": {
+    "634a3000": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.19,
+     "act_MB": 2.34,
+     "end_s": 10.159,
+     "via": true
+    },
+    "6eabd88b": {
+     "pred_MB": 58.55,
+     "bw_MBps": 2.77,
+     "act_MB": 54.94,
+     "end_s": 17.212,
+     "via": false
+    },
+    "d6b125ad": {
+     "pred_MB": 39.86,
+     "bw_MBps": 1.91,
+     "act_MB": 39.86,
+     "end_s": 16.924,
+     "via": true
+    },
+    "b3b1f44a": {
+     "pred_MB": 9.38,
+     "bw_MBps": 0.5,
+     "act_MB": 8.79,
+     "end_s": 17.636,
+     "via": false
+    },
+    "8f866a71": {
+     "pred_MB": 21.13,
+     "bw_MBps": 1.03,
+     "act_MB": 21.11,
+     "end_s": 16.614,
+     "via": true
+    },
+    "49342ae2": {
+     "pred_MB": 32.81,
+     "bw_MBps": 1.59,
+     "act_MB": 30.76,
+     "end_s": 16.691,
+     "via": false
+    },
+    "3b3e17cd": {
+     "pred_MB": 2.33,
+     "bw_MBps": 0.16,
+     "act_MB": 2.19,
+     "end_s": 11.149,
+     "via": false
+    },
+    "a0990dbe": {
+     "pred_MB": 14.09,
+     "bw_MBps": 0.75,
+     "act_MB": 15.34,
+     "end_s": 16.414,
+     "via": false
+    },
+    "c9525038": {
+     "pred_MB": 28.14,
+     "bw_MBps": 1.38,
+     "act_MB": 28.14,
+     "end_s": 16.539,
+     "via": true
+    },
+    "0268ca03": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.32,
+     "act_MB": 7.04,
+     "end_s": 17.805,
+     "via": true
+    },
+    "503e44c2": {
+     "pred_MB": 4.68,
+     "bw_MBps": 2.2,
+     "act_MB": 4.39,
+     "end_s": 1.786,
+     "via": false
+    },
+    "03ace9ff": {
+     "pred_MB": 65.68,
+     "bw_MBps": 3.1,
+     "act_MB": 63.33,
+     "end_s": 17.71,
+     "via": true
+    },
+    "8477a4ed": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.23,
+     "act_MB": 4.4,
+     "end_s": 15.652,
+     "via": false
+    },
+    "8883f742": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.16,
+     "act_MB": 2.2,
+     "end_s": 11.171,
+     "via": false
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 5,
+   "query": "map_day_1h",
+   "swarm_holders": 15,
+   "swarms": 3,
+   "seconds": 3.36,
+   "bytes": 54358711,
+   "chunks": 24,
+   "total": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 8,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 4.17,
+   "est_T": 4.795,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 3.28
+   },
+   "peer_detail": {
+    "858c609e": {
+     "pred_MB": 7.03,
+     "bw_MBps": 2.2,
+     "act_MB": 6.6,
+     "end_s": 2.565,
+     "via": false
+    },
+    "4d9d4a5e": {
+     "pred_MB": 4.7,
+     "bw_MBps": 1.38,
+     "act_MB": 4.7,
+     "end_s": 2.937,
+     "via": true
+    },
+    "6b7ec084": {
+     "pred_MB": 9.36,
+     "bw_MBps": 2.24,
+     "act_MB": 8.78,
+     "end_s": 3.273,
+     "via": false
+    },
+    "99340a22": {
+     "pred_MB": 9.37,
+     "bw_MBps": 2.77,
+     "act_MB": 8.79,
+     "end_s": 2.698,
+     "via": false
+    },
+    "69a33c15": {
+     "pred_MB": 11.71,
+     "bw_MBps": 3.1,
+     "act_MB": 11.71,
+     "end_s": 3.25,
+     "via": true
+    },
+    "b6376e68": {
+     "pred_MB": 2.35,
+     "bw_MBps": 1.03,
+     "act_MB": 2.35,
+     "end_s": 2.064,
+     "via": true
+    },
+    "eac8502f": {
+     "pred_MB": 4.68,
+     "bw_MBps": 1.59,
+     "act_MB": 4.4,
+     "end_s": 2.373,
+     "via": false
+    },
+    "742f76fc": {
+     "pred_MB": 7.03,
+     "bw_MBps": 1.91,
+     "act_MB": 7.03,
+     "end_s": 3.168,
+     "via": true
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 5,
+   "query": "series_point_1h",
+   "swarm_holders": 7,
+   "swarms": 3,
+   "seconds": 5.17,
+   "bytes": 26208172,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 4,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 5.4,
+   "est_T": 5.455,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.97
+   },
+   "peer_detail": {
+    "5fabdfb6": {
+     "pred_MB": 6.21,
+     "bw_MBps": 1.31,
+     "act_MB": 5.81,
+     "end_s": 4.009,
+     "via": false
+    },
+    "685a9010": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 8.34,
+     "end_s": 3.82,
+     "via": false
+    },
+    "10e73658": {
+     "pred_MB": 9.0,
+     "bw_MBps": 1.72,
+     "act_MB": 5.81,
+     "end_s": 3.164,
+     "via": false
+    },
+    "5c2f0e25": {
+     "pred_MB": 6.25,
+     "bw_MBps": 1.16,
+     "act_MB": 6.25,
+     "end_s": 4.964,
+     "via": true
+    }
+   },
+   "cover": [
+    "168x91x180+144"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 5,
+   "query": "period_6h",
+   "swarm_holders": 15,
+   "swarms": 3,
+   "seconds": 17.99,
+   "bytes": 282389625,
+   "chunks": 124,
+   "total": 124,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 14,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 21.16,
+   "est_T": 21.621,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 17.8
+   },
+   "peer_detail": {
+    "d8dfcdfb": {
+     "pred_MB": 4.7,
+     "bw_MBps": 0.23,
+     "act_MB": 4.4,
+     "end_s": 15.62,
+     "via": false
+    },
+    "b6376e68": {
+     "pred_MB": 21.09,
+     "bw_MBps": 1.03,
+     "act_MB": 18.75,
+     "end_s": 16.568,
+     "via": true
+    },
+    "a309113b": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.32,
+     "act_MB": 7.03,
+     "end_s": 17.778,
+     "via": true
+    },
+    "742f76fc": {
+     "pred_MB": 39.84,
+     "bw_MBps": 1.91,
+     "act_MB": 39.84,
+     "end_s": 16.936,
+     "via": true
+    },
+    "dfd10763": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.16,
+     "act_MB": 2.21,
+     "end_s": 11.2,
+     "via": false
+    },
+    "858c609e": {
+     "pred_MB": 4.68,
+     "bw_MBps": 2.2,
+     "act_MB": 4.39,
+     "end_s": 1.742,
+     "via": false
+    },
+    "99340a22": {
+     "pred_MB": 58.65,
+     "bw_MBps": 2.77,
+     "act_MB": 54.98,
+     "end_s": 17.217,
+     "via": false
+    },
+    "d16c1fff": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.19,
+     "act_MB": 2.34,
+     "end_s": 10.143,
+     "via": true
+    },
+    "69a33c15": {
+     "pred_MB": 65.61,
+     "bw_MBps": 3.1,
+     "act_MB": 60.92,
+     "end_s": 17.69,
+     "via": true
+    },
+    "8e376ecd": {
+     "pred_MB": 14.08,
+     "bw_MBps": 0.75,
+     "act_MB": 15.42,
+     "end_s": 16.489,
+     "via": false
+    },
+    "69f87c12": {
+     "pred_MB": 2.36,
+     "bw_MBps": 0.16,
+     "act_MB": 2.21,
+     "end_s": 11.178,
+     "via": false
+    },
+    "ebdd7a40": {
+     "pred_MB": 9.38,
+     "bw_MBps": 0.5,
+     "act_MB": 11.0,
+     "end_s": 17.735,
+     "via": false
+    },
+    "4d9d4a5e": {
+     "pred_MB": 28.12,
+     "bw_MBps": 1.38,
+     "act_MB": 28.11,
+     "end_s": 16.532,
+     "via": true
+    },
+    "eac8502f": {
+     "pred_MB": 32.82,
+     "bw_MBps": 1.59,
+     "act_MB": 30.79,
+     "end_s": 16.699,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 6,
+   "query": "map_day_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 4.49,
+   "bytes": 53641121,
+   "chunks": 60,
+   "total": 60,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 17,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 3.69,
+   "est_T": 3.733,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 4.03
+   },
+   "peer_detail": {
+    "8e0c4829": {
+     "pred_MB": 3.02,
+     "bw_MBps": 1.35,
+     "act_MB": 3.61,
+     "end_s": 2.647,
+     "via": true
+    },
+    "fee1215c": {
+     "pred_MB": 0.59,
+     "bw_MBps": 0.23,
+     "act_MB": 0.54,
+     "end_s": 2.593,
+     "via": false
+    },
+    "d2bde2f1": {
+     "pred_MB": 7.03,
+     "bw_MBps": 2.06,
+     "act_MB": 6.59,
+     "end_s": 3.18,
+     "via": false
+    },
+    "0fecd63b": {
+     "pred_MB": 9.38,
+     "bw_MBps": 2.54,
+     "act_MB": 8.81,
+     "end_s": 3.794,
+     "via": false
+    },
+    "7b8f7c56": {
+     "pred_MB": 7.93,
+     "bw_MBps": 2.68,
+     "act_MB": 5.47,
+     "end_s": 2.773,
+     "via": false
+    },
+    "cb095394": {
+     "pred_MB": 1.79,
+     "bw_MBps": 0.55,
+     "act_MB": 1.62,
+     "end_s": 2.761,
+     "via": false
+    },
+    "7de419f7": {
+     "pred_MB": 2.34,
+     "bw_MBps": 1.2,
+     "act_MB": 2.19,
+     "end_s": 2.34,
+     "via": false
+    },
+    "def5c416": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.92,
+     "act_MB": 2.2,
+     "end_s": 2.633,
+     "via": false
+    },
+    "f6087a87": {
+     "pred_MB": 1.27,
+     "bw_MBps": 0.54,
+     "act_MB": 1.27,
+     "end_s": 2.57,
+     "via": true
+    },
+    "9e534492": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.78,
+     "act_MB": 2.34,
+     "end_s": 3.015,
+     "via": true
+    },
+    "40ae0061": {
+     "pred_MB": 4.68,
+     "bw_MBps": 1.37,
+     "act_MB": 4.39,
+     "end_s": 3.125,
+     "via": false
+    },
+    "e831be75": {
+     "pred_MB": 1.21,
+     "bw_MBps": 0.53,
+     "act_MB": 1.66,
+     "end_s": 4.02,
+     "via": false
+    },
+    "5e5bd2b6": {
+     "pred_MB": 1.24,
+     "bw_MBps": 0.53,
+     "act_MB": 1.65,
+     "end_s": 3.363,
+     "via": false
+    },
+    "e3c86253": {
+     "pred_MB": 3.02,
+     "bw_MBps": 1.12,
+     "act_MB": 3.28,
+     "end_s": 3.043,
+     "via": false
+    },
+    "e4a4db81": {
+     "pred_MB": 2.44,
+     "bw_MBps": 0.83,
+     "act_MB": 2.44,
+     "end_s": 3.099,
+     "via": true
+    },
+    "cbefc5f9": {
+     "pred_MB": 5.5,
+     "bw_MBps": 1.97,
+     "act_MB": 5.53,
+     "end_s": 2.71,
+     "via": false
+    },
+    "b76dfb38": {
+     "pred_MB": 1.27,
+     "bw_MBps": 0.48,
+     "act_MB": 1.7,
+     "end_s": 3.725,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 6,
+   "query": "map_day_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 6.7,
+   "bytes": 53483361,
+   "chunks": 24,
+   "total": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 9,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 7.84,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 6.52
+   },
+   "peer_detail": {
+    "77af8095": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.3,
+     "act_MB": 2.35,
+     "end_s": 6.512,
+     "via": true
+    },
+    "40ae0061": {
+     "pred_MB": 4.69,
+     "bw_MBps": 1.37,
+     "act_MB": 6.61,
+     "end_s": 5.407,
+     "via": false
+    },
+    "def5c416": {
+     "pred_MB": 7.04,
+     "bw_MBps": 0.92,
+     "act_MB": 4.4,
+     "end_s": 5.806,
+     "via": false
+    },
+    "0fecd63b": {
+     "pred_MB": 11.72,
+     "bw_MBps": 2.54,
+     "act_MB": 13.2,
+     "end_s": 5.618,
+     "via": false
+    },
+    "9e534492": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.78,
+     "act_MB": 4.68,
+     "end_s": 5.052,
+     "via": true
+    },
+    "d2bde2f1": {
+     "pred_MB": 14.03,
+     "bw_MBps": 2.06,
+     "act_MB": 10.97,
+     "end_s": 5.189,
+     "via": false
+    },
+    "cf9a134e": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 2.34,
+     "end_s": 4.744,
+     "via": false
+    },
+    "7de419f7": {
+     "pred_MB": 9.36,
+     "bw_MBps": 1.2,
+     "act_MB": 6.59,
+     "end_s": 4.523,
+     "via": false
+    },
+    "c3c9c373": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.41,
+     "act_MB": 2.35,
+     "end_s": 4.787,
+     "via": true
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 6,
+   "query": "series_point_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 55.09,
+   "bytes": 135953591,
+   "chunks": 172,
+   "total": 172,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 19,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 11.89,
+   "est_T": 11.947,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 54.22
+   },
+   "peer_detail": {
+    "def5c416": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 2.2,
+     "end_s": 3.958,
+     "via": false
+    },
+    "0fecd63b": {
+     "pred_MB": 7.01,
+     "bw_MBps": 2.54,
+     "act_MB": 6.57,
+     "end_s": 2.923,
+     "via": false
+    },
+    "7de419f7": {
+     "pred_MB": 9.37,
+     "bw_MBps": 1.2,
+     "act_MB": 4.4,
+     "end_s": 3.743,
+     "via": false
+    },
+    "f6087a87": {
+     "pred_MB": 5.11,
+     "bw_MBps": 0.54,
+     "act_MB": 6.41,
+     "end_s": 9.839,
+     "via": true
+    },
+    "e831be75": {
+     "pred_MB": 5.08,
+     "bw_MBps": 0.53,
+     "act_MB": 5.7,
+     "end_s": 9.664,
+     "via": false
+    },
+    "9e534492": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 2.34,
+     "end_s": 3.288,
+     "via": false
+    },
+    "cbefc5f9": {
+     "pred_MB": 17.85,
+     "bw_MBps": 1.97,
+     "act_MB": 16.57,
+     "end_s": 8.182,
+     "via": false
+    },
+    "40ae0061": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 2.19,
+     "end_s": 4.624,
+     "via": false
+    },
+    "e3c86253": {
+     "pred_MB": 10.92,
+     "bw_MBps": 1.12,
+     "act_MB": 10.87,
+     "end_s": 8.616,
+     "via": false
+    },
+    "7b8f7c56": {
+     "pred_MB": 25.07,
+     "bw_MBps": 2.68,
+     "act_MB": 20.02,
+     "end_s": 8.739,
+     "via": false
+    },
+    "fee1215c": {
+     "pred_MB": 1.91,
+     "bw_MBps": 0.23,
+     "act_MB": 1.71,
+     "end_s": 18.454,
+     "via": false
+    },
+    "b76dfb38": {
+     "pred_MB": 4.44,
+     "bw_MBps": 0.48,
+     "act_MB": 5.13,
+     "end_s": 9.304,
+     "via": false
+    },
+    "e4a4db81": {
+     "pred_MB": 7.61,
+     "bw_MBps": 0.83,
+     "act_MB": 7.61,
+     "end_s": 8.209,
+     "via": true
+    },
+    "cb095394": {
+     "pred_MB": 5.08,
+     "bw_MBps": 0.55,
+     "act_MB": 5.13,
+     "end_s": 8.468,
+     "via": false
+    },
+    "5e5bd2b6": {
+     "pred_MB": 5.12,
+     "bw_MBps": 0.53,
+     "act_MB": 4.57,
+     "end_s": 8.903,
+     "via": false
+    },
+    "d2bde2f1": {
+     "pred_MB": 7.02,
+     "bw_MBps": 2.06,
+     "act_MB": 4.39,
+     "end_s": 3.801,
+     "via": false
+    },
+    "8e0c4829": {
+     "pred_MB": 12.73,
+     "bw_MBps": 1.35,
+     "act_MB": 12.73,
+     "end_s": 8.313,
+     "via": true
+    },
+    "b68fa569": {
+     "pred_MB": 9.0,
+     "bw_MBps": 1.49,
+     "act_MB": 8.34,
+     "end_s": 34.129,
+     "via": false
+    },
+    "b469a382": {
+     "pred_MB": 12.49,
+     "bw_MBps": 1.05,
+     "act_MB": 12.49,
+     "end_s": 54.194,
+     "via": true
+    }
+   },
+   "cover": [
+    "168x91x180+144",
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 6,
+   "query": "series_point_1h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 19.38,
+   "bytes": 27039394,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 3,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 19.6,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 19.27
+   },
+   "peer_detail": {
+    "b469a382": {
+     "pred_MB": 12.49,
+     "bw_MBps": 1.05,
+     "act_MB": 12.49,
+     "end_s": 13.234,
+     "via": true
+    },
+    "6df4640d": {
+     "pred_MB": 6.21,
+     "bw_MBps": 0.32,
+     "act_MB": 6.21,
+     "end_s": 19.265,
+     "via": true
+    },
+    "b68fa569": {
+     "pred_MB": 9.0,
+     "bw_MBps": 1.49,
+     "act_MB": 8.34,
+     "end_s": 8.868,
+     "via": false
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "values",
+   "select": "jlps",
+   "rep": 6,
+   "query": "period_6h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 10.74,
+   "bytes": 277709893,
+   "chunks": 247,
+   "total": 247,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 25,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 12.74,
+   "est_T": 12.887,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 9.88
+   },
+   "peer_detail": {
+    "b76dfb38": {
+     "pred_MB": 4.78,
+     "bw_MBps": 0.48,
+     "act_MB": 5.51,
+     "end_s": 9.321,
+     "via": false
+    },
+    "40ae0061": {
+     "pred_MB": 16.4,
+     "bw_MBps": 1.37,
+     "act_MB": 15.39,
+     "end_s": 9.14,
+     "via": false
+    },
+    "e3c86253": {
+     "pred_MB": 13.25,
+     "bw_MBps": 1.12,
+     "act_MB": 12.17,
+     "end_s": 8.803,
+     "via": false
+    },
+    "0c3755b6": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.31,
+     "act_MB": 2.21,
+     "end_s": 5.94,
+     "via": false
+    },
+    "d2bde2f1": {
+     "pred_MB": 25.8,
+     "bw_MBps": 2.06,
+     "act_MB": 24.19,
+     "end_s": 9.563,
+     "via": false
+    },
+    "7b8f7c56": {
+     "pred_MB": 31.97,
+     "bw_MBps": 2.68,
+     "act_MB": 25.86,
+     "end_s": 8.103,
+     "via": false
+    },
+    "7bdc3ff6": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.4,
+     "act_MB": 4.39,
+     "end_s": 8.885,
+     "via": false
+    },
+    "e4a4db81": {
+     "pred_MB": 0.0,
+     "bw_MBps": 0.0,
+     "act_MB": 4.14,
+     "end_s": 9.54,
+     "via": false
+    },
+    "def5c416": {
+     "pred_MB": 11.73,
+     "bw_MBps": 0.92,
+     "act_MB": 11.02,
+     "end_s": 9.755,
+     "via": false
+    },
+    "8e0c4829": {
+     "pred_MB": 7.98,
+     "bw_MBps": 1.35,
+     "act_MB": 10.93,
+     "end_s": 9.552,
+     "via": true
+    },
+    "5e5bd2b6": {
+     "pred_MB": 2.43,
+     "bw_MBps": 0.53,
+     "act_MB": 4.35,
+     "end_s": 8.312,
+     "via": false
+    },
+    "cbefc5f9": {
+     "pred_MB": 23.4,
+     "bw_MBps": 1.97,
+     "act_MB": 17.56,
+     "end_s": 7.399,
+     "via": false
+    },
+    "cb095394": {
+     "pred_MB": 6.64,
+     "bw_MBps": 0.55,
+     "act_MB": 3.86,
+     "end_s": 8.896,
+     "via": false
+    },
+    "0fecd63b": {
+     "pred_MB": 30.45,
+     "bw_MBps": 2.54,
+     "act_MB": 30.78,
+     "end_s": 9.845,
+     "via": false
+    },
+    "2859e2ce": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.24,
+     "act_MB": 2.18,
+     "end_s": 7.493,
+     "via": false
+    },
+    "7de419f7": {
+     "pred_MB": 14.08,
+     "bw_MBps": 1.2,
+     "act_MB": 13.22,
+     "end_s": 8.942,
+     "via": false
+    },
+    "cf9a134e": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.42,
+     "act_MB": 4.68,
+     "end_s": 9.244,
+     "via": true
+    },
+    "fee1215c": {
+     "pred_MB": 2.4,
+     "bw_MBps": 0.23,
+     "act_MB": 2.2,
+     "end_s": 7.888,
+     "via": false
+    },
+    "b512f57c": {
+     "pred_MB": 9.4,
+     "bw_MBps": 0.74,
+     "act_MB": 8.79,
+     "end_s": 9.69,
+     "via": false
+    },
+    "77af8095": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.3,
+     "act_MB": 2.34,
+     "end_s": 6.483,
+     "via": true
+    },
+    "958a0b8a": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.28,
+     "act_MB": 2.34,
+     "end_s": 6.884,
+     "via": true
+    },
+    "7fa35504": {
+     "pred_MB": 49.23,
+     "bw_MBps": 4.0,
+     "act_MB": 46.89,
+     "end_s": 9.611,
+     "via": true
+    },
+    "e564f22d": {
+     "pred_MB": 16.38,
+     "bw_MBps": 1.3,
+     "act_MB": 15.38,
+     "end_s": 9.669,
+     "via": false
+    },
+    "c3c9c373": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.41,
+     "act_MB": 2.34,
+     "end_s": 4.761,
+     "via": true
+    },
+    "e831be75": {
+     "pred_MB": 6.09,
+     "bw_MBps": 0.53,
+     "act_MB": 4.99,
+     "end_s": 8.446,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x361x720+0",
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "values",
+   "select": "bytes",
+   "rep": 6,
+   "query": "period_6h",
+   "swarm_holders": 33,
+   "swarms": 1,
+   "seconds": 15.53,
+   "bytes": 277756536,
+   "chunks": 124,
+   "total": 124,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 16,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 19.68,
+   "est_T": null,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 15.49
+   },
+   "peer_detail": {
+    "cf9a134e": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.42,
+     "act_MB": 7.03,
+     "end_s": 13.759,
+     "via": true
+    },
+    "40ae0061": {
+     "pred_MB": 25.84,
+     "bw_MBps": 1.37,
+     "act_MB": 24.2,
+     "end_s": 14.301,
+     "via": false
+    },
+    "def5c416": {
+     "pred_MB": 16.41,
+     "bw_MBps": 0.92,
+     "act_MB": 17.61,
+     "end_s": 15.45,
+     "via": false
+    },
+    "e564f22d": {
+     "pred_MB": 23.43,
+     "bw_MBps": 1.3,
+     "act_MB": 19.77,
+     "end_s": 14.997,
+     "via": false
+    },
+    "0fecd63b": {
+     "pred_MB": 49.21,
+     "bw_MBps": 2.54,
+     "act_MB": 46.17,
+     "end_s": 14.668,
+     "via": false
+    },
+    "2859e2ce": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.24,
+     "act_MB": 4.4,
+     "end_s": 14.902,
+     "via": false
+    },
+    "7fa35504": {
+     "pred_MB": 58.6,
+     "bw_MBps": 4.0,
+     "act_MB": 60.95,
+     "end_s": 13.34,
+     "via": true
+    },
+    "0c3755b6": {
+     "pred_MB": 4.7,
+     "bw_MBps": 0.31,
+     "act_MB": 4.41,
+     "end_s": 11.678,
+     "via": false
+    },
+    "7bdc3ff6": {
+     "pred_MB": 7.04,
+     "bw_MBps": 0.4,
+     "act_MB": 6.61,
+     "end_s": 13.245,
+     "via": false
+    },
+    "958a0b8a": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.28,
+     "act_MB": 4.69,
+     "end_s": 13.53,
+     "via": true
+    },
+    "77af8095": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.3,
+     "act_MB": 4.69,
+     "end_s": 12.742,
+     "via": true
+    },
+    "e0859e9c": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.16,
+     "act_MB": 2.2,
+     "end_s": 11.178,
+     "via": false
+    },
+    "d2bde2f1": {
+     "pred_MB": 39.83,
+     "bw_MBps": 2.06,
+     "act_MB": 35.17,
+     "end_s": 14.586,
+     "via": false
+    },
+    "b512f57c": {
+     "pred_MB": 14.08,
+     "bw_MBps": 0.74,
+     "act_MB": 13.15,
+     "end_s": 14.409,
+     "via": false
+    },
+    "c3c9c373": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.41,
+     "act_MB": 4.68,
+     "end_s": 9.262,
+     "via": true
+    },
+    "7de419f7": {
+     "pred_MB": 23.45,
+     "bw_MBps": 1.2,
+     "act_MB": 22.03,
+     "end_s": 14.788,
+     "via": false
+    }
+   },
+   "cover": null
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 6,
+   "query": "map_day_1h",
+   "swarm_holders": 17,
+   "swarms": 3,
+   "seconds": 6.7,
+   "bytes": 53341879,
+   "chunks": 24,
+   "total": 24,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 8,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 24,
+    "covered_samples": 24,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 7.84,
+   "est_T": 7.965,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 6.54
+   },
+   "peer_detail": {
+    "89700077": {
+     "pred_MB": 2.34,
+     "bw_MBps": 0.42,
+     "act_MB": 2.34,
+     "end_s": 4.743,
+     "via": true
+    },
+    "a9c2186b": {
+     "pred_MB": 11.72,
+     "bw_MBps": 2.54,
+     "act_MB": 11.01,
+     "end_s": 4.257,
+     "via": false
+    },
+    "c2ec52db": {
+     "pred_MB": 9.37,
+     "bw_MBps": 1.37,
+     "act_MB": 8.79,
+     "end_s": 5.297,
+     "via": false
+    },
+    "e9da853f": {
+     "pred_MB": 7.04,
+     "bw_MBps": 0.92,
+     "act_MB": 6.6,
+     "end_s": 5.915,
+     "via": false
+    },
+    "01fa49a5": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.78,
+     "act_MB": 4.68,
+     "end_s": 5.029,
+     "via": true
+    },
+    "a5f5f6c0": {
+     "pred_MB": 9.37,
+     "bw_MBps": 2.06,
+     "act_MB": 8.79,
+     "end_s": 6.064,
+     "via": false
+    },
+    "ccff1fb4": {
+     "pred_MB": 2.35,
+     "bw_MBps": 0.3,
+     "act_MB": 2.35,
+     "end_s": 6.532,
+     "via": true
+    },
+    "ca97d9e0": {
+     "pred_MB": 9.36,
+     "bw_MBps": 1.2,
+     "act_MB": 8.79,
+     "end_s": 5.998,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 6,
+   "query": "series_point_1h",
+   "swarm_holders": 5,
+   "swarms": 3,
+   "seconds": 16.38,
+   "bytes": 27039394,
+   "chunks": 5,
+   "total": 5,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 3,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 744,
+    "covered_samples": 744,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 19.6,
+   "est_T": 19.644,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 16.28
+   },
+   "peer_detail": {
+    "c1ac6ed0": {
+     "pred_MB": 6.21,
+     "bw_MBps": 0.32,
+     "act_MB": 6.21,
+     "end_s": 16.274,
+     "via": true
+    },
+    "e836c873": {
+     "pred_MB": 12.49,
+     "bw_MBps": 1.05,
+     "act_MB": 12.49,
+     "end_s": 10.13,
+     "via": true
+    },
+    "93bea687": {
+     "pred_MB": 9.0,
+     "bw_MBps": 1.49,
+     "act_MB": 8.34,
+     "end_s": 4.955,
+     "via": false
+    }
+   },
+   "cover": [
+    "168x91x180+144"
+   ]
+  },
+  {
+   "mode": "bytes",
+   "select": "jlps",
+   "rep": 6,
+   "query": "period_6h",
+   "swarm_holders": 17,
+   "swarms": 3,
+   "seconds": 15.88,
+   "bytes": 277781342,
+   "chunks": 124,
+   "total": 124,
+   "missing": 0,
+   "coverage": 1.0,
+   "peers_used": 16,
+   "state": "done",
+   "sample_coverage": {
+    "requested_samples": 124,
+    "covered_samples": 124,
+    "missing_samples": 0
+   },
+   "value_check": "exact",
+   "plan_T": 19.68,
+   "est_T": 19.988,
+   "attempts": 1,
+   "catalogue_refreshes": 0,
+   "phases": {
+    "view": 0.0,
+    "round0": 15.54
+   },
+   "peer_detail": {
+    "ccff1fb4": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.3,
+     "act_MB": 4.69,
+     "end_s": 12.75,
+     "via": true
+    },
+    "c76c974b": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.24,
+     "act_MB": 2.2,
+     "end_s": 14.769,
+     "via": false
+    },
+    "f5d68176": {
+     "pred_MB": 60.97,
+     "bw_MBps": 4.0,
+     "act_MB": 60.97,
+     "end_s": 12.808,
+     "via": true
+    },
+    "c2ec52db": {
+     "pred_MB": 25.79,
+     "bw_MBps": 1.37,
+     "act_MB": 24.2,
+     "end_s": 14.287,
+     "via": false
+    },
+    "a5f5f6c0": {
+     "pred_MB": 39.86,
+     "bw_MBps": 2.06,
+     "act_MB": 37.36,
+     "end_s": 15.489,
+     "via": false
+    },
+    "d6cffe63": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.41,
+     "act_MB": 4.68,
+     "end_s": 9.269,
+     "via": true
+    },
+    "40ca72ba": {
+     "pred_MB": 4.69,
+     "bw_MBps": 0.31,
+     "act_MB": 4.4,
+     "end_s": 11.652,
+     "via": false
+    },
+    "a9c2186b": {
+     "pred_MB": 46.87,
+     "bw_MBps": 2.54,
+     "act_MB": 43.97,
+     "end_s": 15.311,
+     "via": false
+    },
+    "8f5791b7": {
+     "pred_MB": 14.07,
+     "bw_MBps": 0.74,
+     "act_MB": 13.18,
+     "end_s": 14.43,
+     "via": false
+    },
+    "89700077": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.42,
+     "act_MB": 7.03,
+     "end_s": 13.764,
+     "via": true
+    },
+    "ca97d9e0": {
+     "pred_MB": 23.44,
+     "bw_MBps": 1.2,
+     "act_MB": 22.02,
+     "end_s": 14.792,
+     "via": false
+    },
+    "9b843f5b": {
+     "pred_MB": 7.03,
+     "bw_MBps": 0.4,
+     "act_MB": 6.59,
+     "end_s": 13.21,
+     "via": false
+    },
+    "97601586": {
+     "pred_MB": 23.42,
+     "bw_MBps": 1.3,
+     "act_MB": 21.98,
+     "end_s": 13.707,
+     "via": false
+    },
+    "e9da853f": {
+     "pred_MB": 16.44,
+     "bw_MBps": 0.92,
+     "act_MB": 17.63,
+     "end_s": 15.5,
+     "via": false
+    },
+    "434df9a1": {
+     "pred_MB": 4.68,
+     "bw_MBps": 0.28,
+     "act_MB": 4.68,
+     "end_s": 13.544,
+     "via": true
+    },
+    "89aa1c8a": {
+     "pred_MB": 2.36,
+     "bw_MBps": 0.16,
+     "act_MB": 2.21,
+     "end_s": 11.193,
+     "via": false
+    }
+   },
+   "cover": [
+    "1x721x1440+0"
+   ]
+  }
+ ]
+}

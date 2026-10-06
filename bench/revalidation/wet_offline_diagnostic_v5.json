@@ -1,0 +1,98 @@
+[
+  {
+    "key": "precipitation_rate@4x512x512+1s2o0/3731609.0.1",
+    "old_nv": 2,
+    "new_nv": 3,
+    "old_identity_matches": true,
+    "new_identity_matches": true,
+    "xt_bytes_equal": true,
+    "prefix_ok": true,
+    "old_finite_per_slice": [
+      262144,
+      262144,
+      0,
+      0
+    ],
+    "new_finite_per_slice": [
+      262144,
+      262144,
+      262144,
+      0
+    ],
+    "known_cell_error": 0.0,
+    "cache_vcid": "L3:8c8fe85819c8ed01db7e1b58dd773620:[[34.1,0.09999999999999996,862],[32.800000000000004,0.1,951],null,null]",
+    "computed_cache_vcid": "L3:8c8fe85819c8ed01db7e1b58dd773620:[[34.1,0.09999999999999996,862],[32.800000000000004,0.1,951],null,null]"
+  },
+  {
+    "key": "precipitation_rate@4x512x512+1s2o0/3731609.0.0",
+    "old_nv": 2,
+    "new_nv": 3,
+    "old_identity_matches": true,
+    "new_identity_matches": true,
+    "xt_bytes_equal": true,
+    "prefix_ok": true,
+    "old_finite_per_slice": [
+      262144,
+      262144,
+      0,
+      0
+    ],
+    "new_finite_per_slice": [
+      262144,
+      262144,
+      262144,
+      0
+    ],
+    "known_cell_error": 0.0,
+    "cache_vcid": "L3:e5d07604cc81262bcd300a7f0ad54111:[[30.5,0.1,957],[30.20000000000001,0.09999999999999996,961],null,null]",
+    "computed_cache_vcid": "L3:e5d07604cc81262bcd300a7f0ad54111:[[30.5,0.1,957],[30.20000000000001,0.09999999999999996,961],null,null]"
+  },
+  {
+    "key": "precipitation_rate@4x512x512+1s2o0/3731609.1.0",
+    "old_nv": 3,
+    "new_nv": 3,
+    "old_identity_matches": true,
+    "new_identity_matches": true,
+    "xt_bytes_equal": true,
+    "prefix_ok": true,
+    "old_finite_per_slice": [
+      262144,
+      262144,
+      262144,
+      0
+    ],
+    "new_finite_per_slice": [
+      262144,
+      262144,
+      262144,
+      0
+    ],
+    "known_cell_error": 0.0,
+    "cache_vcid": "L3:c36dfdb1c2db925431848106f53487d5:[[6.600000000000001,0.10000000000000002,490],[5.6000000000000005,0.10000000000000002,500],[5.6000000000000005,0.09999999999999999,403],null]",
+    "computed_cache_vcid": "L3:c36dfdb1c2db925431848106f53487d5:[[6.600000000000001,0.10000000000000002,490],[5.6000000000000005,0.10000000000000002,500],[5.6000000000000005,0.09999999999999999,403],null]"
+  },
+  {
+    "key": "precipitation_rate@4x512x512+1s2o0/3731609.1.1",
+    "old_nv": 2,
+    "new_nv": 3,
+    "old_identity_matches": true,
+    "new_identity_matches": true,
+    "xt_bytes_equal": true,
+    "prefix_ok": true,
+    "old_finite_per_slice": [
+      262144,
+      262144,
+      0,
+      0
+    ],
+    "new_finite_per_slice": [
+      262144,
+      262144,
+      262144,
+      0
+    ],
+    "known_cell_error": 0.0,
+    "cache_vcid": "L3:c80b659fd505b80f80625d032a6b9b1b:[[5.999999999999999,0.09999999999999999,496],[6.100000000000002,0.1,495],null,null]",
+    "computed_cache_vcid": "L3:c80b659fd505b80f80625d032a6b9b1b:[[5.999999999999999,0.09999999999999999,496],[6.100000000000002,0.1,495],null,null]"
+  }
+]

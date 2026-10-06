@@ -1,0 +1,269 @@
+{
+  "started_utc": "2026-10-05T10:46:51.861568+00:00",
+  "estimator": "lattice-v5",
+  "protocol": {
+    "run": "2026-10-05T00:00:00+00:00",
+    "leads_hours": [
+      0,
+      6
+    ],
+    "fields": [
+      [
+        "TMP",
+        "2 m above ground",
+        "Temperature_height_above_ground",
+        2,
+        "K"
+      ],
+      [
+        "UGRD",
+        "10 m above ground",
+        "u-component_of_wind_height_above_ground",
+        10,
+        "m/s"
+      ],
+      [
+        "VGRD",
+        "10 m above ground",
+        "v-component_of_wind_height_above_ground",
+        10,
+        "m/s"
+      ],
+      [
+        "PRMSL",
+        "mean sea level",
+        "Pressure_reduced_to_MSL_msl",
+        null,
+        "Pa"
+      ]
+    ],
+    "region": {
+      "north": 50,
+      "south": 34.25,
+      "west": 0,
+      "east": 31.75
+    },
+    "tiles": [
+      32,
+      32
+    ],
+    "transforms": "Coordinate selection only; no value arithmetic.",
+    "negative_control": "First cell of each tile + one quantum from original GRIB E,D.",
+    "unit_alias": "ecCodes m s**-1 and Unidata m/s denote the same unit; values unchanged.",
+    "max_download_bytes_per_payload": 8388608
+  },
+  "source_sha256": {
+    "bench/gfs_pipelines.py": "13c18bbb780d4afb1fac055ad4310474f6c7472ed8b04e4498306021cde748ee",
+    "zarr_torrent/codec.py": "d1a91f447f7aea60537ac7387d77ceb15903308c7da8c7e9c3d8c5d7d129859b"
+  },
+  "versions": {
+    "numpy": "2.5.3",
+    "xarray": "2026.9.0",
+    "eccodes": "2.49.0",
+    "h5netcdf": "1.8.1"
+  },
+  "fields": [
+    {
+      "short_name": "TMP",
+      "lead_hours": 0,
+      "units": "K",
+      "source_quantum": 0.1,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f000",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=Temperature_height_above_ground&time=2026-10-05T00%3A00%3A00Z&accept=netcdf4&addLatLon=true&vertCoord=2"
+      },
+      "payload_sha256": {
+        "GRIB": "6fd128ea8e6ad28915a0c6ef05c7b985829e530361577988257d5be5f657b734",
+        "NetCDF": "6669288f939cdb1cef77a361ffa0de69f6ea54ee7e26bad2cd577d4f9fb1e1f4",
+        "index": "126bda0aac4862d160282a428df364de7bba03f651715b7bf1484ea4ddc68f4a"
+      }
+    },
+    {
+      "short_name": "UGRD",
+      "lead_hours": 0,
+      "units": "m/s",
+      "source_quantum": 0.01,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f000",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=u-component_of_wind_height_above_ground&time=2026-10-05T00%3A00%3A00Z&accept=netcdf4&addLatLon=true&vertCoord=10"
+      },
+      "payload_sha256": {
+        "GRIB": "520c8822027a840a856f5fdd3f65f2fbadb509d7f9b7580d8ed67b32a68cf5f1",
+        "NetCDF": "39c62b403a17299628bc7b7eb60dc91abc6a3c4ba624c4cf8cb5658c0ab66e4d",
+        "index": "126bda0aac4862d160282a428df364de7bba03f651715b7bf1484ea4ddc68f4a"
+      }
+    },
+    {
+      "short_name": "VGRD",
+      "lead_hours": 0,
+      "units": "m/s",
+      "source_quantum": 0.01,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f000",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=v-component_of_wind_height_above_ground&time=2026-10-05T00%3A00%3A00Z&accept=netcdf4&addLatLon=true&vertCoord=10"
+      },
+      "payload_sha256": {
+        "GRIB": "00ffc58611b05fcceddbfe2c2bca45f22972597ca67268cfb4e39844c9d54f21",
+        "NetCDF": "aad076b542671c6c694f4dd0c5202989c0feb070967349e4cbdd8f4cfde42af6",
+        "index": "126bda0aac4862d160282a428df364de7bba03f651715b7bf1484ea4ddc68f4a"
+      }
+    },
+    {
+      "short_name": "PRMSL",
+      "lead_hours": 0,
+      "units": "Pa",
+      "source_quantum": 0.4,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f000",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=Pressure_reduced_to_MSL_msl&time=2026-10-05T00%3A00%3A00Z&accept=netcdf4&addLatLon=true"
+      },
+      "payload_sha256": {
+        "GRIB": "0e3688dc1e62c5f031e4cd854aac4e94467f2019c042b7add8957f35ac004ac6",
+        "NetCDF": "232f4d1c4076f6ad60243cb485bc7d52b782f1e3408b23512f2c0d84b4a0895b",
+        "index": "126bda0aac4862d160282a428df364de7bba03f651715b7bf1484ea4ddc68f4a"
+      }
+    },
+    {
+      "short_name": "TMP",
+      "lead_hours": 6,
+      "units": "K",
+      "source_quantum": 0.1,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f006",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=Temperature_height_above_ground&time=2026-10-05T06%3A00%3A00Z&accept=netcdf4&addLatLon=true&vertCoord=2"
+      },
+      "payload_sha256": {
+        "GRIB": "5e739dc48d8b3f0f33f903f785c4b3b0c037e27ccb96098111b4d31a5e043bff",
+        "NetCDF": "3676c59d1777f9c60edd949d65ed8486161d13d6024d7df6d8f57aa7a830b7e2",
+        "index": "5cf5511100853c241a82afe6cb1b32e8a5cb137c706e593f8ab6877a76dd1dd8"
+      }
+    },
+    {
+      "short_name": "UGRD",
+      "lead_hours": 6,
+      "units": "m/s",
+      "source_quantum": 0.01,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f006",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=u-component_of_wind_height_above_ground&time=2026-10-05T06%3A00%3A00Z&accept=netcdf4&addLatLon=true&vertCoord=10"
+      },
+      "payload_sha256": {
+        "GRIB": "c0a27c0d4717da06173203f23ee5213b3b36b7421ae965edab413fee40eee390",
+        "NetCDF": "6771b6cb5a930e315b65076cd71ee6da2b8c6d1f16b4fc13c93c5085e45cd2de",
+        "index": "5cf5511100853c241a82afe6cb1b32e8a5cb137c706e593f8ab6877a76dd1dd8"
+      }
+    },
+    {
+      "short_name": "VGRD",
+      "lead_hours": 6,
+      "units": "m/s",
+      "source_quantum": 0.01,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f006",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=v-component_of_wind_height_above_ground&time=2026-10-05T06%3A00%3A00Z&accept=netcdf4&addLatLon=true&vertCoord=10"
+      },
+      "payload_sha256": {
+        "GRIB": "cb6a9c55e7d9a89aac0400662f5389f384706032115ba0250a2d9cad9e44f17b",
+        "NetCDF": "611f8d1fff1897669e9fba3239186fbb21444f110102315dfbc860eb4735d4bd",
+        "index": "5cf5511100853c241a82afe6cb1b32e8a5cb137c706e593f8ab6877a76dd1dd8"
+      }
+    },
+    {
+      "short_name": "PRMSL",
+      "lead_hours": 6,
+      "units": "Pa",
+      "source_quantum": 0.2,
+      "shape": [
+        64,
+        128
+      ],
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "bit_equal_cells": 8192,
+      "cells": 8192,
+      "max_abs_error": 0.0,
+      "source_urls": {
+        "NOAA": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20261005/00/atmos/gfs.t00z.pgrb2.0p25.f006",
+        "Unidata": "https://tds.scigw.unidata.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p25deg/GFS_Global_0p25deg_20261005_0000.grib2?north=50&south=34.25&west=0&east=31.75&var=Pressure_reduced_to_MSL_msl&time=2026-10-05T06%3A00%3A00Z&accept=netcdf4&addLatLon=true"
+      },
+      "payload_sha256": {
+        "GRIB": "a1f095bcb9b8c5b4bd7bfcfe5fbb20d2ea2245da97c47639c41648f19c868db7",
+        "NetCDF": "f4e330f22b93e2c786a09d621043c8770f612a99f21d1b7c510c9f4211b9aedd",
+        "index": "5cf5511100853c241a82afe6cb1b32e8a5cb137c706e593f8ab6877a76dd1dd8"
+      }
+    }
+  ],
+  "work": "/tmp/zt_gfs_pipelines_20261005_v7_complete",
+  "completed_utc": "2026-10-05T10:47:12.844654+00:00"
+}

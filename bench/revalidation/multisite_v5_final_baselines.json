@@ -1,0 +1,189 @@
+{
+ "estimator": "lattice-v5",
+ "provenance": {
+  "cloud": "multisite_v5_baselines_partial.json",
+  "http": "multisite_v5_swarm.json"
+ },
+ "rows": [
+  {
+   "seconds": 6.74,
+   "open_s": 2.88,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "map_day_1h",
+   "rep": 0
+  },
+  {
+   "seconds": 22.42,
+   "open_s": 1.61,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "series_point_1h",
+   "rep": 0
+  },
+  {
+   "seconds": 4.99,
+   "open_s": 1.54,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "week_6h",
+   "rep": 0
+  },
+  {
+   "seconds": 4.75,
+   "open_s": 1.89,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "map_day_1h",
+   "rep": 1
+  },
+  {
+   "seconds": 18.81,
+   "open_s": 1.38,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "series_point_1h",
+   "rep": 1
+  },
+  {
+   "seconds": 5.13,
+   "open_s": 1.73,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "week_6h",
+   "rep": 1
+  },
+  {
+   "seconds": 3.53,
+   "open_s": 1.46,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "map_day_1h",
+   "rep": 2
+  },
+  {
+   "seconds": 17.72,
+   "open_s": 1.7,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "series_point_1h",
+   "rep": 2
+  },
+  {
+   "seconds": 4.39,
+   "open_s": 1.56,
+   "attempts": 1,
+   "max_abs_err": 0.0,
+   "phase": "cloud",
+   "query": "week_6h",
+   "rep": 2
+  },
+  {
+   "phase": "http",
+   "query": "map_day_1h",
+   "rep": 0,
+   "seconds": 3.97,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 24,
+    "http://127.0.0.1:57617": 0
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "series_point_1h",
+   "rep": 0,
+   "seconds": 80.48,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 120,
+    "http://127.0.0.1:57617": 48
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "week_6h",
+   "rep": 0,
+   "seconds": 12.58,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 20,
+    "http://127.0.0.1:57617": 8
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "map_day_1h",
+   "rep": 1,
+   "seconds": 22.93,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 24,
+    "http://127.0.0.1:57617": 0
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "series_point_1h",
+   "rep": 1,
+   "seconds": 102.98,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 120,
+    "http://127.0.0.1:57617": 48
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "week_6h",
+   "rep": 1,
+   "seconds": 18.42,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 20,
+    "http://127.0.0.1:57617": 8
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "map_day_1h",
+   "rep": 2,
+   "seconds": 21.59,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 24,
+    "http://127.0.0.1:57617": 0
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "series_point_1h",
+   "rep": 2,
+   "seconds": 86.66,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 120,
+    "http://127.0.0.1:57617": 48
+   },
+   "max_abs_err": 0.0
+  },
+  {
+   "phase": "http",
+   "query": "week_6h",
+   "rep": 2,
+   "seconds": 21.12,
+   "per_mirror": {
+    "http://127.0.0.1:24257": 20,
+    "http://127.0.0.1:57617": 8
+   },
+   "max_abs_err": 0.0
+  }
+ ]
+}

@@ -196,15 +196,23 @@ def cmd_node(a):
 
 def cmd_scan(a):
     from .scan import scan
-    r = scan(a.path)
-    print(json.dumps({"link": f"zt://{r['grid_id']}", "time": r["grid"]["time"], "dims": r["grid"]["dims"],
-                      "arrays": {n: {"dims": x["dims"], "vfid": x["vfid"][:12], "layouts": list(x["layouts"])}
-                                 for n, x in r["arrays"].items()},
-                      "chunks": len(r["chunks"]), "bytes": sum(c[2] for c in r["chunks"].values())}, indent=1))
+    packing = json.loads(Path(a.packing).read_text()) if a.packing else None
+    grids = scan(a.path, packing=packing)["subgrids"]
+    print(json.dumps({"link": "zt://" + "+".join(sorted(grids)), "grids": {
+        gid: {"time": r["grid"]["time"], "dims": r["grid"]["dims"],
+              "arrays": {n: {"dims": x["dims"], "vfid": x["vfid"][:12], "layouts": list(x["layouts"]),
+                              "source_packing": "packing" in x} for n, x in r["arrays"].items()},
+              "chunks": len(r["chunks"]), "bytes": sum(c[2] for c in r["chunks"].values())}
+        for gid, r in grids.items()}}, indent=1))
 
 
 def cmd_seed(a):
-    r = http(a.ctl, "POST", "/api/seed", {"path": os.path.abspath(a.path)})
+    body = {"path": os.path.abspath(a.path)}
+    if a.packing:
+        body["packing"] = json.loads(Path(a.packing).read_text())
+    r = http(a.ctl, "POST", "/api/seed", body)
+    if a.packing_out:
+        Path(a.packing_out).write_text(json.dumps(r["packing"], indent=2) + "\n")
     print(f"{r['link']}  arrays={','.join(r['arrays'])}  chunks={r['chunks']}  subgrids={len(r['grids'])}")
 
 
@@ -393,6 +401,10 @@ def main(argv=None):
     for name, fn in (("scan", cmd_scan), ("seed", cmd_seed), ("unseed", cmd_unseed)):
         p = sub.add_parser(name)
         p.add_argument("path")
+        if name in ("scan", "seed"):
+            p.add_argument("--packing", help="JSON mapping variable names to source contracts or parameters")
+        if name == "seed":
+            p.add_argument("--packing-out", help="export signed contracts for independent mirrors")
         p.set_defaults(fn=fn)
     sub.add_parser("status").set_defaults(fn=cmd_status)
     p = sub.add_parser("search")

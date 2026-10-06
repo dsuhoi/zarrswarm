@@ -4,3 +4,12 @@ bench
 tests
 **/__pycache__
 *.zarr
+.git
+.pytest_cache
+build
+dist
+site
+paper
+photo
+docs
+*.egg-info

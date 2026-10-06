@@ -1,0 +1,76 @@
+{
+  "scope": "Only task-owned ~/zt_ms/revalidation*_20261003 and ~/zt_ms/review_cycle_20261004 roots; blocks on existing shared hardlinks are recorded separately.",
+  "fibonacci": {
+    "recorded_utc": "2026-10-04T15:24:23.806192+00:00",
+    "roots": [
+      {
+        "path": "/home/d.sukhorukov/zt_ms/revalidation_v4_20261003",
+        "files_inodes": 44,
+        "exclusive_allocated_MiB": 1.13,
+        "shared_allocated_MiB": 0
+      },
+      {
+        "path": "/home/d.sukhorukov/zt_ms/revalidation_v5_20261003",
+        "files_inodes": 7123,
+        "exclusive_allocated_MiB": 32.18,
+        "shared_allocated_MiB": 0
+      },
+      {
+        "path": "/home/d.sukhorukov/zt_ms/revalidation_v5_final_20261003",
+        "files_inodes": 11575,
+        "exclusive_allocated_MiB": 37.7,
+        "shared_allocated_MiB": 5360.04
+      },
+      {
+        "path": "/home/d.sukhorukov/zt_ms/review_cycle_20261004",
+        "files_inodes": 236,
+        "exclusive_allocated_MiB": 119.0,
+        "shared_allocated_MiB": 0
+      }
+    ],
+    "own_active_pids": []
+  },
+  "panel": {
+    "recorded_utc": "2026-10-03T23:49:23.657655+00:00",
+    "roots": [
+      {
+        "path": "/home/dsuhoi/zt_ms/revalidation_v5_20261003",
+        "files_inodes": 25,
+        "exclusive_allocated_MiB": 0.52,
+        "shared_allocated_MiB": 0.0
+      },
+      {
+        "path": "/home/dsuhoi/zt_ms/revalidation_v5_final_20261003",
+        "files_inodes": 78,
+        "exclusive_allocated_MiB": 1.31,
+        "shared_allocated_MiB": 0.0
+      }
+    ],
+    "own_active_pids": []
+  },
+  "cloudru": {
+    "recorded_utc": "2026-10-04T15:01:14.432587+00:00",
+    "roots": [
+      {
+        "path": "/home/jovyan/zt_ms/revalidation_v4_20261003",
+        "files_inodes": 44,
+        "exclusive_allocated_MiB": 1.17,
+        "shared_allocated_MiB": 0.0
+      },
+      {
+        "path": "/home/jovyan/zt_ms/revalidation_v5_20261003",
+        "files_inodes": 5325,
+        "exclusive_allocated_MiB": 131.55,
+        "shared_allocated_MiB": 0.0
+      },
+      {
+        "path": "/home/jovyan/zt_ms/revalidation_v5_final_20261003",
+        "files_inodes": 7103,
+        "exclusive_allocated_MiB": 52.73,
+        "shared_allocated_MiB": 5376.58
+      }
+    ],
+    "own_active_pids": [],
+    "status": "verified_after_access_recovery"
+  }
+}

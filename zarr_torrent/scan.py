@@ -26,7 +26,7 @@ import numpy as np
 import zarr
 
 from . import codec
-from .common import cid_of, cjson, h160
+from .common import check_signed, cid_of, cjson, h160
 
 UNIT_SECONDS = {"second": 1, "seconds": 1, "sec": 1, "secs": 1, "s": 1,
                 "minute": 60, "minutes": 60, "min": 60, "mins": 60,
@@ -165,6 +165,14 @@ def natural_stride(li: dict, T: int) -> tuple[int, int]:
     return (g, pos[0] % g) if g > 1 else (1, 0)
 
 
+def available_layouts(array: dict) -> dict:
+    """Unserved layouts must not determine the reader's time step or preferred encoding."""
+    active = {lay: li for lay, li in array["layouts"].items()
+              if (array["taxis"] is None and li.get("n", 1) > 0) or
+                 (array["taxis"] is not None and (li.get("cov") or "cov" not in li))}
+    return active or array["layouts"]  # retain metadata when every layout is unserved
+
+
 def sample_of(li: dict, g: int) -> int | None:
     """Sample index of quantum g in a layout, None if that layout has no sample there."""
     s, o = tstride(li)
@@ -202,7 +210,95 @@ def grid_id_of(grid: dict) -> str:
                       {"time": None if not t else {k: t[k] for k in ("name", "dt", "rphase")}}))
 
 
-def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = None) -> dict:
+def packing_contract(spec, gid: str, name: str, units: str = "") -> dict:
+    """Bind an explicit source contract to its field, physical grid and units; never infer it from data."""
+    bound = {"version": 1, "grid_id": gid, "variable": name, "units": units}
+    if isinstance(spec, dict) and "parameters" in spec:
+        if any(spec.get(k) != v for k, v in bound.items()) or set(spec) not in (
+                set(bound) | {"parameters"}, set(bound) | {"parameters", "pk", "sig"}):
+            raise ValueError("source packing contract belongs to another field, grid or units")
+        if "sig" in spec and not check_signed(spec):
+            raise ValueError("invalid source packing signature")
+        params = spec["parameters"]
+        out = dict(spec)
+    else:
+        params = spec
+        out = dict(bound, parameters=params)
+    if codec.VALUE_ID != "lattice" or BYTE_IDENTITY:
+        raise ValueError("source packing requires value identity in lattice mode")
+    if isinstance(params, dict):
+        if set(params) != {"time"} or not isinstance(params["time"], dict) or not params["time"]:
+            raise ValueError("source packing needs a nonempty UTC-seconds time catalogue")
+        for stamp, triple in params["time"].items():
+            if not isinstance(stamp, str) or not re.fullmatch(r"-?(0|[1-9][0-9]*)", stamp) or str(int(stamp)) != stamp:
+                raise ValueError("packing catalogue times must be canonical integer UTC seconds")
+            codec.packing_parameters(triple)
+    else:
+        codec.packing_parameters(params)
+    return out
+
+
+def packing_id(contract: dict) -> str:
+    return h160(cjson({k: v for k, v in contract.items() if k not in ("pk", "sig")}))
+
+
+def value_family(name, dims, dtype, shape_nt, contract=None):
+    return h160(cjson({"name": name, "dims": dims, "dtype": "source-codes-v1" if contract else dtype,
+                      "shape_nt": shape_nt} | ({"packing": packing_id(contract)} if contract else {})))
+
+
+def packing_values(values, array: dict, grid: dict, key: str, nv: int):
+    """Logical chunk cells and their authenticated source parameters, excluding storage padding."""
+    name, lay, co = split_key(key)
+    li, T = array["layouts"][lay], array["taxis"]
+    if tuple(values.shape) != tuple(li["chunks"]) or len(co) != values.ndim:
+        raise ValueError("source packing chunk shape does not match its layout")
+    selection = []
+    for axis, (dim, size, c) in enumerate(zip(array["dims"], values.shape, co)):
+        length = (nv or size) if axis == T else min(size, grid["dims"][dim] - c * size)
+        if (axis != T and c < 0) or not 0 < length <= size:
+            raise ValueError("source packing chunk is outside its declared grid")
+        selection.append(slice(0, length))
+    logical = values[tuple(selection)]
+    params = array["packing"]["parameters"]
+    if isinstance(params, dict):
+        if T is None or not grid.get("time"):
+            raise ValueError("time-varying source packing needs a time axis")
+        start, _ = chunk_g(li, T, co[T])
+        stride, _ = tstride(li)
+        tm = grid["time"]
+        try:
+            params = {"slices": [params["time"][str((start + i * stride) * tm["dt"] + tm["rphase"])]
+                                 for i in range(logical.shape[T])]}
+        except KeyError as e:
+            raise ValueError("source packing catalogue does not cover this chunk") from e
+    return logical, params
+
+
+def value_id(values, array: dict, grid: dict, key: str, nv: int) -> str:
+    if "packing" not in array:
+        return codec.vcid_of(values, array["taxis"])
+    logical, params = packing_values(values, array, grid, key, nv)
+    return codec.vcid_of(logical, array["taxis"], packing=params)
+
+
+def value_codes(values, array: dict, grid: dict, key: str, nv: int, *, exact=True):
+    if "packing" not in array:
+        return codec.lattice_codes(values, array["taxis"], exact=exact)
+    logical, params = packing_values(values, array, grid, key, nv)
+    # Source-code parity preserves the source counts, masks and contract, rather than decoder-specific bits.
+    lc = codec.lattice_codes(logical, array["taxis"], exact=False, packing=params)
+    if lc is None:
+        return None
+    codes = np.full(values.shape, codec._SENT, dtype="<i4")
+    codes[tuple(slice(0, s) for s in logical.shape)] = lc[0]
+    pairs = lc[1]
+    if array["taxis"] is not None:
+        pairs += [[1.0, 0.0]] * (values.shape[array["taxis"]] - logical.shape[array["taxis"]])
+    return codes, pairs
+
+
+def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = None, *, packing: dict | None = None) -> dict:
     root = Path(path).resolve()
     g = zarr.open_group(str(root), mode="r")
     fmt = g.metadata.zarr_format
@@ -225,6 +321,8 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
     soff = t["g0"] % stride if t else 0
     m0 = (t["g0"] - soff) // stride if t else 0  # first sample index in this replica's own lattice
     coord_names = {n for n, a in arrays.items() if n != tname and a.ndim == 1 and _dims(a)[0] == n}
+    if packing is not None and (not isinstance(packing, dict) or set(packing) - (set(arrays) - coord_names - {tname})):
+        raise ValueError("source packing must map data variable names to contracts")
 
     def subgrid_of(n):
         """Sub-grid = the variable's own non-time dims (+ their coordinates) and whether it has time.
@@ -240,11 +338,16 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
         dims, cs = _dims(a), _chunks(a)
         taxis = dims.index(tname) if tname in dims else None
         shape_nt = [s for i, s in enumerate(a.shape) if i != taxis]
+        spec = (packing or {}).get(n, a.attrs.get("zt_packing"))
+        contract = None
+        if spec is not None:
+            if a.dtype.kind != "f":
+                raise ValueError("source packing requires floating-point data")
+            contract = packing_contract(spec, grid_id_of(subgrid_of(n)), n, a.attrs.get("units", ""))
         # fill_value is not part of the value family: it only says what an ABSENT chunk would read as (zarr v2 and v3
         # writers default it differently for the same data, e.g. None vs 0 for int16), and holders only ever serve
         # chunks that exist; each layout keeps its own fill in its docs
-        vfid = h160(cjson({"name": n, "dims": dims, "dtype": np.dtype(a.dtype).newbyteorder("<").str,
-                           "shape_nt": shape_nt}))
+        vfid = value_family(n, dims, np.dtype(a.dtype).newbyteorder("<").str, shape_nt, contract)
         ct = cs[taxis] if taxis is not None else None
         # a chunk holding ONE time sample is the same object whatever the replica's step: index it by its quantum
         # (stride 1), so hourly and 6-hourly single-step chunks share keys and holders directly
@@ -261,9 +364,11 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
         fid = h160(cjson({"vfid": vfid, "lay": lay, "fmt": fmt, "docs": hdocs}))
         ainfo[n] = {"vfid": vfid, "dims": dims, "taxis": taxis, "fmt": fmt,
                     "attrs": {k: v for k, v in (a.attrs.asdict() if hasattr(a.attrs, "asdict") else dict(a.attrs)).items()
-                              if not k.startswith("_")},
+                              if not k.startswith("_") and k != "zt_packing"},
                     "layouts": {lay: {"fid": fid, "docs": docs, "chunks": list(cs), "phase": phase}
                                 | ({"stride": a_s, "soff": a_o} if taxis is not None and a_s > 1 else {})}}
+        if contract:
+            ainfo[n]["packing"] = contract
         grid_shape = [math.ceil(s / c) for s, c in zip(a.shape, cs)]
         for idx in np.ndindex(*grid_shape):
             rel = f"{n}/{a.metadata.encode_chunk_key(idx)}"
@@ -276,20 +381,20 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
                 nvalid = min(ct, t["n"] - idx[taxis] * ct)
             todo.append((f"{n}@{lay}/" + ".".join(map(str, canon)), rel, n, nvalid))
 
-    # hash cache: rel -> [size, mtime_ns, cid, vcid]
+    # hash cache: rel -> [size, mtime_ns, cid, vcid, metadata key]
     hc_path = (cache_dir / f"{h160(str(root).encode())}.{codec.VALUE_ID}.{codec.ESTIMATOR}.json") if cache_dir else None  # ids depend on it
     hc = json.loads(hc_path.read_text()) if hc_path and hc_path.exists() else {}
 
     # optional cache shared by every node on a host, keyed by file identity: hard-linked replicas (experiments, a site
     # serving one archive under several paths) hash each chunk file once instead of once per node and run
     shared = Path(os.environ["ZT_HASH_CACHE"]) if os.environ.get("ZT_HASH_CACHE") else None
-    dkey = {n: h160(json.dumps([a["layouts"], a["taxis"]], sort_keys=True, default=str).encode()) for n, a in ainfo.items()}
+    dkey = {n: h160(cjson([a["layouts"], a["taxis"], a.get("packing"), t, subgrid_of(n)])) for n, a in ainfo.items()}
 
     def one(item):
         ckey, rel, n, nvalid = item
         st = (root / rel).stat()
         hit = hc.get(rel)
-        if hit and hit[0] == st.st_size and hit[1] == st.st_mtime_ns:
+        if hit and len(hit) == 5 and hit[0] == st.st_size and hit[1] == st.st_mtime_ns and hit[4] == dkey[n]:
             return ckey, rel, hit[2], hit[3], st.st_size, st.st_mtime_ns, nvalid
         sp = None
         if shared:
@@ -300,7 +405,8 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
             except (OSError, ValueError):
                 pass
         raw = (root / rel).read_bytes()
-        vc = codec.vcid_of(codec.decode(next(iter(ainfo[n]["layouts"].values()))["docs"], raw), ainfo[n]["taxis"])
+        vals = codec.decode(next(iter(ainfo[n]["layouts"].values()))["docs"], raw)
+        vc = value_id(vals, ainfo[n], subgrid_of(n), ckey, nvalid)
         cid = cid_of(raw)
         if sp is not None:
             sp.parent.mkdir(parents=True, exist_ok=True)
@@ -315,7 +421,7 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
         for ckey, rel, cid, vc, size, mt, nvalid in ex.map(one, todo):
             chunks[ckey] = [cid, vc, size, nvalid]
             files[ckey] = str(root / rel)
-            newhc[rel] = [size, mt, cid, vc]
+            newhc[rel] = [size, mt, cid, vc, dkey[split_key(ckey)[0]]]
     if hc_path:
         hc_path.parent.mkdir(parents=True, exist_ok=True)
         hc_path.write_text(json.dumps(newhc))

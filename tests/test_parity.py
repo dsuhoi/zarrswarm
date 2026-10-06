@@ -12,14 +12,19 @@ import xarray as xr
 import zarr_torrent as zt
 from zarr_torrent.node import Node
 from zarr_torrent.store import http, open_views, wait_job
+_ports = iter(range(10000, 30000))
 
 
 def port():
-    s = socket.socket()
-    s.bind(("127.0.0.1", 0))
-    p = s.getsockname()[1]
-    s.close()
-    return p
+    # Avoid collisions with outgoing benchmark sockets and ports chosen earlier in this test.
+    for p in _ports:
+        with socket.socket() as s:
+            try:
+                s.bind(("127.0.0.1", p))
+                return p
+            except OSError:
+                continue
+    raise RuntimeError("no free test port")
 
 
 def test_parity_restores_chunks_nobody_holds(tmp_path):

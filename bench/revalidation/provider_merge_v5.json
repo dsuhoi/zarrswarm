@@ -1,0 +1,134 @@
+[
+ {
+  "mode": "exact",
+  "holders": [
+   "A",
+   "B"
+  ],
+  "trusted_a": false,
+  "state": "partial",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 0,
+   "missing_samples": 24
+  },
+  "estimator": "lattice-v5",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 0.0,
+  "contested": 24,
+  "done": 0,
+  "missing": 24,
+  "per_peer_MB": {}
+ },
+ {
+  "mode": "exact",
+  "holders": [
+   "A",
+   "B",
+   "C"
+  ],
+  "trusted_a": false,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v5",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 2.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "90847a": 33.8,
+   "ab0d87": 15.4
+  },
+  "max_abs_diff_vs_arco": 0.0,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ },
+ {
+  "mode": "lattice",
+  "holders": [
+   "A",
+   "B"
+  ],
+  "trusted_a": false,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v5",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 2.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "eb5f53": 13.8,
+   "4c864a": 26.4
+  },
+  "max_abs_diff_vs_arco": 0.00079345703125,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ },
+ {
+  "mode": "lattice",
+  "holders": [
+   "A",
+   "B",
+   "C"
+  ],
+  "trusted_a": false,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v5",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 3.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "af12b5": 17.6,
+   "9bf2d7": 8.3,
+   "c8e059": 15.4
+  },
+  "max_abs_diff_vs_arco": 0.0007781982421875,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ },
+ {
+  "mode": "exact",
+  "holders": [
+   "A",
+   "B"
+  ],
+  "trusted_a": true,
+  "state": "done",
+  "sample_coverage": {
+   "requested_samples": 24,
+   "covered_samples": 24,
+   "missing_samples": 0
+  },
+  "estimator": "lattice-v5",
+  "one_link": true,
+  "chunks": 24,
+  "usable_holders_per_chunk": 1.0,
+  "contested": 0,
+  "done": 24,
+  "missing": 0,
+  "per_peer_MB": {
+   "066280": 54.7
+  },
+  "max_abs_diff_vs_arco": 0.0,
+  "max_abs_diff_vs_ncar": 0.00079345703125
+ }
+]

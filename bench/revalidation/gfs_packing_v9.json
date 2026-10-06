@@ -1,0 +1,263 @@
+{
+  "started_utc": "2026-10-05T13:01:21.004494+00:00",
+  "sample_sha256": "a157545a540865d1ac8bcedab16a053ea38a245f4635c13036069c2e88111b79",
+  "sample": "bench/revalidation/gfs_pipelines_v7.json",
+  "protocol": "Same eight pinned fields and original payloads; native ecCodes float64 versus NetCDF float32. No target-dtype conversion. Coordinate selection only. One true GRIB-quantum change per tile.",
+  "source_sha256": {
+    "bench/gfs_native_precision.py": "06e7583377fce13ad8b5ebc20cf0c001398142d407bb770011aa9280410cdc4e",
+    "zarr_torrent/codec.py": "0eeee2dba9dabb344c4a274e162cb0dd8f317cba792f97958bedbe0833d1ad57"
+  },
+  "fields": [
+    {
+      "short_name": "TMP",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "K",
+      "cells": 8192,
+      "numerically_equal_cells": 1614,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.1,
+      "max_abs_error": 1.2207031261368684e-05,
+      "max_error_in_source_quanta": 0.00012207031261368684,
+      "trusted_packing": {
+        "source_step": 0.1,
+        "source_origin": 204.565869140625,
+        "max_error": 0.045000000000000005,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          5.684341886080801e-13,
+          0.00012207031261368684
+        ]
+      }
+    },
+    {
+      "short_name": "UGRD",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 310,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05,
+      "trusted_packing": {
+        "source_step": 0.01,
+        "source_origin": -42.497802734375,
+        "max_error": 0.0045000000000000005,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          4.440892098500626e-13,
+          4.5776366874861196e-05
+        ]
+      }
+    },
+    {
+      "short_name": "VGRD",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 357,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05,
+      "trusted_packing": {
+        "source_step": 0.01,
+        "source_origin": -40.13969482421875,
+        "max_error": 0.0045000000000000005,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          3.774758283725532e-13,
+          4.5776367230132564e-05
+        ]
+      }
+    },
+    {
+      "short_name": "PRMSL",
+      "lead_hours": 0,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "Pa",
+      "cells": 8192,
+      "numerically_equal_cells": 1674,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.4,
+      "max_abs_error": 0.003125000002910383,
+      "max_error_in_source_quanta": 0.007812500007275958,
+      "trusted_packing": {
+        "source_step": 0.4,
+        "source_origin": 93213.2875,
+        "max_error": 0.18000000000000002,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          0.0,
+          0.007812500007275958
+        ]
+      }
+    },
+    {
+      "short_name": "TMP",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "K",
+      "cells": 8192,
+      "numerically_equal_cells": 1583,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.1,
+      "max_abs_error": 1.2207031261368684e-05,
+      "max_error_in_source_quanta": 0.00012207031261368684,
+      "trusted_packing": {
+        "source_step": 0.1,
+        "source_origin": 210.86503906250002,
+        "max_error": 0.045000000000000005,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          5.684341886080801e-13,
+          0.00012207031261368684
+        ]
+      }
+    },
+    {
+      "short_name": "UGRD",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 336,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05,
+      "trusted_packing": {
+        "source_step": 0.01,
+        "source_origin": -42.4615087890625,
+        "max_error": 0.0045000000000000005,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          5.329070518200751e-13,
+          4.577636758540393e-05
+        ]
+      }
+    },
+    {
+      "short_name": "VGRD",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "m/s",
+      "cells": 8192,
+      "numerically_equal_cells": 336,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 8,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.01,
+      "max_abs_error": 4.5776367230132564e-07,
+      "max_error_in_source_quanta": 4.5776367230132564e-05,
+      "trusted_packing": {
+        "source_step": 0.01,
+        "source_origin": -38.415126953125004,
+        "max_error": 0.0045000000000000005,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          7.105427357601002e-13,
+          4.577636758540393e-05
+        ]
+      }
+    },
+    {
+      "short_name": "PRMSL",
+      "lead_hours": 6,
+      "dtypes": [
+        "float64",
+        "float32"
+      ],
+      "units": "Pa",
+      "cells": 8192,
+      "numerically_equal_cells": 1717,
+      "float32_normalized_equal_cells": 8192,
+      "exact_identity_match": false,
+      "tiles": 8,
+      "matching_tiles": 7,
+      "accepted_source_count_changes": 0,
+      "source_quantum": 0.2,
+      "max_abs_error": 0.003125000002910383,
+      "max_error_in_source_quanta": 0.015625000014551915,
+      "trusted_packing": {
+        "source_step": 0.2,
+        "source_origin": 93578.725,
+        "max_error": 0.09000000000000001,
+        "eligible_tiles": 8,
+        "matching_tiles": 8,
+        "accepted_source_count_changes": 0,
+        "max_residual_in_source_steps": [
+          0.0,
+          0.015625000014551915
+        ]
+      }
+    }
+  ],
+  "packing_protocol_sha256": "9cf8c170b28ad767159aa21930e0f1c3745ce12dd9acc6f13226499a6c8dd1f5",
+  "packing_scope": "Caller-provided original GRIB reference/scales; 0.45-step decoder budget. Numeric API only, no new station or transport deployment.",
+  "completed_utc": "2026-10-05T13:01:22.299633+00:00"
+}

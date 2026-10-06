@@ -1,0 +1,55 @@
+{
+  "before_recorded_full_answers": 10,
+  "before_planned_answers": 24,
+  "before_interrupted": true,
+  "before_failure": "receiver SIGSEGV on cycle 1 native-min point query; incomplete series retained, not pooled with fixed run",
+  "after_full_exact_answers": 24,
+  "after_placement_count": 1,
+  "after_repeated_cycles": 4,
+  "arms": {
+    "native-jlps": {
+      "point_median_s": 8.187838837999152,
+      "point_range_s": [
+        8.18178341499879,
+        8.285851434004144
+      ],
+      "cpu_range_s": [
+        2.068068505,
+        2.477083882
+      ],
+      "max_value_hash_s": 0.5961264260113239
+    },
+    "native-min": {
+      "point_median_s": 8.098817452497315,
+      "point_range_s": [
+        8.092231720002019,
+        8.158934170991415
+      ],
+      "cpu_range_s": [
+        1.933509898,
+        2.427855669
+      ],
+      "max_value_hash_s": 0.5727277120022336
+    },
+    "aria2-min": {
+      "point_median_s": 21.317438985497574,
+      "point_range_s": [
+        21.13851522099867,
+        22.304980037006317
+      ],
+      "cpu_range_s": [
+        1.928987829,
+        1.9567422799999998
+      ],
+      "max_value_hash_s": 0.3655337850068463
+    }
+  },
+  "reproduced_slow_read": {
+    "seconds": 207.60919470500085,
+    "arm": "native-jlps",
+    "query": "point_series",
+    "cpu_seconds": 276.977687941,
+    "max_value_hash_s": 144.41360222100047,
+    "max_file_write_s": 0.695909625996137
+  }
+}

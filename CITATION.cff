@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use ZarrSwarm in your research, please cite this software."
+type: software
+title: ZarrSwarm
+authors:
+  - family-names: Sukhorukov
+    given-names: Daniil
+  - family-names: Makarov
+    given-names: Ilya
+version: 0.1.0
+date-released: '2026-10-06'
+repository-code: https://github.com/dsuhoi/zarrswarm
+url: https://dsuhoi.github.io/zarrswarm/
+license: MIT

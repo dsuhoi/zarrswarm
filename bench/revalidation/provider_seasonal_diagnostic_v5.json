@@ -1,0 +1,143 @@
+{
+  "scope": "Post-hoc diagnosis, no estimator tuning; NCAR shared quantizer uses the declared ARCO-count perturbation.",
+  "source_sha256": "549dbce12e3ec6f76ed597bb5d7dfa8aba5eb492d3326b76451afea161d87bcb",
+  "codec_sha256": "d8cdecd6cb5c8fed4154a27ec6e81f080b3c56660e8500d64901855ece43a1c9",
+  "fields": {
+    "2m_temperature@2024-01-15T00": {
+      "full_lattices": [
+        [
+          0.001953125,
+          0.0007632629979779917,
+          136969
+        ],
+        [
+          0.0019531254903596695,
+          215.17264982317513,
+          26801
+        ]
+      ],
+      "rejected_by_first_diagnostic": {
+        "step": 0,
+        "code_hash": 0,
+        "level": 0
+      },
+      "tile_step_ranges": [
+        [
+          0.001953125,
+          0.001953125
+        ],
+        [
+          0.0019531249999999996,
+          0.0019531267622995767
+        ]
+      ],
+      "max_absolute_difference": 0.00079345703125,
+      "shared_NCAR_quantizer": {
+        "accepted_provider_tiles": 64,
+        "accepted_ARCO_count_changed_tiles": 0
+      }
+    },
+    "2m_temperature@2024-04-15T00": {
+      "full_lattices": [
+        [
+          0.0017721337499415222,
+          203.97325345411048,
+          31654
+        ],
+        [
+          0.0019531245378177557,
+          203.9734699290938,
+          28721
+        ]
+      ],
+      "rejected_by_first_diagnostic": {
+        "step": 64,
+        "code_hash": 0,
+        "level": 0
+      },
+      "tile_step_ranges": [
+        [
+          0.0017721334141855354,
+          0.0017721338376091376
+        ],
+        [
+          0.0019531230507689164,
+          0.0019531250000000004
+        ]
+      ],
+      "max_absolute_difference": 0.00091552734375,
+      "shared_NCAR_quantizer": {
+        "accepted_provider_tiles": 64,
+        "accepted_ARCO_count_changed_tiles": 2
+      }
+    },
+    "2m_temperature@2024-07-15T00": {
+      "full_lattices": [
+        [
+          0.001820898380257674,
+          205.5739743597115,
+          29782
+        ],
+        [
+          0.0019531249999999998,
+          205.57336425781253,
+          27766
+        ]
+      ],
+      "rejected_by_first_diagnostic": {
+        "step": 64,
+        "code_hash": 0,
+        "level": 0
+      },
+      "tile_step_ranges": [
+        [
+          0.0018208983173519928,
+          0.0018208985622083
+        ],
+        [
+          0.0019531249999999993,
+          0.0019531250000000004
+        ]
+      ],
+      "max_absolute_difference": 0.00091552734375,
+      "shared_NCAR_quantizer": {
+        "accepted_provider_tiles": 64,
+        "accepted_ARCO_count_changed_tiles": 5
+      }
+    },
+    "2m_temperature@2024-10-15T00": {
+      "full_lattices": [
+        [
+          0.001953125,
+          5.107595602775668e-05,
+          133290
+        ],
+        [
+          0.001953125,
+          208.28128051757812,
+          26650
+        ]
+      ],
+      "rejected_by_first_diagnostic": {
+        "step": 0,
+        "code_hash": 0,
+        "level": 0
+      },
+      "tile_step_ranges": [
+        [
+          0.001953125,
+          0.001953125
+        ],
+        [
+          0.0019531249999999996,
+          0.0019531250000000004
+        ]
+      ],
+      "max_absolute_difference": 0.000823974609375,
+      "shared_NCAR_quantizer": {
+        "accepted_provider_tiles": 64,
+        "accepted_ARCO_count_changed_tiles": 0
+      }
+    }
+  }
+}

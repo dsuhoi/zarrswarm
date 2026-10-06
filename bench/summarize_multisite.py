@@ -17,7 +17,11 @@ rows = json.load(open(sys.argv[1]))["rows"]
 for ph, sel, name in CONF:
     cells = []
     for q in QUERIES:
-        xs = [r for r in rows if r["phase"] == ph and r.get("select") == sel and r["query"] == q]
+        candidates = [r for r in rows if r["phase"] == ph and r.get("select") == sel and r["query"] == q]
+        xs = [r for r in candidates if r.get("coverage", 1) == 1 and not r.get("missing", 0)
+              and r.get("state", "done") == "done" and r.get("max_abs_err") == 0]
+        if len(xs) != len(candidates):
+            print(f"{name} {q}: {len(candidates) - len(xs)} incomplete or unverified answers excluded")
         if not xs:
             cells.append("---")
             continue

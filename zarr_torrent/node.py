@@ -27,7 +27,8 @@ import numpy as np
 from . import capt, codec, jlps as jlpsmod, parity as par, plan as planmod, pushdown as pd
 from .common import Identity, check_signed, cid_of, cjson, h160, verify
 from .dht import DHT
-from .scan import chunk_extent, chunk_g, chunks_for, grid_id_of, natural_stride, scan, split_key, tstride
+from .scan import (available_layouts, chunk_extent, chunk_g, chunks_for, grid_id_of, natural_stride, packing_contract,
+                   scan, split_key, tstride, value_codes, value_family, value_id)
 
 ANNOUNCE_EVERY = float(os.environ.get("ZT_ANNOUNCE_EVERY", "600"))
 VIEW_TTL = 30
@@ -121,6 +122,9 @@ class Node:
         self.net_key = network_key or None  # closed network: every data-port request must carry it (X-Zt-Net)
         self.cfg_seeds = list(seeds)  # config [[seed]] paths/globs: re-read on every start, not persisted
         self.host, self.port, self.ctl_port = host, port, ctl_port or port + 1
+        bound = {"0.0.0.0": "127.0.0.1", "::": "::1"}.get(host, host)
+        bound = f"[{bound}]" if ":" in bound else bound
+        self._local_data_url = f"http://{bound}:{port}"
         self.bootstrap_urls, self.relay, self.relay_server = list(bootstrap), relay, relay_server
         self.ident = Identity(self.home)
         if public:
@@ -188,6 +192,7 @@ class Node:
         self._job_keys: dict[str, tuple] = {}  # job id -> (keys, region view) for resume
         self.used: dict[tuple[str, str], float] = {}  # (grid, key) -> last use (download / client read / serve)
         self._tasks: list[asyncio.Task] = []
+        self.seed_packing: dict[str, dict] = {}
 
     # ------------------------------------------------------------------ lifecycle
     async def start(self):
@@ -198,6 +203,20 @@ class Node:
         (self.home / "cache").mkdir(parents=True, exist_ok=True)
         for p in sorted((self.home / "cache").glob("*.json")):
             d = json.loads(p.read_text())
+            for k, ent in list(d["chunks"].items()):
+                name, lay, _ = split_key(k)
+                if par.is_parity(name):
+                    if any(m[2] >= 0 and not codec.same_vcid(m[1], m[1]) for m in ent[4]):
+                        del d["chunks"][k]  # retain blobs on disk; old parity must be regenerated
+                        self._dirty.add(p.stem)
+                elif ent[1].startswith(("L:", "L2:")):
+                    try:
+                        a = d["arrays"][name]
+                        vals = await asyncio.to_thread(codec.decode, a["layouts"][lay]["docs"], self._cas(ent[0]).read_bytes())
+                        ent[1] = value_id(vals, a, d["grid"], k, ent[3])
+                    except (OSError, ValueError):
+                        del d["chunks"][k]
+                    self._dirty.add(p.stem)
             self.caches[p.stem] = d
         data = web.Application(client_max_size=64 << 20, middlewares=[self._net_guard, self._bad_input, self._lossy])
         data.add_routes([web.post("/dht", self.h_dht), web.get("/m/{grid}", self.h_manifest),
@@ -229,6 +248,7 @@ class Node:
             self._runners.append(r)
         state = self.home / "state.json"
         st = json.loads(state.read_text()) if state.exists() else {}
+        self.seed_packing = st.get("seed_packing", {})
         paths = list(dict.fromkeys(st.get("seeds", []) + [m for g in self.cfg_seeds
                                                            for m in sorted(glob.glob(os.path.expanduser(g))) or [g]]))
         self.names = st.get("names", {})
@@ -268,7 +288,7 @@ class Node:
         for src in list(self.seeds.values()) + [dict(c, files=None) for c in self.caches.values()]:
             gid = src.get("grid_id") or grid_id_of(src["grid"])
             L = local.setdefault(gid, {"grid": src["grid"], "gdocs": src["gdocs"], "arrays": {},
-                                       "chunks": {}, "files": {}})
+                                       "chunks": {}, "files": {}, "_seeded_keys": set()})
             for n, a in src["arrays"].items():
                 La = L["arrays"].get(n)
                 if La is None:
@@ -283,6 +303,8 @@ class Node:
                     continue
                 L["chunks"][ck] = ent
                 L["files"][ck] = src["files"][ck] if src["files"] else str(self._cas(ent[0]))
+                if src["files"]:
+                    L["_seeded_keys"].add(ck)  # only user-provided seeds are local authorities
         self.local = local
         self._mf.clear()
         self._capt.clear()  # explicit (re)seed: publish immediately, no rate limit
@@ -292,8 +314,16 @@ class Node:
     def _cas(self, cid: str) -> Path:
         return self.home / "cas" / cid[:2] / cid
 
-    async def add_seed(self, path: str, persist=True, announce=True) -> dict:
-        res = await asyncio.to_thread(scan, path, self.home / "scan")
+    async def add_seed(self, path: str, persist=True, announce=True, *, packing=None) -> dict:
+        path = str(Path(path).resolve())
+        spec = self.seed_packing.get(path) if packing is None else packing
+        res = await asyncio.to_thread(scan, path, self.home / "scan", packing=spec)
+        for sg in res["subgrids"].values():
+            for a in sg["arrays"].values():
+                if "packing" in a and "sig" not in a["packing"]:
+                    a["packing"] = self.ident.signed(a["packing"])
+        if packing is not None:
+            self.seed_packing[path] = packing
         _trim()  # a scan decodes every chunk on one thread per core; glibc keeps those arenas unless asked to return them
         for k in [k for k in self.seeds if k[0] == res["path"]]:
             del self.seeds[k]
@@ -313,7 +343,7 @@ class Node:
         root = Path(path)
         try:
             return tuple(sorted((str(f.relative_to(root)), f.stat().st_mtime_ns, f.stat().st_size)
-                                for pat in ("zarr.json", ".zarray", ".zattrs", ".zgroup", "*/zarr.json", "*/.zarray")
+                                for pat in ("zarr.json", ".zarray", ".zattrs", ".zgroup", "*/zarr.json", "*/.zarray", "*/.zattrs")
                                 for f in root.glob(pat)))
         except OSError:
             return None
@@ -385,18 +415,18 @@ class Node:
                     continue
                 if sigs.get(path) == sig and n % 10:
                     continue
-                first = path not in sigs
                 sigs[path] = sig
-                if first and n % 10:
-                    continue  # baseline taken; the seed itself was scanned at add time
                 before = {k: e[:2] for (p_, _), sd in self.seeds.items() if p_ == path for k, e in sd["chunks"].items()}
+                before_arrays = {g: sd.get("arrays", {}) for (p_, g), sd in self.seeds.items() if p_ == path}
                 try:
                     await self.add_seed(path, persist=False, announce=False)
                 except Exception as e:
                     print(f"[zt] rescan {path}: {e}")
+                    sigs.pop(path, None)  # retry a temporarily incomplete producer write next round
                     continue
                 after = {k: e[:2] for (p_, _), sd in self.seeds.items() if p_ == path for k, e in sd["chunks"].items()}
-                if after != before:
+                after_arrays = {g: sd.get("arrays", {}) for (p_, g), sd in self.seeds.items() if p_ == path}
+                if after != before or after_arrays != before_arrays:
                     for g in {g for p_, g in self.seeds if p_ == path}:
                         await self.announce(g)
                     print(f"[zt] {path}: {len(set(after) - set(before))} new, "
@@ -412,6 +442,7 @@ class Node:
 
     def _save_state(self):
         (self.home / "state.json").write_text(json.dumps({"seeds": sorted({p for p, _ in self.seeds}),
+                                                          "seed_packing": self.seed_packing,
                                                           "names": self.names,
                                                           "subs": {i: {k: v for k, v in s.items() if k != "jobs"}
                                                                    for i, s in self.subs.items()}}))
@@ -797,7 +828,7 @@ class Node:
             if data is not None and xt and L:
                 try:  # value-level transport codec: fewer bytes on slow links, verified by vcid on arrival
                     n, lay, _ = split_key(k)
-                    vals = await asyncio.to_thread(self.decoded.get, k, L["arrays"][n]["layouts"][lay]["docs"],
+                    vals = await asyncio.to_thread(self.decoded.get, cid_of(data), L["arrays"][n]["layouts"][lay]["docs"],
                                                    lambda d=data: d)
                     alt = await asyncio.to_thread(codec.xt1_encode, vals)
                     if len(alt) < len(data):
@@ -841,7 +872,7 @@ class Node:
             docs = L["arrays"][n]["layouts"][lay]["docs"]
             cid = L["chunks"][k][0]
             try:
-                vals = await asyncio.to_thread(self.decoded.get, k, docs, lambda f=f: Path(f).read_bytes())
+                vals = await asyncio.to_thread(self.decoded.get, cid, docs, lambda f=f: Path(f).read_bytes())
                 out = pd.cut(vals, sel)
                 if self.cheat:
                     out = bytes(len(out))  # a lie with a perfectly valid signature
@@ -895,7 +926,8 @@ class Node:
             cs = v["arrays"].get(n, {}).get("layouts", {}).get(lay, {}).get("chunks") or []
             if cs:
                 frac[it["key"]] = frac.get(it["key"], 0.0) + float(np.prod([(hi - lo) / c for (lo, hi), c in zip(it["sel"], cs)]))
-        whole = [k for k, f_ in frac.items() if f_ > PD_WHOLE_FRAC and not L["files"].get(k)]
+        whole = [k for k, f_ in frac.items() if f_ > PD_WHOLE_FRAC and not
+                 (L["files"].get(k) and os.path.exists(L["files"][k]) and self._fits(L, v, k))]
         if whole:
             await self.fetch(grid, whole)
             L = self.local.get(grid, {"files": {}})
@@ -903,9 +935,9 @@ class Node:
             k, sel = it["key"], it["sel"]
             self.pd_stats["items"] += 1
             f = L["files"].get(k)
-            if f and os.path.exists(f):  # we hold the chunk: cut locally
+            if f and os.path.exists(f) and self._fits(L, v, k):  # cut only the selected version
                 n, lay, _ = split_key(k)
-                vals = await asyncio.to_thread(self.decoded.get, k, L["arrays"][n]["layouts"][lay]["docs"],
+                vals = await asyncio.to_thread(self.decoded.get, L["chunks"][k][0], L["arrays"][n]["layouts"][lay]["docs"],
                                                lambda f=f: Path(f).read_bytes())
                 out[i] = pd.cut(vals, sel)
                 self.pd_stats["local"] += 1
@@ -978,7 +1010,7 @@ class Node:
                 pth = paths.get(k)
                 if pth and pth not in ("!", "retry"):
                     n, lay, _ = split_key(k)
-                    vals = await asyncio.to_thread(self.decoded.get, k, v["arrays"][n]["layouts"][lay]["docs"],
+                    vals = await asyncio.to_thread(self.decoded.get, self.local[grid]["chunks"][k][0], v["arrays"][n]["layouts"][lay]["docs"],
                                                    lambda pth=pth: Path(pth).read_bytes())
                     out[i] = pd.cut(vals, items[i]["sel"])
         return out
@@ -992,7 +1024,7 @@ class Node:
             return
         n, lay, _ = split_key(k)
         v = await self.view(grid)
-        vals = await asyncio.to_thread(self.decoded.get, k, v["arrays"][n]["layouts"][lay]["docs"],
+        vals = await asyncio.to_thread(self.decoded.get, self.local[grid]["chunks"][k][0], v["arrays"][n]["layouts"][lay]["docs"],
                                        lambda: Path(pth).read_bytes())
         truth = pd.cut(vals, sel)
         r = self.rep.setdefault(p, [0, 0])
@@ -1166,7 +1198,7 @@ class Node:
         rb = b""
         if hdr["path"].lstrip("/").startswith(RELAY_PATHS):
             try:
-                async with self.session.request(hdr["method"], f"http://127.0.0.1:{self.port}{hdr['path']}",
+                async with self.session.request(hdr["method"], self._local_data_url + hdr["path"],
                                                 data=body) as r:
                     rb = await r.read()
                     out.update(status=r.status, ctype=r.content_type,
@@ -1186,7 +1218,7 @@ class Node:
             async with lock:
                 await ws.send_bytes(_frame(h, b))
         try:
-            async with self.session.request(hdr["method"], f"http://127.0.0.1:{self.port}{hdr['path']}",
+            async with self.session.request(hdr["method"], self._local_data_url + hdr["path"],
                                             data=body) as r:
                 await send({"rid": rid, "status": r.status, "ctype": r.content_type, "stream": 1,
                             "headers": {k: v for k, v in r.headers.items() if k.startswith("X-Zt-")}})
@@ -1303,7 +1335,8 @@ class Node:
 
     async def view(self, grid: str, refresh: bool = False) -> dict:
         v = self.views.get(grid)
-        if v and not refresh and time.time() - v["ts"] < VIEW_TTL:
+        trust = frozenset(self.trusted)
+        if v and not refresh and v.get("_trust") == trust and time.time() - v["ts"] < VIEW_TTL:
             return v
         peers = await self.find_peers(grid)
         tasks = {asyncio.create_task(self._manifest(n, a, grid, refresh)): n for n, a in peers.items()}
@@ -1320,7 +1353,7 @@ class Node:
             mans[self.ident.id] = dict(self.local[grid], node=self.ident.id, _etag=f"local{self._lver}")
         if not mans:
             raise KeyError(f"no reachable peers for {grid}")
-        key = tuple(sorted((n, m.get("_etag", "")) for n, m in mans.items()))
+        key = (tuple(sorted((n, m.get("_etag", "")) for n, m in mans.items())), trust)
         memo = self._view_memo.get(grid)
         if memo and memo[0] == key:  # no replica changed: skip the O(#chunks) merge
             v = dict(memo[1])
@@ -1328,7 +1361,7 @@ class Node:
             v = await asyncio.to_thread(merge_view, grid, mans, self.ident.id, self.trusted)
             self._view_memo[grid] = (key, v)
             v = dict(v)
-        v.update(ts=time.time(), addrs=peers)
+        v.update(ts=time.time(), addrs=peers, _trust=trust)
         self.views[grid] = v
         return v
 
@@ -1341,8 +1374,11 @@ class Node:
 
     @staticmethod
     def _fits(L: dict, v: dict, k: str) -> bool:
-        """Is our local file for k stored in the encoding the view reads it with (same value family and layout
-        encoding)? A seed or cache entry of another family must be transcoded, not passed through."""
+        """Does a local chunk match the selected value, valid length and encoding of this view?"""
+        if "best" in v:
+            b, ent = v["best"].get(k), L.get("chunks", {}).get(k)
+            if not b or not (b["src"] or b.get("restore")) or not ent or ent[3] != b["nv"] or not codec.same_vcid(ent[1], b["vcid"]):
+                return False
         n, lay, _ = split_key(k)
         La, va = L.get("arrays", {}).get(n), v.get("arrays", {}).get(n)
         if not La or not va or lay not in va["layouts"]:
@@ -1361,8 +1397,8 @@ class Node:
         v0 = view or self.views.get(grid)
         for k in dict.fromkeys(keys):
             f = L["files"].get(k)
-            if f and os.path.exists(f) and (self._fits_expect(L, k, expect[k]) if expect and k in expect
-                                            else v0 is None or self._fits(L, v0, k)):
+            if f and os.path.exists(f) and (v0 is None or self._fits(L, v0, k)) and (
+                    not expect or k not in expect or self._fits_expect(L, k, expect[k])):
                 out[k] = f
             else:
                 need.append(k)
@@ -1409,8 +1445,9 @@ class Node:
             raise
         for k in mine:
             lf = self.local.get(grid, {"files": {}})["files"].get(k)
-            if lf and expect and k in expect and not self._fits_expect(self.local.get(grid, {}), k, expect[k]):
-                lf = None  # a local file of another family is no answer for this reader
+            if lf and (not self._fits(self.local.get(grid, {}), v, k) or
+                    expect and k in expect and not self._fits_expect(self.local.get(grid, {}), k, expect[k])):
+                lf = None  # stale values or another family are no answer for this reader
             out[k] = res.get(k) or lf or \
                 ("!" if k in v["best"] and not (job and job.get("cancel")) else None)
         retry = []
@@ -1642,7 +1679,10 @@ class Node:
             while p not in failed:
                 batch = take(p)
                 if not batch:
-                    if not inflight or (job is not None and job.get("cancel")):
+                    # An unassigned holder can run before the assigned workers.
+                    # Keep it available for endgame while another live queue has work.
+                    queued = steal and any(q for o, q in queues.items() if o not in failed)
+                    if (not inflight and not queued) or (job is not None and job.get("cancel")):
                         return
                     await asyncio.sleep(0.05)  # others still in flight: failures may requeue work to us
                     continue
@@ -1757,13 +1797,13 @@ class Node:
         tasks = [asyncio.create_task(worker(p)) for p in peers for _ in range(CONC_PER_PEER)]
         watcher = asyncio.create_task(all_done.wait())
         try:
-            await asyncio.wait(tasks + [watcher], return_when=asyncio.FIRST_COMPLETED)
             # BitTorrent-style endgame CANCEL: once every chunk is in, drop the duplicate/straggler requests still in
             # flight instead of waiting for them (a slow relayed peer used to add seconds to finished downloads)
+            pending = set(tasks) | {watcher}
             while not all_done.is_set() and any(not t.done() for t in tasks):
-                await asyncio.wait(tasks + [watcher], return_when=asyncio.FIRST_COMPLETED)
-                if all(t.done() for t in tasks):
-                    break
+                # FIRST_COMPLETED returns immediately for an already-finished task.
+                # Re-waiting on it spins the loop and starves verification threads.
+                _, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
         finally:  # also when this download itself is cancelled (a probe past its deadline): no orphan workers
             for t in tasks + [watcher]:
                 if not t.done():
@@ -1802,7 +1842,7 @@ class Node:
     async def _restore(self, grid: str, v: dict, k: str) -> str | None:
         """Try every stripe family that covers k (a previous family pass may already have rebuilt it)."""
         f = self.local.get(grid, {"files": {}})["files"].get(k)
-        if f and os.path.exists(f):
+        if f and os.path.exists(f) and self._fits(self.local[grid], v, k):
             return f
         failed = v.setdefault("_fam_failed", set())  # a family that cannot be rebuilt now is not retried per key
         for r in v["best"][k]["restore"]:
@@ -1864,8 +1904,13 @@ class Node:
         for j, (data, cid, vcid) in rebuilt.items():
             if cid_of(data) != cid:
                 continue
+            mk = keys[j]
+            chosen = v["best"].get(mk, {}).get("vcid", vcid)
+            if not codec.same_vcid(vcid, chosen):
+                self._rfail("selected_vcid_mismatch")
+                continue
             try:
-                if not codec.same_vcid(codec.vcid_of(codec.decode(a["layouts"][lay]["docs"], data), a["taxis"]), vcid):
+                if not codec.same_vcid(value_id(codec.decode(a["layouts"][lay]["docs"], data), a, v["grid"], mk, members[j][3]), vcid):
                     continue
             except Exception:
                 continue
@@ -1873,7 +1918,6 @@ class Node:
             if not path.exists():
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data)
-            mk = keys[j]
             if mk not in v["best"]:
                 v["best"][mk] = {"vcid": vcid, "nv": members[j][3], "src": []}
             stored = self._index(grid, v, mk, cid, len(data))
@@ -1889,7 +1933,7 @@ class Node:
         out, need = {}, []
         for k in keys:
             f = L["files"].get(k)
-            if f and os.path.exists(f):
+            if f and os.path.exists(f) and self._fits(L, v, k):
                 out[k] = f
             else:
                 need.append(k)
@@ -1923,13 +1967,22 @@ class Node:
             co = list(f_["co"])
             co[T] = par.member_of(f_["co"][T], j, K, D, O)
             coords[j] = co
+            mk = f"{f_['base']}@{lay}/" + ".".join(map(str, co))
             vals = await self._canon_values_tile(grid, v, f_["base"], lay, co)
-            lc = codec.lattice_codes(vals, T, exact=False) if by_codes and vals is not None else None
-            if vals is None or (by_codes and (lc is None or not codec.same_vcid(codec.vcid_of(vals, T), mem[1]))):
+            try:
+                lc = value_codes(vals, a, v["grid"], mk, mem[3], exact=False) if by_codes and vals is not None else None
+                matches = vals is not None and (not by_codes or lc is not None and
+                           codec.same_vcid(value_id(vals, a, v["grid"], mk, mem[3]), mem[1]))
+            except ValueError:
+                matches = False
+            if not matches:
                 missing.append(j)  # (a member that does not match its recorded value id cannot help the algebra)
             else:
                 present[j] = lc[0].tobytes() if by_codes else \
                     np.ascontiguousarray(vals).astype(vals.dtype.newbyteorder("<"), copy=False).tobytes()
+                if not by_codes and (not mem[0] or cid_of(present[j]) != mem[0]):
+                    del present[j]
+                    missing.append(j)  # raw-float algebra requires the encoder's exact bytes
         if not missing:
             self._rfail("nothing_missing")
             return None
@@ -1939,21 +1992,33 @@ class Node:
         rebuilt = par.restore_many(blobs[:len(missing)], present, missing)
         dt, _ = _dtype_fill_docs(li["docs"])
         out = None
-        for j, (data, _, vcid) in rebuilt.items():
-            if by_codes:
-                vals = codec.from_lattice_codes(np.frombuffer(data, dtype="<i4").reshape(li["chunks"]), members[j][4], dt, T)
-            else:
-                vals = np.frombuffer(data, dtype=dt.newbyteorder("<")).reshape(li["chunks"]).astype(dt)
-            if not codec.same_vcid(codec.vcid_of(vals, T), vcid):
+        for j, (data, payload_cid, vcid) in rebuilt.items():
+            mk = f"{f_['base']}@{lay}/" + ".".join(map(str, coords[j]))
+            chosen = v["best"].get(mk, {}).get("vcid", vcid)
+            if not codec.same_vcid(vcid, chosen):
+                self._rfail("selected_vcid_mismatch")
+                continue
+            if not by_codes and (not payload_cid or cid_of(data) != payload_cid):
+                self._rfail("payload_cid_mismatch")
+                continue
+            try:
+                if by_codes:
+                    vals = codec.from_lattice_codes(np.frombuffer(data, dtype="<i4").reshape(li["chunks"]), members[j][4], dt, T)
+                else:
+                    vals = np.frombuffer(data, dtype=dt.newbyteorder("<")).reshape(li["chunks"]).astype(dt)
+                if not codec.same_vcid(value_id(vals, a, v["grid"], mk, members[j][3]), vcid):
+                    raise ValueError("reconstructed source identity mismatch")
+                enc = await asyncio.to_thread(codec.encode, li["docs"], vals)
+                if not codec.same_vcid(value_id(codec.decode(li["docs"], enc), a, v["grid"], mk, members[j][3]), vcid):
+                    raise ValueError("stored encoding changes reconstructed identity")
+            except (ValueError, TypeError, OverflowError):
                 self._rfail("vcid_mismatch")
                 continue
-            enc = await asyncio.to_thread(codec.encode, li["docs"], vals)
             cid = cid_of(enc)
             path = self._cas(cid)
             if not path.exists():
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(enc)
-            mk = f"{f_['base']}@{lay}/" + ".".join(map(str, coords[j]))
             v["best"].setdefault(mk, {"vcid": vcid, "nv": members[j][3], "src": []})
             stored = self._index(grid, v, mk, cid, len(enc))
             self.pd_stats["restored"] = self.pd_stats.get("restored", 0) + 1
@@ -2065,6 +2130,8 @@ class Node:
                                               enumerate(zip(_meta(li["docs"])["shape"], li["chunks"])) if i != T])]
         pname = par.parity_name(var, k, d, row, o, kind="v")
         c = self.caches.setdefault(grid, {"grid": v["grid"], "gdocs": v["gdocs"], "arrays": {}, "chunks": {}})
+        c["arrays"].setdefault(var, {kk: a[kk] for kk in ("vfid", "dims", "taxis", "fmt", "attrs", "packing") if kk in a}
+                                  | {"layouts": {lay: li}})
         c["arrays"].setdefault(pname, {"vfid": "vparity:" + a["vfid"], "dims": a["dims"], "taxis": T, "fmt": a["fmt"],
                                        "attrs": {}, "layouts": {}})["layouts"].setdefault(
             lay, {"fid": "vparity", "docs": {}, "chunks": li["chunks"], "phase": ph})
@@ -2085,8 +2152,10 @@ class Node:
                         members.append(("", "", 0, None, None))
                         continue
                     nv = min(ct, v["gmax"] - (cc * ct + ph))
+                    mk = f"{var}@{lay}/" + ".".join(map(str, co))
                     b = np.ascontiguousarray(vals).astype(vals.dtype.newbyteorder("<"), copy=False).tobytes()
-                    members.append(("", codec.vcid_of(vals, T), nv, b, codec.lattice_codes(vals, T)))
+                    members.append((cid_of(b), value_id(vals, a, v["grid"], mk, nv), nv, b,
+                                    value_codes(vals, a, v["grid"], mk, nv)))
                 if all(m[3] is None for m in members):
                     continue
                 # code over lattice codes when they reproduce every member exactly: identical for every decoder of
@@ -2152,13 +2221,14 @@ class Node:
             if not pth or pth in ("!", "retry"):
                 return None
             _, l2, _ = split_key(k)
-            vals = await asyncio.to_thread(self.decoded.get, k, a["layouts"][l2]["docs"], lambda p_=pth: Path(p_).read_bytes())
+            vals = await asyncio.to_thread(self.decoded.get, self.local[grid]["chunks"][k][0], a["layouts"][l2]["docs"], lambda p_=pth: Path(p_).read_bytes())
             out[dst] = vals[src]
         return out
 
     async def a_parity(self, req):
         d = await req.json()
         return web.json_response(await self.make_parity(d["grid"], d["var"], int(d.get("k", 8)), bool(d.get("drop")),
+                                                        layout=d.get("layout"),
                                                         d=int(d["d"]) if d.get("d") else None,
                                                         row=int(d["row"]) if d.get("row") is not None else None,
                                                         kind=d.get("kind", "v")))
@@ -2228,7 +2298,8 @@ class Node:
         if L and var in L["arrays"]:
             mans[self.ident.id] = {"node": self.ident.id, "grid": L["grid"], "gdocs": L["gdocs"],
                                    "arrays": {var: L["arrays"][var]},
-                                   "chunks": {k: e for k, e in L["chunks"].items() if split_key(k)[0] == var}}
+                                   "chunks": {k: e for k, e in L["chunks"].items() if split_key(k)[0] == var},
+                                   "_seeded_keys": L.get("_seeded_keys", ())}
         if not mans:
             return None
         v = await asyncio.to_thread(merge_view, grid, mans, self.ident.id, self.trusted)
@@ -2269,7 +2340,8 @@ class Node:
                 if rv and var in rv["arrays"]:
                     lat = _lattice(rv["arrays"][var], t, reg.get("step"), g_lo)
                     keys, info = await self._cover(rv, var, g_lo, g_hi, reg.get("isel") or None, cover, lat)
-                    return keys, dict(info, view="capt-range", _view=rv)
+                    info.setdefault("_view", rv)
+                    return keys, dict(info, view="capt-range")
         v = await self.view(grid)
         t = v["grid"]["time"]
         if var not in v["arrays"]:
@@ -2285,21 +2357,24 @@ class Node:
                 _, lay, co = split_key(k)
                 cs = a["layouts"][lay]["chunks"]
                 return all(co[i] * cs[i] < hi and (co[i] + 1) * cs[i] > lo for i, (lo, hi) in box.items())
-            return [k for k in v["best"] if split_key(k)[0] == var and inside(k)], {"cover": "all"}
+            return [k for k in v["best"] if split_key(k)[0] == var and inside(k)], {"cover": "all", "lattice": [1, 0],
+                "request": {"var": var, "g_lo": 0, "g_hi": 1, "isel": isel}}
         sec = lambda x, unit="s": int(np.datetime64(x, unit).astype("datetime64[s]").astype("int64"))
-        g_lo, g_hi = v["gmin"], v["gmax"]
+        extent = local_extent({"arrays": v["arrays"], "chunks": {
+            k: [None, None, None, b["nv"]] for k, b in v["best"].items() if split_key(k)[0] == var}})
+        g_lo, g_hi = extent or (v["gmin"], v["gmax"])
         if reg.get("t0"):
-            g_lo = max(g_lo, -(-(sec(reg["t0"]) - t["rphase"]) // t["dt"]))
+            g_lo = -(-(sec(reg["t0"]) - t["rphase"]) // t["dt"])
         if reg.get("t1"):
             t1 = str(reg["t1"]).strip()
             end = sec(t1, "D") + 86400 if len(t1) == 10 else sec(t1) + 1
-            g_hi = min(g_hi, -(-(end - t["rphase"]) // t["dt"]))
+            g_hi = -(-(end - t["rphase"]) // t["dt"])
         lat = _lattice(v["arrays"][var], t, reg.get("step"), g_lo if reg.get("t0") else None)
         return await self._cover(v, var, g_lo, g_hi, isel, cover, lat)
 
-    async def _cover(self, v, var, g_lo, g_hi, isel, cover, lattice=(1, 0)):
+    async def _cover(self, v, var, g_lo, g_hi, isel, cover, lattice=(1, 0), *, refresh_missing=True):
         keys, info = await self._cover_core(v, var, g_lo, g_hi, isel, cover, lattice)
-        info = dict(info, lattice=list(lattice))
+        info = dict(info, lattice=list(lattice), request={"var": var, "g_lo": g_lo, "g_hi": g_hi, "isel": isel})
         # chunks nobody holds any more but a stripe parity can restore (ZTP-EC) join the request as-is
         a = v["arrays"][var]
         extra = []
@@ -2308,13 +2383,27 @@ class Node:
                 continue
             _, lay, co = split_key(k)
             li = a["layouts"][lay]
+            if not jlpsmod.complete_for(li, lattice):
+                continue
+            box = {a["dims"].index(dim): bounds for dim, bounds in (isel or {}).items() if dim in a["dims"]}
+            if any(co[i] * li["chunks"][i] >= hi or (co[i] + 1) * li["chunks"][i] <= lo
+                   for i, (lo, hi) in box.items() if i != a["taxis"]):
+                continue
             g0, g1 = chunk_extent(li, a["taxis"], co[a["taxis"]])
             if g0 < g_hi and g1 > g_lo:
                 extra.append(k)
         if extra:
             info = dict(info, restorable=sum(1 for k in extra if v["best"][k].get("restore")),
                         contested=sum(1 for k in extra if v["best"][k].get("contested")))
-        return keys + extra, info
+        keys += extra
+        coverage = jlpsmod.region_coverage(var, v["arrays"], v["best"], keys, g_lo, g_hi, isel, lattice)
+        if coverage["missing_samples"] and refresh_missing:
+            # A slow manifest may have arrived after the first bounded catalogue round.
+            # Refresh once; real holes remain partial rather than causing an unbounded retry.
+            fresh = await self.view(v["grid_id"], refresh=True)
+            keys, info = await self._cover(fresh, var, g_lo, g_hi, isel, cover, lattice, refresh_missing=False)
+            info.update(_view=fresh, catalogue_refresh=1)
+        return keys, info
 
     async def _cover_core(self, v, var, g_lo, g_hi, isel, cover, lattice=(1, 0)):
         me = self.ident.id
@@ -2340,14 +2429,15 @@ class Node:
                 continue
             try:
                 theirs = await asyncio.to_thread(codec.decode, v["pinfo"][rp][name]["layouts"][lay]["docs"], raw)
+                if not codec.same_vcid(value_id(theirs, a, v.get("grid", {}), k, rv["nv"]), rv["vcid"]):
+                    continue  # not even the rival's own value: ask another rival holder
+                if "packing" in a:
+                    prefix = mine.copy()
+                    prefix[np.isnan(theirs)] = np.nan  # rival NaNs are unknown cells
+                    return codec.same_vcid(value_id(prefix, a, v["grid"], k, rv["nv"]), rv["vcid"])
+                return codec.agrees_with_prefix(mine, theirs, a["taxis"], rv["nv"])
             except Exception:
                 continue
-            if not codec.same_vcid(codec.vcid_of(theirs, a["taxis"]), rv["vcid"]):
-                continue  # not even the rival's own value: ask another rival holder
-            m = np.isfinite(theirs) if theirs.dtype.kind == "f" else np.ones(theirs.shape, bool)
-            parts = rv["vcid"].split(":")
-            tol = float(parts[3]) / 2 if len(parts) == 4 else 0.0
-            return bool(np.all(np.abs(mine[m].astype("f8") - theirs[m].astype("f8")) <= tol))
         return False  # the rival could not be checked: completeness alone does not decide
 
     def _verify_store(self, v: dict, k: str, p: str, data: bytes) -> tuple[str, int] | None:
@@ -2355,36 +2445,26 @@ class Node:
         name, lay, _ = split_key(k)
         b = v["best"][k]
         cid = next(c for q, c, _ in b["src"] if q == p)
-        va, pa = v["arrays"][name]["layouts"][lay], v["pinfo"][p][name]["layouts"][lay]
-        if data[:4] == codec.XT1:  # transport-encoded values: verify by vcid, store in our own encoding
-            try:
-                vals = codec.xt1_decode(data)
-            except Exception:
-                return None
-            if not codec.same_vcid(codec.vcid_of(vals, v["arrays"][name]["taxis"]), b["vcid"]):
-                return None
-            data = codec.encode(va["docs"], vals)
-            cid = cid_of(data)
-            path = self._cas(cid)
-            if not path.exists():
-                path.parent.mkdir(parents=True, exist_ok=True)
-                tmp = path.with_name(path.name + f".{uuid.uuid4().hex[:6]}")
-                tmp.write_bytes(data)
-                tmp.replace(path)
-            return cid, len(data)
-        if cid_of(data) != cid:
+        a = v["arrays"][name]
+        va, pa = a["layouts"][lay], v["pinfo"][p][name]["layouts"][lay]
+        transport = data[:4] == codec.XT1
+        if not transport and cid_of(data) != cid:
             return None
-        # always check the value-level id chosen by holder majority: a single peer cannot poison the swarm
-        # by advertising its own (cid, vcid) for bytes that decode to other values
         try:
-            vals = codec.decode(pa["docs"], data)
+            if transport:
+                vals = codec.xt1_decode(data)
+            else:
+                vals = codec.decode(pa["docs"], data)
+            if not codec.same_vcid(value_id(vals, a, v["grid"], k, b["nv"]), b["vcid"]):
+                return None
+            if transport or pa["fid"] != va["fid"]:
+                data = codec.encode(va["docs"], vals)
+                # Casting dtype or a lossy codec can cross a source cell. Validate what we actually store.
+                if not codec.same_vcid(value_id(codec.decode(va["docs"], data), a, v["grid"], k, b["nv"]), b["vcid"]):
+                    return None
+                cid = cid_of(data)
         except Exception:
             return None
-        if not codec.same_vcid(codec.vcid_of(vals, v["arrays"][name]["taxis"]), b["vcid"]):
-            return None
-        if pa["fid"] != va["fid"]:
-            data = codec.encode(va["docs"], vals)
-            cid = cid_of(data)
         path = self._cas(cid)
         if not path.exists():
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -2399,7 +2479,8 @@ class Node:
         b, va = v["best"][k], v["arrays"][name]
         path = self._cas(cid)
         c = self.caches.setdefault(grid, {"grid": v["grid"], "gdocs": v["gdocs"], "arrays": {}, "chunks": {}})
-        ca = c["arrays"].setdefault(name, {kk: va[kk] for kk in ("vfid", "dims", "taxis", "fmt", "attrs")} | {"layouts": {}})
+        meta = {kk: va[kk] for kk in ("vfid", "dims", "taxis", "fmt", "attrs", "packing") if kk in va}
+        ca = c["arrays"].setdefault(name, meta | {"layouts": {}})
         li = {kk: va["layouts"][lay][kk] for kk in ("fid", "docs", "chunks", "phase", "stride", "soff")
               if kk in va["layouts"][lay]}
         if ca["vfid"] != va["vfid"] or ca["layouts"].setdefault(lay, li)["fid"] != li["fid"]:
@@ -2412,7 +2493,7 @@ class Node:
             if same_var:
                 ca["layouts"][lay] = li
             else:
-                ca = c["arrays"][name] = {kk: va[kk] for kk in ("vfid", "dims", "taxis", "fmt", "attrs")} | {"layouts": {lay: li}}
+                ca = c["arrays"][name] = meta | {"layouts": {lay: li}}
             c["chunks"][k] = [cid, b["vcid"], size, b["nv"]]
             self.used[(grid, k)] = time.time()
             self._rebuild()
@@ -2448,16 +2529,19 @@ class Node:
             "bw": {p: round(b) for p, b in self.bw.items()}})
 
     async def a_seed(self, req):
-        res = await self.add_seed((await req.json())["path"])
+        args = await req.json()
+        res = await self.add_seed(args["path"], packing=args.get("packing"))
         sgs = res["subgrids"]
         return web.json_response({"grids": sorted(sgs), "chunks": sum(len(g["chunks"]) for g in sgs.values()),
                                   "arrays": sorted({n for g in sgs.values() for n in g["arrays"]}),
+                                  "packing": {n: a["packing"] for g in sgs.values() for n, a in g["arrays"].items() if "packing" in a},
                                   "link": "zt://" + "+".join(sorted(sgs))})
 
     async def a_unseed(self, req):
         p = str(Path((await req.json())["path"]).resolve())
         for k in [k for k in self.seeds if k[0] == p]:
             del self.seeds[k]
+        self.seed_packing.pop(p, None)
         self._rebuild()
         self._save_state()
         return web.json_response({"ok": True})
@@ -2540,10 +2624,13 @@ class Node:
                 v = rview or self.views.get(d["grid"])
                 probed = await self._probe_unknown(d["grid"], v, d["keys"]) if v else 0
                 if probed:
+                    catalogue_refresh = info.get("catalogue_refresh", 0)
                     d["keys"], info = await self.region_keys(d["grid"], d["region"], "jlps")
                     rview = info.pop("_view", None)
                     info["probed"] = probed
+                    info["catalogue_refresh"] = catalogue_refresh + info.get("catalogue_refresh", 0)
         jid = uuid.uuid4().hex[:8]
+        d["keys"] = list(dict.fromkeys(d["keys"]))
         job = {"id": jid, "grid": d["grid"], "label": d.get("label", ""), "state": "running", "total": 0,
                "done": 0, "bytes": 0, "missing": 0, "per_peer": {}, "t0": time.time(), "t1": None,
                "order": d.get("order", "optimal"), "done_keys": [], "cover": info}
@@ -2556,18 +2643,37 @@ class Node:
         """(Re)start a job: keys already present locally count as done, the rest is fetched."""
         grid, (keys, rview) = job["grid"], self._job_keys[job["id"]]
         L = self.local.get(grid, {"files": {}})
-        have = [k for k in keys if k in L["files"]]
+        v = rview or self.views.get(grid)
+        have = [k for k in keys if k in L["files"] and os.path.exists(L["files"][k])
+                and (v is None or self._fits(L, v, k))]
         job.update(state="running", t1=None, cancel=False, pause=False, total=len(have), done=len(have),
                    missing=0, failed=0, done_keys=list(have))
 
         async def run():
             try:
-                await self.fetch(grid, [k for k in keys if k not in L["files"]], job, view=rview)
-                job["state"] = ("paused" if job.get("pause") else "cancelled") if job.get("cancel") \
-                    else "partial" if job.get("failed") else "done"
+                results = await self.fetch(grid, [k for k in keys if k not in have], job, view=rview)
+                job["done_keys"] = list(dict.fromkeys(job["done_keys"] + have + [k for k, path in results.items()
+                                                            if path and path not in ("!", "retry")]))
+                job["total"], job["done"] = len(keys), len(job["done_keys"])
+                job["missing"] = job["total"] - job["done"]
+                state = ("paused" if job.get("pause") else "cancelled") if job.get("cancel") \
+                    else "partial" if job.get("failed") or job.get("missing") else "done"
+                request = job["cover"].get("request")
+                if request and not job.get("cancel"):
+                    v = rview or await self.view(grid)
+                    # Include reconstructed keys and their recorded valid lengths.
+                    keys_best = dict(v["best"])
+                    for k, ent in self.local.get(grid, {}).get("chunks", {}).items():
+                        keys_best.setdefault(k, {"src": [], "nv": ent[3]})
+                    job["coverage"] = jlpsmod.region_coverage(request["var"], v["arrays"], keys_best,
+                        job["done_keys"], request["g_lo"], request["g_hi"], request["isel"],
+                        tuple(job["cover"]["lattice"]))
+                    if job["coverage"]["missing_samples"]:
+                        state = "partial"
             except Exception as e:
-                job["state"] = f"error: {e}"
-            job["t1"] = time.time()
+                state = f"error: {e}"
+            # Publish the terminal state only after its coverage and completion time are ready.
+            job.update(t1=time.time(), state=state)
             self._flush()
             await self.announce(grid)
         asyncio.create_task(run())
@@ -2608,7 +2714,8 @@ class Node:
                 region = {"var": var, "t0": iso(end - sub["last_s"] + t["dt"]), "t1": iso(end),
                           "isel": sub.get("isel"), "step": sub.get("step")}
                 keys, _ = await self.region_keys(g, region, "jlps")
-                if all(k in self.local.get(g, {"files": {}})["files"] for k in keys):
+                L = self.local.get(g, {"files": {}})
+                if all(k in L["files"] and os.path.exists(L["files"][k]) and self._fits(L, v, k) for k in keys):
                     continue
                 jobs.append(await self.start_job({"grid": g, "keys": keys, "label": f"follow {var} {sub['id']}"}))
         sub["jobs"] = jobs
@@ -2746,13 +2853,13 @@ def _dtype_fill_docs(docs: dict):
 def _lattice(a: dict, t: dict, step_s=None, g_ref: int | None = None) -> tuple[int, int]:
     """Request lattice (S, O) in grid quanta: `step_s` seconds if given (aligned to the requested start or to
     the replicas), else the finest stride any layout of the variable offers."""
-    lays = list(a["layouts"].values())
+    lays = list(available_layouts(a).values())
     if step_s:
         S = int(float(step_s)) // t["dt"]
         if S < 1 or int(float(step_s)) % t["dt"]:
             raise ValueError(f"step {step_s}s is not a multiple of the grid quantum {t['dt']}s")
         offs = [li.get("soff", 0) % S for li in lays if S % li.get("stride", 1) == 0]
-        return S, (g_ref % S if g_ref is not None and not offs else (offs[0] if offs else 0))
+        return S, (g_ref % S if g_ref is not None else (min(offs) if offs else 0))
     S, O = min(natural_stride(li, a["taxis"]) for li in lays)
     return S, O % S
 
@@ -2824,6 +2931,7 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
     """Union view over all replicas and layouts: majority value-family per variable, per layout the
     preferred encoding (own > majority), best replica per chunk, per-layout time coverage & sizes."""
     first = mans.get(me) or next(iter(mans.values()))
+    own_seeds = mans.get(me, {}).get("_seeded_keys", ())
     # view format: our own replica's if we have one, else the majority over all replicas' arrays (ties -> v3)
     fmts = [a["fmt"] for m in mans.values() for a in m["arrays"].values()]
     own = [a["fmt"] for a in mans[me]["arrays"].values()] if me in mans else []
@@ -2831,10 +2939,35 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
     if not own:
         first = next((m for m in mans.values() if any(a["fmt"] == fmt for a in m["arrays"].values())), first)
     arrays, pinfo = {}, {p: m["arrays"] for p, m in mans.items()}
+    eligible = {}
     for n in sorted({n for m in mans.values() for n in m["arrays"] if not par.is_parity(n)}):
-        vf = [m["arrays"][n]["vfid"] for m in mans.values() if n in m["arrays"]]
-        vfid = max(set(vf), key=vf.count)
-        cands = [(p, m["arrays"][n]) for p, m in mans.items() if n in m["arrays"] and m["arrays"][n]["vfid"] == vfid]
+        options, authorities = [], set()
+        for p, m in mans.items():
+            a = m["arrays"].get(n)
+            if a is None:
+                continue
+            local_seed = p == me and any(split_key(k)[0] == n for k in own_seeds)
+            if "packing" in a:
+                try:
+                    contract = packing_contract(a["packing"], grid, n, a.get("attrs", {}).get("units", ""))
+                    anchor = h160(bytes.fromhex(contract["pk"]))
+                    shape_nt = [m["grid"]["dims"][dim] for i, dim in enumerate(a["dims"]) if i != a["taxis"]]
+                    if (anchor not in trusted and anchor != me) or a["vfid"] != value_family(n, a["dims"], "", shape_nt, contract):
+                        continue  # neither peer majority nor a changed dtype can replace a trusted source contract
+                except (KeyError, TypeError, ValueError, OverflowError):
+                    continue
+                authorities.add(a["vfid"])
+            elif p in trusted or local_seed:
+                authorities.add(a["vfid"])
+            options.append((p, a))
+        if not options or len(authorities) > 1:
+            continue  # conflicting trusted field definitions require an explicit authority choice
+        vf = [a["vfid"] for _, a in options]
+        vfid = next(iter(authorities)) if authorities else max(sorted(set(vf)), key=vf.count)
+        cands = [(p, a) for p, a in options if a["vfid"] == vfid]
+        if any("packing" in a for _, a in cands):
+            cands = [(p, a) for p, a in cands if "packing" in a]
+        eligible[n] = {p for p, _ in cands}
         base = next((a for p, a in cands if p == me), cands[0][1])
         lays = {}
         for lay in sorted({lay for _, a in cands for lay in a["layouts"]}):
@@ -2847,14 +2980,20 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
             lays[lay] = dict(li, n=0, bytes=0, cov=[])
         arrays[n] = {k: base[k] for k in ("vfid", "dims", "taxis", "fmt")} | {"attrs": base.get("attrs", {}),
                                                                              "layouts": lays}
+        if "packing" in base:
+            arrays[n]["packing"] = base["packing"]
     cand, parsed = {}, {}
     pcoll: dict[str, dict] = {}
     for p, m in mans.items():
-        ok = {n: a["vfid"] == arrays[n]["vfid"] for n, a in m["arrays"].items() if n in arrays}
+        ok = {n: p in eligible[n] for n in m["arrays"] if n in arrays}
         for k, e in m["chunks"].items():
             cid, vcid, size, nv = e[:4]
             if par.is_parity(k.partition("@")[0]):  # erasure-stripe parity entry: [cid, "", size, 0, members]
-                if len(e) > 4 and isinstance(e[4], list):
+                base = par.base_of(k.partition("@")[0])[0]
+                if base in arrays and "packing" in arrays[base] and not ok.get(base):
+                    continue  # a parity row also belongs to the authenticated source family
+                if len(e) > 4 and isinstance(e[4], list) and all(
+                        mem[2] < 0 or codec.same_vcid(mem[1], mem[1]) for mem in e[4]):
                     pc = pcoll.setdefault(k, {"holders": [], "members": e[4]})
                     pc["holders"].append((p, cid, size))
                 continue
@@ -2862,7 +3001,7 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
             if sk is None:
                 sk = parsed[k] = split_key(k)
             n, lay, _ = sk
-            if ok.get(n) and lay in arrays[n]["layouts"]:
+            if ok.get(n) and lay in arrays[n]["layouts"] and codec.same_vcid(vcid, vcid):
                 cand.setdefault(k, []).append((nv, vcid, cid, size, p))
     best = {}
     for k, cs in cand.items():
@@ -2872,12 +3011,14 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
             continue
         # value identity by holder majority (then more valid steps): one lying peer cannot override honest ones.
         # ponytail: Sybil peers can still outvote; add trusted publisher keys when that matters
-        score, rep = {}, {}
-        for nv, vcid, _, _, p in cs:
+        score, rep, groups = {}, {}, {}
+        for nv, vcid, _, _, p in sorted(cs, key=lambda c: (c[1], c[4])):
             # lattice ids of copies decoded by different software are equivalent, not equal: one group per value
-            g = rep.setdefault(vcid, next((r for r in score if codec.same_vcid(r, vcid)), vcid))
+            g = rep.setdefault(vcid, next((r for r in score if all(codec.same_vcid(x, vcid)
+                                                   for x in groups[r])), vcid))
+            groups.setdefault(g, set()).add(vcid)
             t, h, n = score.get(g, (0, 0, 0))
-            score[g] = (t + (p in trusted or p == me), h + 1, max(n, nv))
+            score[g] = (t + (p in trusted or p == me and k in own_seeds), h + 1, max(n, nv))
         ranked = sorted(score, key=lambda x: score[x], reverse=True)
         vc = ranked[0]
         if len(ranked) > 1 and score[ranked[1]] == score[vc]:
@@ -2891,7 +3032,8 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
             # decided by completeness alone (growing data: the newer copy has more valid steps). A liar could pad
             # missing cells to win, so the receiver also fetches the rival and accepts only a superset of it
             rv = ranked[1]
-            best[k]["rival"] = {"vcid": rv, "src": [(c[4], c[2], c[3]) for c in cs if rep[c[1]] == rv]}
+            best[k]["rival"] = {"vcid": rv, "nv": score[rv][2],
+                                "src": [(c[4], c[2], c[3]) for c in cs if rep[c[1]] == rv]}
     # chunks whose holders are all gone but whose stripe survives (RS rows from different volunteers +
     # surviving members) are restorable (ZTP-EC). Rows of one stripe form a family.
     fams: dict[str, dict] = {}
@@ -2925,16 +3067,23 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
                 parsed[dk] = (f_["base"], f_["lay"], dco)
             elif best[dk].get("restore") is not None:
                 best[dk]["restore"].append({"fam": fk, "i": i})
-    tcs = {}
+    tcs, unavailable = {}, set()
     for k, b in best.items():
         n, lay, co = parsed[k]
         li = arrays[n]["layouts"][lay]
+        T = arrays[n]["taxis"]
+        if not b["src"] and not b.get("restore"):
+            if T is not None:
+                unavailable.add((n, lay, co[T]))
+            continue
         li["n"] += 1
         li["bytes"] += b["src"][0][2] if b["src"] else 0
-        if arrays[n]["taxis"] is not None:
-            tcs.setdefault((n, lay), set()).add(co[arrays[n]["taxis"]])
+        if T is not None:
+            tcs.setdefault((n, lay), set()).add(co[T])
     for (n, lay), cs in tcs.items():
-        arrays[n]["layouts"][lay]["cov"] = _ranges(sorted(cs))
+        # ponytail: time-based coverage skips a whole time chunk with a contested spatial tile; tile-level
+        # coverage is needed if combining incomplete spatial layouts becomes a requirement.
+        arrays[n]["layouts"][lay]["cov"] = _ranges(sorted(c for c in cs if (n, lay, c) not in unavailable))
     ext = local_extent({"arrays": arrays, "chunks": {k: [None, None, None, b["nv"]] for k, b in best.items()}})
     return {"grid_id": grid, "grid": first["grid"], "gdocs": first["gdocs"], "fmt": fmt, "arrays": arrays,
             "pinfo": pinfo, "best": best, "gmin": ext[0] if ext else None, "gmax": ext[1] if ext else None,
