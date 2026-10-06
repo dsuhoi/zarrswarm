@@ -13,7 +13,7 @@ from textual.widgets import DataTable, Input, SelectionList, Static, TabbedConte
 from zarrswarm.cli import _config
 from zarrswarm.node import Node
 from zarrswarm.store import http
-from zarrswarm.tui import AddDialog, SearchDialog, SeedDialog, SettingsScreen, ZtTui
+from zarrswarm.tui import AddDialog, SearchDialog, SeedDialog, SettingsScreen, ZsTui
 
 
 def port():
@@ -54,7 +54,7 @@ def test_tui_torrent_flow(tmp_path, monkeypatch):
     out = str(tmp_path / "out.nc")
 
     async def drive():
-        app = ZtTui(f"http://127.0.0.1:{seeder.ctl_port}", home=tmp_path / "h_s")
+        app = ZsTui(f"http://127.0.0.1:{seeder.ctl_port}", home=tmp_path / "h_s")
         async with app.run_test(size=(160, 50)) as pilot:
             await pilot.press("s")
             dlg = app.screen
@@ -66,7 +66,7 @@ def test_tui_torrent_flow(tmp_path, monkeypatch):
             assert await until(pilot, lambda: app.query_one("#list", DataTable).row_count == 1)
             assert "раздача" in str(app.query_one("#list", DataTable).get_row_at(0)[3])
             grid = app.rows[0]["grid"]
-        app = ZtTui(f"http://127.0.0.1:{client.ctl_port}", home=tmp_path / "h_c")
+        app = ZsTui(f"http://127.0.0.1:{client.ctl_port}", home=tmp_path / "h_c")
         async with app.run_test(size=(160, 50)) as pilot:
             await pilot.press("slash")
             sd = app.screen
@@ -74,7 +74,7 @@ def test_tui_torrent_flow(tmp_path, monkeypatch):
             sd.query_one("#tag", Input).value = "2 metre temperature"
             await pilot.press("enter")
             assert await until(pilot, lambda: sd.query_one("#found", DataTable).row_count >= 1)
-            assert str(sd.query_one("#found", DataTable).get_row_at(0)[0]) == f"zt://{grid}"
+            assert str(sd.query_one("#found", DataTable).get_row_at(0)[0]) == f"zs://{grid}"
             await pilot.press("enter")  # hit -> add dialog with the link, metadata loaded automatically
             assert await until(pilot, lambda: isinstance(app.screen, AddDialog))
             ad = app.screen
@@ -122,7 +122,7 @@ def test_tui_torrent_flow(tmp_path, monkeypatch):
         assert cfg["upload_mbps"] == 12.5 and cfg["cache_max_gb"] == 50 and cfg["seed"] == [{"path": "/data/*.zarr"}]
         assert cfg["tuning"] == {"audit_rate": 0.2}
         # remove on the seeder: unseed after confirmation
-        app = ZtTui(f"http://127.0.0.1:{seeder.ctl_port}", home=tmp_path / "h_s")
+        app = ZsTui(f"http://127.0.0.1:{seeder.ctl_port}", home=tmp_path / "h_s")
         async with app.run_test(size=(160, 50)) as pilot:
             assert await until(pilot, lambda: app.query_one("#list", DataTable).row_count == 1)
             app.query_one("#list", DataTable).focus()

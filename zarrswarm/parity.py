@@ -1,4 +1,4 @@
-"""Erasure stripes for availability (ZTP-EC) with Cauchy Reed-Solomon over GF(256).
+"""Erasure stripes for availability with Cauchy Reed-Solomon over GF(256).
 
 A stripe = k data chunks of one (variable, layout, spatial tile). Each volunteer stores ONE distinct parity row j
 (1/k of the data); any k surviving pieces - data members or parity rows held by different volunteers - rebuild
@@ -16,7 +16,7 @@ import numpy as np
 
 from . import gf
 
-MAGIC = b"ZTR1"
+MAGIC = b"ZSR1"
 
 
 def is_parity(name: str) -> bool:
@@ -67,6 +67,8 @@ def encode(members: list[tuple], row: int = 0, mode: str = "bytes") -> bytes:
 
 
 def _parse(blob: bytes):
+    if blob[:4] not in (MAGIC, b"ZTR1") or len(blob) < 8:
+        raise ValueError("invalid parity header")
     n = int.from_bytes(blob[4:8], "big")
     return json.loads(blob[8:8 + n]), np.frombuffer(blob[8 + n:], dtype=np.uint8)
 

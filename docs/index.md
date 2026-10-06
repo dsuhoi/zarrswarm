@@ -7,7 +7,7 @@ request and verifies received chunks.
 
 For example, one node may store hourly temperature maps, another may store
 chunks suited to time series, and a third may extend the archive into the next
-month. Clients use one `zt://...` link. Coordinates, sample times and value
+month. Clients use one `zs://...` link. Coordinates, sample times and value
 verification determine whether copies can be combined; see
 [network access and trust](network.md).
 
@@ -34,7 +34,7 @@ export. The [user guide](user.md) explains how to test your own data.
 ```python
 import zarrswarm as zs
 
-ds = zs.open_dataset("zt://<grid>", pushdown=False)
+ds = zs.open_dataset("zs://<grid>", pushdown=False)
 sample = ds.isel(time=slice(0, 24)).load()
 ```
 

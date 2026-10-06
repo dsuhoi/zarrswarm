@@ -1,4 +1,4 @@
-"""zt-tui - torrent-client style terminal UI for the local zt node.
+"""zs-tui - torrent-client style terminal UI for the local zs node.
 
 Main list = datasets ("torrents": one row per grid the node seeds, holds or is downloading), filters on the left,
 details below (general / content tree from metadata / piece map / peers / log). Dialogs: add download (pick
@@ -22,6 +22,7 @@ from textual.screen import ModalScreen
 from textual.widgets import (Button, DataTable, Footer, Header, Input, Label, ListItem, ListView, Log, Select,
                              SelectionList, Static, Switch, TabbedContent, TabPane, TextArea, Tree)
 
+from .common import state_home
 from .store import CTL, http, open_views
 
 FILTERS = [("all", "Все"), ("down", "Загружаются"), ("pause", "На паузе"), ("seed", "Раздаются"), ("done", "Скачаны"), ("err", "Ошибки")]
@@ -150,7 +151,7 @@ class AddDialog(ModalScreen):
         with VerticalScroll(id="box"):
             yield Label("[b]Добавить загрузку[/b]")
             with Horizontal(classes="row"):
-                yield Input(self.link0, placeholder="zt://…  или  zt://имя@ключ", id="link")
+                yield Input(self.link0, placeholder="zs://…  или  zs://имя@ключ", id="link")
                 yield Button("Метаданные", id="meta", variant="primary")
             yield Static("введите ссылку и нажмите «Метаданные»", id="info")
             yield SelectionList(id="vars")
@@ -270,7 +271,7 @@ class SeedDialog(ModalScreen):
         lines = []
         for g, sg in r["subgrids"].items():
             nb = sum(c[2] for c in sg["chunks"].values())
-            lines.append(f"[b]zt://{g[:16]}…[/b]  {' × '.join(f'{k}={v}' for k, v in sg['grid']['dims'].items())}"
+            lines.append(f"[b]zs://{g[:16]}…[/b]  {' × '.join(f'{k}={v}' for k, v in sg['grid']['dims'].items())}"
                          f"  {len(sg['chunks'])} чанков, {_mb(nb)}")
             for n, a in sorted(sg["arrays"].items()):
                 if n not in sg["grid"]["dims"]:
@@ -322,7 +323,7 @@ class SearchDialog(ModalScreen):
             t.clear()
             for h in hits:
                 tr = f"{_ts(h['tr'][0])[:10]} … {_ts(h['tr'][1])[:10]}" if h.get("tr") else "—"
-                t.add_row(f"zt://{h['grid']}", str(h["seeders"]), ",".join(h["vars"]), tr,
+                t.add_row(f"zs://{h['grid']}", str(h["seeders"]), ",".join(h["vars"]), tr,
                           " × ".join(f"{k}={v}" for k, v in (h.get("dims") or {}).items()))
             if hits:
                 t.focus()
@@ -334,7 +335,7 @@ class SearchDialog(ModalScreen):
 
 
 class SettingsScreen(ModalScreen):
-    """Edits ~/.zt/config.toml (the node reads it at start: restart the node to apply)."""
+    """Edits ~/.zs/config.toml (the node reads it at start: restart the node to apply)."""
     DEFAULT_CSS = """
     SettingsScreen { align: center middle; }
     #box { width: 100; height: 90%; border: thick $accent; background: $panel; padding: 1 2; }
@@ -441,7 +442,7 @@ class ConfirmDialog(ModalScreen):
 
 
 # ---------------------------------------------------------------------------------------------------- app
-class ZtTui(App):
+class ZsTui(App):
     TITLE = "ZarrSwarm"
     CSS = """
     #top { height: 1fr; }
@@ -458,7 +459,7 @@ class ZtTui(App):
     def __init__(self, ctl: str, home: str | Path | None = None):
         super().__init__()
         self.ctl = ctl
-        self.home = Path(home or os.environ.get("ZT_HOME", "~/.zt")).expanduser()
+        self.home = state_home(home)
         self.status: dict = {}
         self.views: dict[str, dict] = {}   # grid -> /api/view summary (refreshed in the background)
         self._view_ts: dict[str, float] = {}
@@ -553,7 +554,7 @@ class ZtTui(App):
             size = _mb(r["size"]) + (f" · {r['chunks']}/{r['swarm']} ч." if r["swarm"] else f" · {r['chunks']} ч.")
             t.add_row(Text(r["name"], style="bold"), size, _bar(r["progress"]), Text(label, style=color),
                       f"{_mb(r['down'])}/с" if r["down"] else "", str(r["peers"] or ""), _eta(r["eta"]),
-                      f"zt://{r['grid'][:14]}…", key=r["grid"])
+                      f"zs://{r['grid'][:14]}…", key=r["grid"])
         if keep is not None:
             try:
                 t.move_cursor(row=t.get_row_index(keep))
@@ -585,7 +586,7 @@ class ZtTui(App):
             return
         v = self.views.get(r["grid"]) or {}
         t = (v.get("grid") or {}).get("time")
-        lines = [f"ссылка      zt://{r['grid']}",
+        lines = [f"ссылка      zs://{r['grid']}",
                  f"переменные  {', '.join(r['vars']) or '—'}",
                  f"сетка       {' × '.join(f'{k}={n}' for k, n in ((v.get('grid') or {}).get('dims') or {}).items()) or '—'}"]
         if t and v.get("gmin") is not None:
@@ -660,8 +661,8 @@ class ZtTui(App):
         from . import open_dataset
         self._content_for = grid
         try:
-            view = open_views(f"zt://{grid}", self.ctl)[0][1]
-            ds = open_dataset(f"zt://{grid}", ctl=self.ctl)
+            view = open_views(f"zs://{grid}", self.ctl)[0][1]
+            ds = open_dataset(f"zs://{grid}", ctl=self.ctl)
         except Exception as e:
             self._content_for = None
             self.app.call_from_thread(self.log_line, f"метаданные {grid[:12]}: {e}")
@@ -682,7 +683,7 @@ class ZtTui(App):
         def show():
             tree = self.query_one("#content", Tree)
             tree.clear()
-            tree.root.set_label(Text(f"zt://{grid[:16]}…  ({ds.nbytes / 1e6:,.1f} МБ в распакованном виде)", "bold"))
+            tree.root.set_label(Text(f"zs://{grid[:16]}…  ({ds.nbytes / 1e6:,.1f} МБ в распакованном виде)", "bold"))
             d = tree.root.add("Измерения", expand=True)
             for k, n in ds.sizes.items():
                 d.add_leaf(f"{k}: {n}")
@@ -702,7 +703,7 @@ class ZtTui(App):
                     node.add_leaf(f"раскладка {lay}: чанк {tuple(li['chunks'])}, чанков {li.get('n', '?')}")
             at = tree.root.add("Атрибуты", expand=False)
             for ak, av in ds.attrs.items():
-                if not ak.startswith("zt_"):
+                if not ak.startswith(("zs_", "zt_")):
                     at.add_leaf(f"{ak}: {av}")
             tree.root.expand()
         self.app.call_from_thread(show)
@@ -807,9 +808,12 @@ class ZtTui(App):
         self.call_from_thread(self.log_line, f"удалено: {r['name']}")
 
 
+ZtTui = ZsTui  # compatibility for existing callers
+
+
 def main():
     ctl = sys.argv[1] if len(sys.argv) > 1 else CTL
-    ZtTui(ctl).run()
+    ZsTui(ctl).run()
 
 
 if __name__ == "__main__":

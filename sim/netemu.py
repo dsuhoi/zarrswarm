@@ -1,4 +1,4 @@
-"""Kernel-level network emulation of a swarm (Mininet-style, rootless): every peer is a real `zt node` process in its
+"""Kernel-level network emulation of a swarm (Mininet-style, rootless): every peer is a real `zs node` process in its
 own network namespace, attached by a veth pair to a router namespace; its access link is shaped by the kernel
 (`tc netem` one-way delay and loss, `tc tbf` rate) in both directions, and TCP is the kernel's own. Same interface as
 procswarm.ProcSwarm, so sim/e_hetero.py runs unchanged on it (--emu).
@@ -21,14 +21,15 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from zarrswarm.common import env
 from zarrswarm.store import http  # noqa: E402
 
-IN_ROUTER = "ZT_EMU_ROUTER"
+IN_ROUTER = "ZS_EMU_ROUTER"
 
 
 def ensure_router():
     """Re-exec the current program inside a fresh user+net namespace (root there), which acts as the router."""
-    if os.environ.get(IN_ROUTER):
+    if env(IN_ROUTER):
         return
     os.environ[IN_ROUTER] = "1"
     os.execvp("unshare", ["unshare", "-rn", "--kill-child", sys.executable] + sys.argv)
@@ -92,12 +93,13 @@ class EmuSwarm:
             args += ["--relay", kw["relay"]]
         if kw.get("relay_server"):
             args += ["--relay-server"]
-        env = dict(os.environ, **self.env, ZT_CTL_HOST=ip, ZT_EMU_STRATEGY=kw.get("strategy", self.strategy),
+        env = dict(os.environ, **self.env, ZS_CTL_HOST=ip, ZS_EMU_STRATEGY=kw.get("strategy", self.strategy),
                    PYTHONPATH=os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[1]),
                                                             os.environ.get("PYTHONPATH")])))
-        env.pop("ZT_EMU_LATENCY_MS", None)  # the kernel delays packets; the node adds nothing
+        env.pop("ZS_EMU_LATENCY_MS", None)  # the kernel delays packets; the node adds nothing
+        env.pop("ZT_EMU_LATENCY_MS", None)  # legacy setting must not add a second delay either
         if kw.get("rate"):  # announce the access-link rate like a station would; the kernel enforces it
-            env["ZT_ANNOUNCE_MBPS"] = str(kw["rate"] / 1e6)
+            env["ZS_ANNOUNCE_MBPS"] = str(kw["rate"] / 1e6)
         log = open(self.root / f"{name}.log", "w")
         # the child waits on stdin until its interface exists, then becomes the node
         proc = subprocess.Popen(["unshare", "-n", "sh", "-c", 'read x; exec "$@"', "sh", *args], env=env,
@@ -154,7 +156,7 @@ class EmuSwarm:
                 self.kill(n)
             except Exception:
                 pass
-        if os.environ.get("ZT_KEEP_LOGS"):
+        if env("ZS_KEEP_LOGS"):
             for h in self.root.glob("h_*"):
                 shutil.rmtree(h, ignore_errors=True)
             return
@@ -165,8 +167,8 @@ def selftest():
     """Two nodes, a 1 MB/s uplink with 50 ms one-way delay: measured RTT and transfer rate must follow the shaping."""
     import xarray as xr
     import pandas as pd
-    import zarrswarm as zt
-    root = Path("~/.cache/zt_netemu_selftest").expanduser()
+    import zarrswarm as zs
+    root = Path("~/.cache/zs_netemu_selftest").expanduser()
     shutil.rmtree(root, ignore_errors=True)
     sw = EmuSwarm(root, 2, 1, 0.0, seed=1, relay_rate=25e6, rate_median=1e6, rate_range=(1e6, 1e6))
     vals = np.random.default_rng(0).random((48, 64, 64)).astype("f4")
@@ -176,7 +178,7 @@ def selftest():
                                                                     consolidated=False)
     link = http(sw.ctl("p00"), "POST", "/api/seed", {"path": str(p)})["link"]
     t = time.time()
-    got = zt.open_dataset(link, ctl=sw.ctl("boot0")).v.values
+    got = zs.open_dataset(link, ctl=sw.ctl("boot0")).v.values
     dt = time.time() - t
     assert np.array_equal(got, vals)
     print(f"netemu ok: {vals.nbytes / 1e6:.2f} MB in {dt:.1f} s through a 1 MB/s shaped uplink")

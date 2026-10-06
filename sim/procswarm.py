@@ -1,6 +1,6 @@
-"""A swarm of real `zt node` processes on one host (one process per peer: no shared GIL, real sockets), with the
+"""A swarm of real `zs node` processes on one host (one process per peer: no shared GIL, real sockets), with the
 same interface as simulate.Swarm (nodes, meta, ctl, _start, kill, stop). Uplinks are token buckets (--upload-mbps),
-latency via ZT_EMU_LATENCY_MS; NAT'd peers attach to a bootstrap relay.
+latency via ZS_EMU_LATENCY_MS; NAT'd peers attach to a bootstrap relay.
 """
 import math
 import os
@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from zarrswarm.common import env
 from zarrswarm.store import http  # noqa: E402
 from simulate import port  # noqa: E402
 
@@ -64,8 +65,8 @@ class ProcSwarm:
             args += ["--relay", kw["relay"]]
         if kw.get("relay_server"):
             args += ["--relay-server"]
-        env = dict(os.environ, **self.env, ZT_EMU_LATENCY_MS=str(kw.get("latency", 0) * 1e3),
-                   ZT_EMU_STRATEGY=kw.get("strategy", self.strategy),
+        env = dict(os.environ, **self.env, ZS_EMU_LATENCY_MS=str(kw.get("latency", 0) * 1e3),
+                   ZS_EMU_STRATEGY=kw.get("strategy", self.strategy),
                    PYTHONPATH=os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[1]),
                                                             os.environ.get("PYTHONPATH")])))
         log = open(self.root / f"{name}.log", "w")
@@ -104,7 +105,7 @@ class ProcSwarm:
                 self.kill(n)
             except Exception:
                 pass
-        if os.environ.get("ZT_KEEP_LOGS"):  # keep node logs (post-mortem), drop the bulky homes
+        if env("ZS_KEEP_LOGS"):  # keep node logs (post-mortem), drop the bulky homes
             for h in self.root.glob("h_*"):
                 shutil.rmtree(h, ignore_errors=True)
             return

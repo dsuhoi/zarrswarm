@@ -185,7 +185,7 @@ Implementation: `zarrswarm/aqp.py`, `zarrswarm/node.py`.
 ```python
 import zarrswarm as zs
 
-ds = zs.open_dataset("zt://<grid>", chunks={}, pushdown=False)
+ds = zs.open_dataset("zs://<grid>", chunks={}, pushdown=False)
 subset = ds["t2m"].isel(time=slice(0, 24))
 zs.prefetch(subset)
 result = subset.mean("time").compute()
@@ -194,7 +194,7 @@ result = subset.mean("time").compute()
 The local node exposes a virtual read-only Zarr store. `chunks={}` enables local Dask; `chunking=` controls
 the virtual Zarr layout. Neither rewrites holder stores. With pushdown disabled, selecting a small slice
 still fetches whole source chunks. `prefetch` identifies chunks through a dry read and may allocate an array
-the size of the selected input. Multi-machine Dask execution and a native `xr.open_dataset("zt://...")`
+the size of the selected input. Multi-machine Dask execution and a native `xr.open_dataset("zs://...")`
 backend have not been validated or registered.
 
 Implementation: `zarrswarm/store.py`. See the [user guide](docs/user.md) for exports and examples.

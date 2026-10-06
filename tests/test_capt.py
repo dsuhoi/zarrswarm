@@ -37,7 +37,7 @@ def test_capt_incremental_manifest_sync(tmp_path):
                           coords={"time": times[:n], "y": [0.0, 1.0], "x": [0.0, 1.0]})
     ds(24 * 399).to_zarr(p, encoding={v: {"chunks": (24, 2, 2)} for v in "abcd"}, consolidated=False)
     link = http(sctl, "POST", "/api/seed", {"path": p})["link"]
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     v1 = http(cctl, "GET", f"/api/view/{grid}?refresh=1")
     full = http(cctl, "GET", "/api/status")["page_fetched"]
     assert v1["nchunks"] >= 4 * 399 and full > 0
@@ -55,11 +55,11 @@ def test_capt_incremental_manifest_sync(tmp_path):
     jid = http(fctl, "POST", "/api/download", {"grid": grid, "region": {"var": "c", "t0": "2020-06-01",
                                                                        "t1": "2020-06-07"}})["job"]
     from zarrswarm.store import wait_job
-    import zarrswarm as zt
+    import zarrswarm as zs
     job = wait_job(fctl, jid)
     assert job["state"] == "done" and job["done"] == 7 and job["cover"].get("view") == "capt-range", job
     assert http(fctl, "GET", "/api/status")["page_fetched"] < 0.3 * full
-    got = zt.open_dataset(link, ctl=fctl).c.sel(time=slice("2020-06-01", "2020-06-07")).values
+    got = zs.open_dataset(link, ctl=fctl).c.sel(time=slice("2020-06-01", "2020-06-07")).values
     assert got.shape == (168, 2, 2) and (got == 2).all()
     for n in (fresh, client, seeder):
         run(n.stop())

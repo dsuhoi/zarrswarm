@@ -14,7 +14,7 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.store import http, open_views, wait_job  # noqa: E402
 
@@ -30,7 +30,7 @@ def port():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rate", type=float, default=2e6)
-    ap.add_argument("--replica", default="~/.cache/zt_real/wb2/wb2_R1_v3.zarr")
+    ap.add_argument("--replica", default="~/.cache/zs_real/wb2/wb2_R1_v3.zarr")
     a = ap.parse_args()
     rep = str(Path(a.replica).expanduser())
     tmp = Path(tempfile.mkdtemp(prefix="ztxt", dir=Path("~/.cache").expanduser()))
@@ -56,7 +56,7 @@ def main():
                 job = wait_job(ctl, jid, every=0.2)
                 wire += job["bytes"]
         dt = time.perf_counter() - t0
-        ds = zt.open_dataset(link, ctl=ctl)
+        ds = zs.open_dataset(link, ctl=ctl)
         exact = all(np.array_equal(ds[v].sel(time=src.time).transpose(*src[v].dims).values, src[v].values)
                     for v in src.data_vars)
         res[mode] = {"s": round(dt, 1), "wire_MB": round(wire / 1e6, 1), "exact": exact,

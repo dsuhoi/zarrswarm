@@ -17,7 +17,7 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.scan import scan  # noqa: E402
 from zarrswarm.store import http  # noqa: E402
@@ -75,7 +75,7 @@ def main():
     l1 = http(ctl(nodes[0]), "POST", "/api/seed", {"path": str(w / "arco_1h.zarr")})["link"]
     l2 = http(ctl(nodes[1]), "POST", "/api/seed", {"path": str(w / "wb2_6h.zarr")})["link"]
     t = time.time()
-    six = zt.open_dataset(l1, ctl=ctl(nodes[2]), step="6h")[VAR].sel(time=slice("2020-01-01", "2020-01-05T18")).load()
+    six = zs.open_dataset(l1, ctl=ctl(nodes[2]), step="6h")[VAR].sel(time=slice("2020-01-01", "2020-01-05T18")).load()
     get_s = time.time() - t
     ref = xr.open_zarr(WB2, consolidated=True, chunks=None)[VAR].sel(time=six.time.values).load()
     exact = bool(np.array_equal(six.values, ref.values))

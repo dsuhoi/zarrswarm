@@ -14,6 +14,8 @@ netcdf = ["h5netcdf", "h5py"]
 [project.scripts]
 zarrswarm = "zarrswarm.cli:main"
 zarrswarm-tui = "zarrswarm.tui:main"
+zs = "zarrswarm.cli:main"
+zs-tui = "zarrswarm.tui:main"
 zt = "zarrswarm.cli:main"
 zt-tui = "zarrswarm.tui:main"
 

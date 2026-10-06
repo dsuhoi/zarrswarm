@@ -15,6 +15,8 @@ import zarr
 from zarr.core.buffer import cpu
 from zarr.storage import MemoryStore
 
+from .common import env
+
 
 def chunk_shape(docs: dict) -> list[int]:
     if "zarr.json" in docs:
@@ -74,7 +76,7 @@ def encode(docs: dict, values: np.ndarray) -> bytes:
     return d[key].to_bytes()
 
 
-VALUE_ID = __import__("os").environ.get("ZT_VALUE_ID", "lattice")  # "lattice" | "exact"
+VALUE_ID = env("ZS_VALUE_ID", "lattice")  # "lattice" | "exact"
 ESTIMATOR = "lattice-v5"  # per-slice centers, steps and radii; invalidate private and shared scan caches
 
 

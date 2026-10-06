@@ -17,7 +17,7 @@ import pytest
 import xarray as xr
 import zarr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm.node import Node
 from zarrswarm.scan import scan
 from zarrswarm.store import http
@@ -112,7 +112,7 @@ def check_equal(ds, exp, variables):
 
 
 def open_client(sw, link, **kw):
-    return zt.open_dataset(link, ctl=ctl(sw, "client"), **kw)
+    return zs.open_dataset(link, ctl=ctl(sw, "client"), **kw)
 
 
 # ----------------------------------------------------------------------------------------------- scenarios
@@ -142,7 +142,7 @@ def test_heterogeneous_layouts_single_index_and_rechunk(swarm):
     # time-series friendly view: whole time axis, one pixel per chunk -> assembled from both layouts
     ts = open_client(swarm, la, chunking={"time": -1, "lat": 1, "lon": 1})
     check_equal(ts, exp, ["t2m_l"])
-    st = zt.store_of(ts)
+    st = zs.store_of(ts)
     assert st.stats["assembled"] > 0 and st.stats["direct"] == 0
     # view equal to layout B -> direct pass-through wherever B exists, assembled elsewhere
     vb = open_client(swarm, la, chunking={"time": 48, "lat": 8, "lon": 12})
@@ -215,7 +215,7 @@ def test_multilevel_and_surface_vars_dask_and_dataarray_ops(swarm):
     da = ds.z.sel(level=850, lat=slice(-5, 5), time=win)
     ref = exp.z.sel(level=850, lat=slice(-5, 5), time=win)
     np.testing.assert_allclose(da.mean("time").compute().values, ref.mean("time").values, rtol=1e-6)
-    zt.prefetch(ds.t2m_m.sel(time=slice(times[0], times[11])))  # DataArray prefetch
+    zs.prefetch(ds.t2m_m.sel(time=slice(times[0], times[11])))  # DataArray prefetch
 
 
 def test_search_index(swarm):
@@ -228,7 +228,7 @@ def test_search_index(swarm):
     link = seed(swarm, "b", p)
     for tag in ("sst", "sea_surface_temperature"):
         hits = http(ctl(swarm, "client"), "GET", f"/api/search?tag={tag}")
-        assert any(f"zt://{h['grid']}" == link for h in hits), (tag, hits)
+        assert any(f"zs://{h['grid']}" == link for h in hits), (tag, hits)
 
 
 def test_irregular_time_is_rejected(tmp_path):
@@ -279,11 +279,11 @@ def test_region_download_jlps_and_bytes_cover(swarm):
     pb = make(t / "b.zarr", times, ["r2m"], chunks=(168, 8, 12))
     link = seed(swarm, "a", pa)
     assert seed(swarm, "b", pb) == link
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     for cover in ("bytes", "jlps"):
         jid = http(ctl(swarm, "client"), "POST", "/api/download",
                    {"grid": grid, "cover": cover, "region": {"var": "r2m", "t0": "2023-01-03", "t1": "2023-01-05"}})["job"]
-        job = zt.store.wait_job(ctl(swarm, "client"), jid)
+        job = zs.store.wait_job(ctl(swarm, "client"), jid)
         assert job["state"] == "done" and job["missing"] == 0 and job["done"] > 0, job
     ds = open_client(swarm, link)
     check_equal(ds.sel(time=slice("2023-01-03", "2023-01-05")), oracle([pa]).sel(time=slice("2023-01-03", "2023-01-05")),
@@ -295,10 +295,10 @@ def test_spatial_region_download_only_touches_overlapping_tiles(swarm):
     times = pd.date_range("2023-06-01", periods=48, freq="h")
     p = make(t / "a.zarr", times, ["bb"], chunks=(24, 4, 6))       # lat 8 -> 2 tiles, lon 12 -> 2 tiles
     link = seed(swarm, "a", p)
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     jid = http(ctl(swarm, "client"), "POST", "/api/download",
                {"grid": grid, "region": {"var": "bb", "isel": {"lat": [0, 3], "lon": [7, 12]}}})["job"]
-    job = zt.store.wait_job(ctl(swarm, "client"), jid)
+    job = zs.store.wait_job(ctl(swarm, "client"), jid)
     assert job["state"] == "done" and job["total"] == 2, job   # 2 time chunks x 1 lat tile x 1 lon tile
     ds = open_client(swarm, link)
     sub = ds.bb.isel(lat=slice(0, 3), lon=slice(7, 12)).sel(time=slice(times[0], times[-1]))
@@ -307,14 +307,14 @@ def test_spatial_region_download_only_touches_overlapping_tiles(swarm):
 
 
 def test_cli_get_to_netcdf_and_zarr_with_sel(swarm, tmp_path):
-    from zarrswarm.cli import main as zt_main
+    from zarrswarm.cli import main as zs_main
     t = swarm["tmp"] / "s_cli_out"
     times = pd.date_range("2023-09-01", periods=48, freq="h")
     p = make(t / "a.zarr", times, ["nc1"], chunks=(24, 4, 6))
     link = seed(swarm, "a", p)
     exp = oracle([p]).nc1.sel(lat=slice(-3, 10))
     for out in (str(tmp_path / "o.nc"), str(tmp_path / "o.zarr")):
-        zt_main(["--ctl", ctl(swarm, "client"), "get", link, "--vars", "nc1", "--sel", "lat=-3:10",
+        zs_main(["--ctl", ctl(swarm, "client"), "get", link, "--vars", "nc1", "--sel", "lat=-3:10",
                  "--time", "2023-09-01:2023-09-02", "--out", out])
         got = xr.open_dataset(out) if out.endswith(".nc") else xr.open_zarr(out, consolidated=False)
         np.testing.assert_array_equal(got.nc1.values, exp.transpose(*got.nc1.dims).values)
@@ -328,9 +328,9 @@ def test_sequential_scan_triggers_readahead(swarm):
     ds = open_client(swarm, link)
     for d in range(3):  # a training loop reading day after day
         ds.ra.sel(time=slice(times[24 * d], times[24 * d + 23])).values
-    st = zt.store_of(ds)
+    st = zs.store_of(ds)
     assert st.stats["readahead"] >= 1
     time.sleep(1.5)  # background prefetch lands in the local cache
-    g = link.removeprefix("zt://")
+    g = link.removeprefix("zs://")
     have = http(ctl(swarm, "client"), "GET", "/api/status")["grids"][g]["chunks"]
     assert have >= 3 + 1

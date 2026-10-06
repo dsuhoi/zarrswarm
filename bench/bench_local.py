@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm.node import Node
 from zarrswarm.store import http
 
@@ -82,30 +82,30 @@ def main():
         link = timed(f"scan+seed {n}", lambda: http(ctl(n), "POST", "/api/seed", {"path": p})["link"], res)
 
     timed("baseline: xr.open_zarr(A, local disk).load()", lambda: xr.open_zarr(pa, consolidated=False).t2m.load(), res)
-    ds = timed("zt.open_dataset (DHT lookup + 3 manifests)", lambda: zt.open_dataset(link, ctl=ctl("client")), res)
+    ds = timed("zs.open_dataset (DHT lookup + 3 manifests)", lambda: zs.open_dataset(link, ctl=ctl("client")), res)
     v = timed("swarm: full t2m load (cold, 3 peers)", lambda: ds.t2m.load(), res)
     assert np.array_equal(v.values, full.t2m.values)
     res["swarm_cold_MBps_raw"] = round(nb / 1e6 / res["swarm: full t2m load (cold, 3 peers)"], 1)
     job = [j for j in http(ctl("client"), "GET", "/api/status")["jobs"]]
     st = http(ctl("client"), "GET", "/api/status")
     res["client_bw_est_MBps"] = {p[:8]: round(b / 1e6, 1) for p, b in st["bw"].items()}
-    ds2 = zt.open_dataset(link, ctl=ctl("client"))
+    ds2 = zs.open_dataset(link, ctl=ctl("client"))
     timed("swarm: full t2m load (warm cache)", lambda: ds2.t2m.load(), res)
-    ts = zt.open_dataset(link, ctl=ctl("client"), chunking={"time": -1, "lat": 1, "lon": 1})
+    ts = zs.open_dataset(link, ctl=ctl("client"), chunking={"time": -1, "lat": 1, "lon": 1})
     pt = timed("re-chunked view: point time series (warm)", lambda: ts.t2m.isel(lat=10, lon=20).load(), res)
     assert np.array_equal(pt.values, full.t2m.isel(lat=10, lon=20).values)
     # fresh client for prefetch / progressive
     fresh = Node(tmp / "h_fresh", port=port(), ctl_port=port(), bootstrap=[boot])
     run(fresh.start())
     fctl = f"http://127.0.0.1:{fresh.ctl_port}"
-    ds3 = zt.open_dataset(link, ctl=fctl)
-    r = timed("progressive mean to 1% (cold)", lambda: zt.progressive_mean(ds3, "t2m", rel_err=0.01), res)
+    ds3 = zs.open_dataset(link, ctl=fctl)
+    r = timed("progressive mean to 1% (cold)", lambda: zs.progressive_mean(ds3, "t2m", rel_err=0.01), res)
     res["progressive"] = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in r.items()}
     res["true_mean"] = float(full.t2m.mean())
     fresh2 = Node(tmp / "h_fresh2", port=port(), ctl_port=port(), bootstrap=[boot])
     run(fresh2.start())
-    ds4 = zt.open_dataset(link, ctl=f"http://127.0.0.1:{fresh2.ctl_port}")
-    timed("prefetch whole t2m (cold, one plan)", lambda: zt.prefetch(ds4.t2m), res)
+    ds4 = zs.open_dataset(link, ctl=f"http://127.0.0.1:{fresh2.ctl_port}")
+    timed("prefetch whole t2m (cold, one plan)", lambda: zs.prefetch(ds4.t2m), res)
     print(json.dumps(res, indent=1))
     for n in list(nodes.values()) + [fresh, fresh2]:
         run(n.stop())

@@ -5,8 +5,8 @@
 | Role | Requirements | Initialization |
 |---|---|---|
 | Bootstrap and relay | Public IP or DNS name and an open TCP data port | `--bootstrap-node --public-host HOST` |
-| Public holder | An externally reachable data port | `--join ztnet://... --listen-public` |
-| Node behind NAT | Outbound connections to bootstrap and relay | `--join ztnet://...` |
+| Public holder | An externally reachable data port | `--join zsnet://... --listen-public` |
+| Node behind NAT | Outbound connections to bootstrap and relay | `--join zsnet://...` |
 
 A NAT node attaches to a relay over a websocket and serves data through it.
 Bootstrap nodes provide entry into the DHT; peers then discover each other through
@@ -21,11 +21,11 @@ then activate the environment:
 ```bash
 source .venv/bin/activate
 zarrswarm init --bootstrap-node --public-host data.example.org --service
-systemctl --user enable --now zt-node
+systemctl --user enable --now zs-node
 ```
 
 Replace the hostname with your reachable host. The printed
-`ztnet://<id>@data.example.org:7881` invitation is used by other participants.
+`zsnet://<id>@data.example.org:7881` invitation is used by other participants.
 You can run `zarrswarm node` directly instead of installing a service.
 On Linux, `loginctl enable-linger "$USER"` lets a user service continue after logout.
 
@@ -33,13 +33,13 @@ Add `--private` to create an invitation containing a network key.
 [Network access](network.md) describes its scope.
 
 Open incoming TCP port 7881. The control API uses port 7882 on loopback and
-requires `X-Zt-Client` and a local `Host`. Keep this control port local.
+requires `X-Zs-Client` and a local `Host`. Keep this control port local.
 
 ## Join other nodes
 
 ```bash
-zarrswarm init --join 'ztnet://<id>@data.example.org:7881' --service
-zarrswarm init --join 'ztnet://<id>@data.example.org:7881' --listen-public --service
+zarrswarm init --join 'zsnet://<id>@data.example.org:7881' --service
+zarrswarm init --join 'zsnet://<id>@data.example.org:7881' --listen-public --service
 ```
 
 The first form uses a relay. With `--listen-public`, the node asks bootstrap to
@@ -50,9 +50,9 @@ the relay. Add other entry points to `bootstrap = [...]` in `config.toml`.
 
 ```bash
 docker build -t zarrswarm .
-mkdir -p "$HOME/zt-home"
-docker run --rm --user "$(id -u):$(id -g)" -v "$HOME/zt-home:/zt" zarrswarm init --join 'ztnet://<id>@data.example.org:7881'
-docker run -d --name zarrswarm --restart unless-stopped --user "$(id -u):$(id -g)" --network host -v "$HOME/zt-home:/zt" -v /data:/data:ro zarrswarm node
+mkdir -p "$HOME/zs-home"
+docker run --rm --user "$(id -u):$(id -g)" -v "$HOME/zs-home:/zs" zarrswarm init --join 'zsnet://<id>@data.example.org:7881'
+docker run -d --name zarrswarm --restart unless-stopped --user "$(id -u):$(id -g)" --network host -v "$HOME/zs-home:/zs" -v /data:/data:ro zarrswarm node
 docker exec zarrswarm zarrswarm status
 ```
 
@@ -68,7 +68,7 @@ specified in the example.
 ## Seed stores and manage disk use
 
 ```toml
-# ~/.zt/config.toml
+# ~/.zs/config.toml
 upload_mbps = 50
 
 [[seed]]
@@ -85,9 +85,9 @@ announced. `cache_max_gb = 200` limits downloaded cached data; it does not limit
 the original stores you seed.
 
 Seeding decodes chunks to build identities. Scanning uses one thread per
-available core, up to 16, unless `ZT_SCAN_WORKERS` overrides the count.
+available core, up to 16, unless `ZS_SCAN_WORKERS` overrides the count.
 The node releases unused scan heap memory with `malloc_trim` on glibc.
-Unchanged file identities reuse `~/.zt/scan`. `ZT_HASH_CACHE=DIR` shares
+Unchanged file identities reuse `~/.zs/scan`. `ZS_HASH_CACHE=DIR` shares
 hashes between nodes on one host, using file identity and metadata.
 File changes that preserve size and modification time are outside this
 stat-based cache model.
@@ -98,7 +98,7 @@ Reseed a changed store to refresh it immediately.
 ## Store repair data
 
 ```bash
-zarrswarm parity 'zt://<grid>' t2m --k 8 --drop
+zarrswarm parity 'zs://<grid>' t2m --k 8 --drop
 ```
 
 A volunteer can retain a Reed–Solomon parity row instead of a complete dataset.
@@ -110,14 +110,14 @@ and compression. See the [protocol](https://github.com/dsuhoi/zarrswarm/blob/mai
 
 ```bash
 zarrswarm status
-zarrswarm peers 'zt://<grid>'
+zarrswarm peers 'zs://<grid>'
 zarrswarm-tui
-journalctl --user -u zt-node -f
+journalctl --user -u zs-node -f
 ```
 
 ## Keys and trust
 
-`~/.zt/node.key` is the node's Ed25519 identity. Initialize a distinct identity
+`~/.zs/node.key` is the node's Ed25519 identity. Initialize a distinct identity
 on each host. DHT records, manifests and pushdown receipts use its signatures.
 
 Configure `trust = ["<pubkey>"]` to give selected publishers precedence over
@@ -129,7 +129,7 @@ network key is not sent in the header, but payloads are unencrypted HTTP.
 Synchronize clocks: a difference greater than 120 seconds causes authentication
 failures. Use a VPN if you need channel confidentiality.
 
-Manifest versions and previous roots are saved in `~/.zt/heads.json`.
+Manifest versions and previous roots are saved in `~/.zs/heads.json`.
 Clients reject observed rollbacks and blacklist holders that sign different
 roots at one version. `/api/status` exposes `fraud` and `blacklist`.
 The blacklist is local and held in memory until restart.
@@ -143,7 +143,9 @@ The blacklist is local and held in memory until restart.
 | `ro=True` on a public host | External port reachability; open the port and restart |
 | Slow downloads | Holder bandwidth and shared relay capacity in `zarrswarm peers LINK` |
 | `cannot reseed ...` | A configured seed path disappeared; other stores continue serving |
-| Port 7881 or 7882 is busy | Initialize with `--port N`; use `ZT_CTL=http://127.0.0.1:<N+1>` for that node |
+| Port 7881 or 7882 is busy | Initialize with `--port N`; use `ZS_CTL=http://127.0.0.1:<N+1>` for that node |
 
-The short `zt` and `zt-tui` command aliases, `zt-node` service name,
-`ZT_*` settings and `~/.zt` state directory are supported for existing nodes.
+New user services are named `zs-node.service`. Existing `zt-node.service` files are left untouched.
+To replace one, stop and disable the old unit before initializing with `--service` and enabling `zs-node`;
+avoid running both units against the same state directory. See
+[legacy compatibility](config.md#legacy-compatibility) for state reuse and setting precedence.

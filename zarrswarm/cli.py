@@ -1,16 +1,16 @@
-"""zt - command line client.
+"""zs - command line client.
 
-  zt init --bootstrap-node --public-host HOST   # first node of a network: prints ztnet://ID@HOST:PORT
-  zt init --join ztnet://ID@HOST:PORT           # any other node: address (public/relay) is found automatically
-  zt node                                       # run with ~/.zt/config.toml (flags override)
-  zt scan   PATH                                # offline: grid id, variables, layouts, chunks
-  zt seed   PATH                                # seed via the local node -> zt://<grid>
-  zt search TAG                                 # metadata index: variables / standard_name / long_name
-  zt get    LINK [--vars a,b] [--time A:B] [--out out.zarr] [--chunking time=8760,lat=1] [--progressive]
-  zt mean   LINK VAR [--time A:B] [--rel-err 0.01]
-  zt name   NAME LINK                           # signed mutable name -> zt://NAME@<pubkey>
-  zt follow LINK --vars t2m --last 7d           # subscription: keep the newest 7 days downloaded
-  zt status | peers LINK | unseed PATH
+  zs init --bootstrap-node --public-host HOST   # first node of a network: prints zsnet://ID@HOST:PORT
+  zs init --join zsnet://ID@HOST:PORT           # any other node: address (public/relay) is found automatically
+  zs node                                       # run with ~/.zs/config.toml (flags override)
+  zs scan   PATH                                # offline: grid id, variables, layouts, chunks
+  zs seed   PATH                                # seed via the local node -> zs://<grid>
+  zs search TAG                                 # metadata index: variables / standard_name / long_name
+  zs get    LINK [--vars a,b] [--time A:B] [--out out.zarr] [--chunking time=8760,lat=1] [--progressive]
+  zs mean   LINK VAR [--time A:B] [--rel-err 0.01]
+  zs name   NAME LINK                           # signed mutable name -> zs://NAME@<pubkey>
+  zs follow LINK --vars t2m --last 7d           # subscription: keep the newest 7 days downloaded
+  zs status | peers LINK | unseed PATH
 """
 import argparse
 import asyncio
@@ -23,6 +23,7 @@ import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .common import env, state_home
 from .store import CTL, http, open_dataset, open_views, progressive_mean, progressive_mean_vas, step_seconds, wait_job
 
 DEFAULT_PORT = 7881
@@ -33,18 +34,18 @@ def _mb(b):
 
 
 def _home(a) -> Path:
-    return Path(getattr(a, "home", None) or os.environ.get("ZT_HOME", "~/.zt")).expanduser()
+    return state_home(getattr(a, "home", None))
 
 
 TUNING = {  # config [tuning] key -> env variable read by node/store at import (docs/config.md)
-    "announce_every_s": "ZT_ANNOUNCE_EVERY", "page_cache_mb": "ZT_PAGE_CACHE_MB", "decoded_cache_mb": "ZT_DECODED_MB",
-    "client_cache_mb": "ZT_DECODED_CACHE_MB", "audit_rate": "ZT_AUDIT", "pushdown_frac": "ZT_PUSHDOWN_FRAC",
-    "readahead_chunks": "ZT_READAHEAD", "stall_min_s": "ZT_STALL_MIN", "xt1_below_bps": "ZT_XT1_BELOW",
-    "relay_frame_kb": "ZT_RELAY_FRAME_KB", "rescan_every_s": "ZT_RESCAN_EVERY", "follow_every_s": "ZT_FOLLOW_EVERY"}
+    "announce_every_s": "ZS_ANNOUNCE_EVERY", "page_cache_mb": "ZS_PAGE_CACHE_MB", "decoded_cache_mb": "ZS_DECODED_MB",
+    "client_cache_mb": "ZS_DECODED_CACHE_MB", "audit_rate": "ZS_AUDIT", "pushdown_frac": "ZS_PUSHDOWN_FRAC",
+    "readahead_chunks": "ZS_READAHEAD", "stall_min_s": "ZS_STALL_MIN", "xt1_below_bps": "ZS_XT1_BELOW",
+    "relay_frame_kb": "ZS_RELAY_FRAME_KB", "rescan_every_s": "ZS_RESCAN_EVERY", "follow_every_s": "ZS_FOLLOW_EVERY"}
 
 
 def _config(home: Path) -> dict:
-    """config.toml (written by `zt init`, commented) or legacy config.json."""
+    """config.toml (written by `zs init`, commented) or legacy config.json."""
     import tomllib
     t, j = home / "config.toml", home / "config.json"
     if t.exists():
@@ -66,7 +67,7 @@ def _write_config(home: Path, cfg: dict):
     path.chmod(0o600)  # may hold the network key
     path.write_text(f"""# ZarrSwarm node configuration (docs/config.md). Command-line flags override these values.
 
-# network this node belongs to (printed by `zt init`, give it to other hosts)
+# network this node belongs to (printed by `zs init`, give it to other hosts)
 network = {v("network", "")}
 # closed network: shared key every request must carry ("" = open network). SECRET: it is also in the invite.
 network_key = {v("network_key", "")}
@@ -98,7 +99,7 @@ cache_max_gb = {v("cache_max_gb", 0)}
 # publisher public keys whose values win over the holder majority
 trust = {v("trust", [])}
 
-# datasets to seed at every start (paths or globs; `zt seed` additions are remembered in state.json separately)
+# datasets to seed at every start (paths or globs; `zs seed` additions are remembered in state.json separately)
 # [[seed]]
 # path = "/data/era5/*.zarr"
 {seeds}
@@ -107,14 +108,20 @@ trust = {v("trust", [])}
 {tuning}""")
 
 
-def parse_ztnet(s: str) -> tuple[str | None, str, str | None]:
-    """ztnet://<node_id>@host:port[?k=<network key>] -> (node_id, http://host:port, key)"""
-    s, _, q = s.removeprefix("ztnet://").partition("?")
+def parse_zsnet(s: str) -> tuple[str | None, str, str | None]:
+    """zsnet://<node_id>@host:port[?k=<network key>] -> (node_id, http://host:port, key)"""
+    scheme, sep, rest = s.partition("://")
+    if sep and scheme not in ("zsnet", "ztnet"):
+        raise ValueError("network invitation must use zsnet://")
+    s, _, q = (rest if sep else s).partition("?")
     key = next((v for k, _, v in (x.partition("=") for x in q.split("&")) if k == "k"), None) or None
     nid, _, hp = s.rpartition("@")
     if ":" not in hp:
         hp = f"{hp}:{DEFAULT_PORT}"
     return nid or None, f"http://{hp}", key
+
+
+parse_ztnet = parse_zsnet  # compatibility for existing callers
 
 
 def _progress(job):
@@ -141,23 +148,24 @@ def cmd_init(a):
             import secrets
             cfg["network_key"] = secrets.token_urlsafe(24)
         k = f"?k={cfg['network_key']}" if cfg.get("network_key") else ""
-        cfg["network"] = f"ztnet://{ident.id}@{a.public_host}:{cfg['port']}{k}"
+        cfg["network"] = f"zsnet://{ident.id}@{a.public_host}:{cfg['port']}{k}"
     elif a.join:
-        _, boot, key = parse_ztnet(a.join)
+        nid, boot, key = parse_zsnet(a.join)
         cfg["network_key"] = key or ""
-        cfg.update(host="0.0.0.0" if a.listen_public else "127.0.0.1", bootstrap=[boot], network=a.join,
+        invite = f"zsnet://{nid + '@' if nid else ''}{boot.removeprefix('http://')}{'?k=' + key if key else ''}"
+        cfg.update(host="0.0.0.0" if a.listen_public else "127.0.0.1", bootstrap=[boot], network=invite,
                    auto=a.listen_public, relay=None if a.listen_public else boot, public=None, relay_server=False)
     else:
-        sys.exit("use --bootstrap-node --public-host HOST  or  --join ztnet://ID@HOST:PORT")
+        sys.exit("use --bootstrap-node --public-host HOST  or  --join zsnet://ID@HOST:PORT")
     _write_config(home, cfg)
     print(f"node id   {ident.id}\nconfig    {home / 'config.toml'}\nnetwork   {cfg['network']}")
     if a.service:
-        unit = Path("~/.config/systemd/user/zt-node.service").expanduser()
+        unit = Path("~/.config/systemd/user/zs-node.service").expanduser()
         unit.parent.mkdir(parents=True, exist_ok=True)
         unit.write_text(f"[Unit]\nDescription=ZarrSwarm node\nAfter=network-online.target\n\n[Service]\n"
                         f"ExecStart={sys.executable} -m zarrswarm.cli node --home {home}\nRestart=always\n"
                         f"RestartSec=5\n\n[Install]\nWantedBy=default.target\n")
-        print(f"service   {unit}  (systemctl --user enable --now zt-node)")
+        print(f"service   {unit}  (systemctl --user enable --now zs-node)")
 
 
 def cmd_node(a):
@@ -166,7 +174,8 @@ def cmd_node(a):
     for k, x in cfg.get("tuning", {}).items():  # before importing node: its constants are read at import
         if k not in TUNING:
             sys.exit(f"unknown [tuning] key {k!r}; known: {', '.join(TUNING)}")
-        os.environ.setdefault(TUNING[k], str(x))
+        if env(TUNING[k]) is None:
+            os.environ[TUNING[k]] = str(x)
     from .node import Node
     pick = lambda k, d=None: getattr(a, k) if getattr(a, k) not in (None, False, []) else (cfg.get(k) or d)
     mbps = a.upload_mbps if a.upload_mbps is not None else cfg.get("upload_mbps", 0)
@@ -175,15 +184,15 @@ def cmd_node(a):
                 bootstrap=pick("bootstrap", []) or [], relay=pick("relay"),
                 relay_server=pick("relay_server", False), auto=pick("auto", False), trust=pick("trust", []) or [],
                 rate=mbps * 1e6 if mbps else None, seeds=[x["path"] for x in cfg.get("seed", [])],
-                network_key=os.environ.get("ZT_NETWORK_KEY") or cfg.get("network_key") or None,
+                network_key=env("ZS_NETWORK_KEY") or cfg.get("network_key") or None,
                 cache_max=int(float(cfg.get("cache_max_gb") or 0) * 1e9),
                 # link emulation for experiments (not in the config on purpose)
-                latency=float(os.environ.get("ZT_EMU_LATENCY_MS", 0)) / 1e3, loss=float(os.environ.get("ZT_EMU_LOSS", 0)),
-                strategy=os.environ.get("ZT_EMU_STRATEGY", "maxflow"))
+                latency=float(env("ZS_EMU_LATENCY_MS", 0)) / 1e3, loss=float(env("ZS_EMU_LOSS", 0)),
+                strategy=env("ZS_EMU_STRATEGY", "maxflow"))
 
     async def run():
         await node.start()
-        print(f"zt node {node.ident.id} addr={node.addr} ro={node.ro} ctl=127.0.0.1:{node.ctl_port} "
+        print(f"zs node {node.ident.id} addr={node.addr} ro={node.ro} ctl=127.0.0.1:{node.ctl_port} "
               f"contacts={len(node.dht.contacts())}", flush=True)
         stop = asyncio.Event()
         loop = asyncio.get_running_loop()
@@ -198,7 +207,7 @@ def cmd_scan(a):
     from .scan import scan
     packing = json.loads(Path(a.packing).read_text()) if a.packing else None
     grids = scan(a.path, packing=packing)["subgrids"]
-    print(json.dumps({"link": "zt://" + "+".join(sorted(grids)), "grids": {
+    print(json.dumps({"link": "zs://" + "+".join(sorted(grids)), "grids": {
         gid: {"time": r["grid"]["time"], "dims": r["grid"]["dims"],
               "arrays": {n: {"dims": x["dims"], "vfid": x["vfid"][:12], "layouts": list(x["layouts"]),
                               "source_packing": "packing" in x} for n, x in r["arrays"].items()},
@@ -225,7 +234,7 @@ def cmd_status(a):
     print(f"node {s['id']}  addr={s['addr']}  ro={s['ro']}  contacts={s['contacts']}  relayed={s['relayed']}")
     print(f"pubkey {s['pk']}   (publisher key: others put it into trust = [...])")
     for g, x in s["grids"].items():
-        print(f"  zt://{g}  {x['chunks']} chunks  {_mb(x['bytes'])}  {','.join(x['arrays'])}")
+        print(f"  zs://{g}  {x['chunks']} chunks  {_mb(x['bytes'])}  {','.join(x['arrays'])}")
     for j in s["jobs"]:
         print(f"  job {j['id']} {j['state']} {j['done']}/{j['total']} {_mb(j['bytes'])} {j['label']}")
 
@@ -234,7 +243,7 @@ def cmd_search(a):
     fmt = lambda s: datetime.fromtimestamp(s, timezone.utc).strftime("%Y-%m-%d %H:%M")
     for r in http(a.ctl, "GET", "/api/search?tag=" + urllib.parse.quote(a.tag)):
         tr = f"{fmt(r['tr'][0])} .. {fmt(r['tr'][1])}" if r.get("tr") else "-"
-        print(f"zt://{r['grid']}  seeders={r['seeders']}  vars={','.join(r['vars'])}  time={tr}  dims={r['dims']}")
+        print(f"zs://{r['grid']}  seeders={r['seeders']}  vars={','.join(r['vars'])}  time={tr}  dims={r['dims']}")
 
 
 def cmd_peers(a):
@@ -315,7 +324,7 @@ def export(link, ctl, vars_, t0, t1, isel, out, chunking=None, step=None):
         sub = sub.isel({d: slice(*r) for d, r in isel.items() if d in sub.dims})
     for v in sub.variables.values():
         v.encoding.clear()
-    sub.attrs = {k: v for k, v in sub.attrs.items() if not k.startswith("zt_")}
+    sub.attrs = {k: v for k, v in sub.attrs.items() if not k.startswith(("zs_", "zt_"))}
     if out.endswith((".nc", ".nc4", ".h5")):
         sub.load().to_netcdf(out, engine="h5netcdf" if _has("h5netcdf") else None)
     else:
@@ -371,19 +380,19 @@ def cmd_name(a):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="zarrswarm", description="Verified peer-to-peer sharing of Zarr arrays")
-    ap.add_argument("--ctl", default=CTL, help="local node control URL (env ZT_CTL)")
+    ap.add_argument("--ctl", default=CTL, help="local node control URL (env ZS_CTL)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("init", help="create identity + config for this host")
     p.add_argument("--home")
     p.add_argument("--port", type=int)
     p.add_argument("--bootstrap-node", action="store_true", help="publicly reachable first node (+relay)")
     p.add_argument("--public-host")
-    p.add_argument("--join", help="ztnet://ID@HOST:PORT of any bootstrap node")
+    p.add_argument("--join", help="zsnet://ID@HOST:PORT of any bootstrap node")
     p.add_argument("--listen-public", action="store_true",
                    help="bind 0.0.0.0 and auto-detect reachability (default: outbound-only via relay)")
     p.add_argument("--service", action="store_true", help="write a systemd --user unit")
     p.add_argument("--private", action="store_true",
-                   help="closed network: generate a network key; the printed ztnet:// invite carries it")
+                   help="closed network: generate a network key; the printed zsnet:// invite carries it")
     p.set_defaults(fn=cmd_init)
     p = sub.add_parser("node")
     p.add_argument("--home")

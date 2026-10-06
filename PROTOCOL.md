@@ -1,8 +1,18 @@
 # ZarrSwarm wire protocol
 
 This is an implementation reference, not a stable interoperability specification. Wire changes should be
-checked against the existing clients and tests. The package and executable are named `zarrswarm`; link schemes,
-`ZT_*` configuration and existing node state retain their current formats.
+checked against the existing clients and tests. The package and full executable are named `zarrswarm`,
+with the short command `zs`. Dataset links use `zs://`, network invitations use `zsnet://`, and settings
+use `ZS_*`. New nodes store state in `~/.zs`; the user service is `zs-node.service`.
+
+Legacy `zt://` and `ztnet://` links remain valid inputs. `ZT_*` settings are fallbacks when the matching
+`ZS_*` setting is absent; new settings take precedence even when explicitly empty. An existing `~/.zt`
+directory is reused when neither a home override nor `~/.zs` exists. Grid, byte and value identities,
+signed payloads and DHT keys retain their definitions.
+
+HTTP headers use `X-Zs-Client`, `X-Zs-Net`, `X-Zs-Pk`, `X-Zs-Sig` and `X-Zs-Accept`. Senders include
+matching `X-Zt-*` aliases for older peers; readers prefer `X-Zs-*` when both are present. Relays forward
+both forms. The control API still checks `Host` and the client header, and private networks still verify HMAC.
 
 ## Node identity and discovery
 
@@ -120,7 +130,7 @@ for once across attached holders, rather than treating every holder as an indepe
 
 ## Private-network authentication
 
-When `ZT_NETWORK_KEY` is set, HTTP requests carry HMAC authentication over timestamp, method and path,
+When `ZS_NETWORK_KEY` is set, HTTP requests carry HMAC authentication over timestamp, method and path,
 including the query string. The allowed timestamp skew is 120 seconds. Nodes therefore need reasonably
 synchronized clocks. Possession of an invitation key grants access to the network.
 
@@ -151,6 +161,8 @@ accepted result must receive immediate content validation.
 ## Value-level parity
 
 Parity stripes operate on compatible canonical field tiles using Cauchy Reed–Solomon coding over GF(256).
+New parity objects start with `ZSR1`; readers also accept the legacy `ZTR1` marker. The header and coding
+rules are unchanged.
 Recovery requires `k` independent compatible data/parity members, with distinct parity rows. Several parity
 rows are supported. A stripe keeps one field definition and spatial tile.
 

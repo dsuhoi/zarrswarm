@@ -9,7 +9,7 @@ import pytest
 import xarray as xr
 import zarr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm import codec
 from zarrswarm.common import check_signed, cid_of
 from zarrswarm.node import merge_view
@@ -47,7 +47,7 @@ def test_slice_contract_and_scan_cache_invalidation(tmp_path, monkeypatch):
         codec.vcid_of(a, 0, packing={"slices": [[True, 0, .1], [2, 100, .1]]})
     times, values, _ = samples(2)
     path = write(tmp_path / "cache.zarr", values - values[:, :1, :1], times, (1, 2, 3))
-    monkeypatch.setenv("ZT_HASH_CACHE", str(tmp_path / "shared"))
+    monkeypatch.setenv("ZS_HASH_CACHE", str(tmp_path / "shared"))
     first = scan(path, tmp_path / "scan", packing={"v": [1, 0, .1]})
     second = scan(path, tmp_path / "scan", packing={"v": [2, 0, .1]})
     m1, m2 = next(iter(first["subgrids"].values())), next(iter(second["subgrids"].values()))
@@ -65,7 +65,7 @@ def test_cli_scan_reports_source_contract_subgrids(tmp_path, capsys):
     params = tmp_path / "packing.json"; params.write_text(json.dumps(spec))
     main(["scan", path, "--packing", str(params)])
     result = json.loads(capsys.readouterr().out)
-    assert result["link"] == "zt://" + "+".join(sorted(result["grids"]))
+    assert result["link"] == "zs://" + "+".join(sorted(result["grids"]))
     grid = next(iter(result["grids"].values()))
     assert grid["arrays"]["v"]["source_packing"] and grid["chunks"] == 4
 
@@ -81,20 +81,20 @@ def test_native_dtypes_signed_mirror_transfer_and_restart(net):
     assert check_signed(contract)
     mirror.trusted.add(source.ident.id); client.trusted.add(source.ident.id)
     http(ctl(mirror), "POST", "/api/seed", {"path": p2, "packing": {"v": contract}})
-    grid = result["link"].removeprefix("zt://")
+    grid = result["link"].removeprefix("zs://")
     view = run(client.view(grid, refresh=True))
     keys = [k for k in view["best"] if k.startswith("v@")]
     assert len(keys) == 16 and all(len(view["best"][k]["src"]) == 2 for k in keys)
     # Original publisher is no longer available; its detached signature is carried by the mirror.
     run(source.stop())
-    got = zt.open_dataset(result["link"], ctl=ctl(client)).v.values
+    got = zs.open_dataset(result["link"], ctl=ctl(client)).v.values
     assert np.all(np.abs(got - values) < .1)
     run(client.stop()); run(mirror.stop())
     run(mirror.start()); run(client.start())
     assert mirror.local[grid]["arrays"]["v"]["packing"] == contract
     assert client.local[grid]["arrays"]["v"]["packing"] == contract
     assert not client.local[grid].get("_seeded_keys")  # downloaded cache is not a value authority
-    got2 = zt.open_dataset(result["link"], ctl=ctl(client)).v.values
+    got2 = zs.open_dataset(result["link"], ctl=ctl(client)).v.values
     np.testing.assert_array_equal(got2, got)
     run(source.start())  # fixture owns lifecycle
 
@@ -208,7 +208,7 @@ def test_contested_layout_falls_back_without_inventing_hourly_samples(net):
     assert view["arrays"]["v"]["layouts"][same]["cov"] == []
     assert all(b.get("contested") for k, b in view["best"].items() if k.startswith(f"v@{same}/"))
     assert View(view).S == 6
-    got = zt.open_dataset(f"zt://{grid}", ctl=ctl(client)).v.values
+    got = zs.open_dataset(f"zs://{grid}", ctl=ctl(client)).v.values
     assert got.shape == values.shape and np.max(np.abs(got - values)) < .1
 
 
@@ -218,7 +218,7 @@ def test_source_count_repair_across_layouts(net):
     times, values, spec = samples(8)
     p1 = write(tmp / "complete.zarr", values, times, (1, 3, 5))
     res = http(ctl(source), "POST", "/api/seed", {"path": p1, "packing": spec})
-    contract = res["packing"]["v"]; grid = res["link"].removeprefix("zt://")
+    contract = res["packing"]["v"]; grid = res["link"].removeprefix("zs://")
     for n in (mirror, vol, client): n.trusted.add(source.ident.id)
     # Mirror has a different time/spatial layout, a different native dtype, and lacks the first two times.
     p2 = write(tmp / "partial.zarr", (values + .025).astype("f4"), times, (2, 2, 3))
@@ -240,6 +240,6 @@ def test_source_count_repair_across_layouts(net):
     jid = http(ctl(client), "POST", "/api/download", {"grid": grid, "region": {"var": "v"}})["job"]
     job = wait_job(ctl(client), jid)
     assert job["state"] == "done" and job.get("restored") == 2, job
-    got = zt.open_dataset(res["link"], ctl=ctl(client)).v.values
+    got = zs.open_dataset(res["link"], ctl=ctl(client)).v.values
     assert np.all(np.abs(got - values) < .1)
     run(source.start())

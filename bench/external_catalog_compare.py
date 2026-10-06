@@ -246,7 +246,7 @@ async def receive(cat_path, arm, reg_json, home, ip, aria2, out):
             await asyncio.sleep(0.1)
             lag.append(max(0.0, time.monotonic() - t - 0.1))
     heartbeat_task = asyncio.create_task(heartbeat())
-    stack_path = Path('/tmp') / f'zt-query-stacks-{os.getpid()}.txt'
+    stack_path = Path('/tmp') / f'zs-query-stacks-{os.getpid()}.txt'
     stack = stack_path.open('w')
     try:
         faulthandler.dump_traceback_later(30, repeat=True, file=stack)
@@ -305,7 +305,7 @@ def run(a):
     ensure_router()
     root, variants = Path(a.root).resolve(), Path(a.variants).resolve()
     root.mkdir(parents=True, exist_ok=True)
-    os.environ.update(ZT_KEEP_LOGS='1', ZT_SCAN_WORKERS='2', ZT_HASH_CACHE=str(root / 'hashcache'),
+    os.environ.update(ZS_KEEP_LOGS='1', ZS_SCAN_WORKERS='2', ZS_HASH_CACHE=str(root / 'hashcache'),
                       OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1')
     source = Path(__file__).resolve().parents[1]
     truth = variants / 'V1-arco-1h.zarr'

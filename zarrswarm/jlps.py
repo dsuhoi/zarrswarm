@@ -15,14 +15,15 @@ Cost is independent of the spatial size and of the number of elements: O(iters *
 """
 from collections import defaultdict
 
+from .common import env
 from . import plan as planmod
 from .scan import chunk_g, split_key
 
 
-CHUNK_OVERHEAD_S = float(__import__("os").environ.get("ZT_CHUNK_OVERHEAD_MS", "50")) / 1e3
+CHUNK_OVERHEAD_S = float(env("ZS_CHUNK_OVERHEAD_MS", "50")) / 1e3
 # the receiver's own rate (download + value verification, stored bytes/s): one more shared bottleneck (sec. 3.2)
-CLIENT_BW = float(__import__("os").environ.get("ZT_CLIENT_MBPS", "30")) * 1e6
-SLACK = float(__import__("os").environ.get("ZT_JLPS_SLACK", "0.1"))  # covers this close in makespan count as ties
+CLIENT_BW = float(env("ZS_CLIENT_MBPS", "30")) * 1e6
+SLACK = float(env("ZS_JLPS_SLACK", "0.1"))  # covers this close in makespan count as ties
 
 
 def complete_for(li: dict, lattice: tuple[int, int]) -> bool:

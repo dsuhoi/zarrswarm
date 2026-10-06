@@ -17,7 +17,7 @@ import pandas as pd
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.store import http  # noqa: E402
 
@@ -66,11 +66,11 @@ def main():
         for method in ("vdc_ratio", "vas"):
             c = Node(tmp / f"c_{method}_{trial}", port=port(), ctl_port=port(), bootstrap=[f"http://127.0.0.1:{bp}"])
             run(c.start())
-            dsc = zt.open_dataset(link, ctl=f"http://127.0.0.1:{c.ctl_port}")
+            dsc = zs.open_dataset(link, ctl=f"http://127.0.0.1:{c.ctl_port}")
             if method == "vas":
-                r = zt.progressive_mean_vas(dsc, "t2m", rel_err=a.rel_err, seed=trial)
+                r = zs.progressive_mean_vas(dsc, "t2m", rel_err=a.rel_err, seed=trial)
             else:
-                r = zt.progressive_mean(dsc, "t2m", rel_err=a.rel_err)
+                r = zs.progressive_mean(dsc, "t2m", rel_err=a.rel_err)
             r["covered"] = bool(abs(r["mean"] - true) <= r["ci95"]) if r.get("mean") is not None else None
             r["abs_err"] = abs(r["mean"] - true) if r.get("mean") is not None else None
             out[method].append(r)

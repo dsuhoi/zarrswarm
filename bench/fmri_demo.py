@@ -29,7 +29,7 @@ import xarray as xr
 from zarr.codecs import ZstdCodec
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from zarrswarm.codec import same_vcid, vcid_of  # noqa: E402
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.store import http, wait_job  # noqa: E402
@@ -90,7 +90,7 @@ def main():
     ctl = lambda n: f"http://127.0.0.1:{nodes[n].ctl_port}"
     links = {n: http(ctl(n), "POST", "/api/seed", {"path": str(w / f"{n}.zarr")})["link"] for n in reps}
     res = {"one_link": len(set(links.values())) == 1, "layouts": {}, "queries": {}}
-    grid = next(iter(links.values())).removeprefix("zt://")
+    grid = next(iter(links.values())).removeprefix("zs://")
     v = http(ctl("client"), "GET", f"/api/view/{grid}?refresh=1")
     res["layouts"] = sorted(v["arrays"]["bold"]["layouts"])
     truth = ds.bold.values
@@ -108,7 +108,7 @@ def main():
         jid = http(cc, "POST", "/api/download", {"grid": grid, "region": dict(reg, var="bold")})["job"]
         job = wait_job(cc, jid)
         step = "4s" if reg["step"] == 4 else None
-        view = zt.open_dataset(link, ctl=cc, step=step).bold
+        view = zs.open_dataset(link, ctl=cc, step=step).bold
         got = (view if step else sel(view)).values  # the 4 s view is already subsampled
         ref = sel(ds.bold).values
         res["queries"][qn] = {"seconds": round(time.time() - t, 2), "chunks": job["done"], "missing": job["missing"],

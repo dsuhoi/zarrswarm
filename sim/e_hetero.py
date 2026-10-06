@@ -23,6 +23,7 @@ import zarr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import simulate as S  # noqa: E402
+from zarrswarm.common import env
 from zarrswarm import scan as scanmod  # noqa: E402
 from zarrswarm import codec  # noqa: E402
 from zarrswarm.store import http, wait_job  # noqa: E402
@@ -245,7 +246,7 @@ def main():
     ap.add_argument("--modes", default="values,bytes")
     ap.add_argument("--out", default="sim/results_ehet.json")
     ap.add_argument("--placement", default="random", choices=["random", "sat"])
-    ap.add_argument("--procs", action="store_true", help="one real `zt node` process per peer (no shared GIL)")
+    ap.add_argument("--procs", action="store_true", help="one real `zs node` process per peer (no shared GIL)")
     ap.add_argument("--emu", action="store_true", help="kernel-level emulation: netns + tc netem/tbf (sim/netemu.py)")
     ap.add_argument("--rate-mbps", type=float, default=4.0, help="median peer uplink (lognormal, clipped x0.2..x5)")
     ap.add_argument("--covers", default="jlps", help="values mode: also run e.g. 'jlps,bytes' (E2)")
@@ -267,7 +268,7 @@ def main():
         "period_6h": {"t0": first, "t1": last, "step": 21600},
     }
     queries = {q: queries[q] for q in a.queries.split(",")}
-    root = Path(os.environ.get("ZT_SIM_ROOT", "~/.cache/zt_sim")).expanduser()
+    root = Path(env("ZS_SIM_ROOT", "~/.cache/zs_sim")).expanduser()
     from zarrswarm.codec import ESTIMATOR
     import hashlib
     metadata = {"estimator": ESTIMATOR, "source_sha256": {
@@ -282,12 +283,12 @@ def main():
             if a.emu:
                 from netemu import EmuSwarm
                 sw = EmuSwarm(root / f"ehet_{mode}_{rep}", a.peers, a.boot, a.nat, seed=100 + rep,
-                              env={"ZT_IDENTITY": mode}, rate_median=a.rate_mbps * 1e6,
+                              env={"ZS_IDENTITY": mode}, rate_median=a.rate_mbps * 1e6,
                               rate_range=(a.rate_mbps * 0.2e6, a.rate_mbps * 5e6))
             elif a.procs:
                 from procswarm import ProcSwarm
                 sw = ProcSwarm(root / f"ehet_{mode}_{rep}", a.peers, a.boot, a.nat, seed=100 + rep,
-                               env={"ZT_IDENTITY": mode}, rate_median=a.rate_mbps * 1e6,
+                               env={"ZS_IDENTITY": mode}, rate_median=a.rate_mbps * 1e6,
                                rate_range=(a.rate_mbps * 0.2e6, a.rate_mbps * 5e6))
             else:
                 sw = S.Swarm(root / f"ehet_{mode}_{rep}", a.peers, a.boot, a.nat, seed=100 + rep)
@@ -312,7 +313,7 @@ def main():
                         # a later candidate gets three times its time (at least 2 min) and is otherwise just worse
                         dl = candidate_deadline(best)
                         try:
-                            job, secs, cov = run_query(sw, f"{mode}{qn[:3]}{cover[:2]}{i}", "zt://" + g, reg, cover,
+                            job, secs, cov = run_query(sw, f"{mode}{qn[:3]}{cover[:2]}{i}", "zs://" + g, reg, cover,
                                                        deadline=dl)
                         except Exception as e:
                             print(f"candidate {g[:8]} of {qn}: {type(e).__name__} {e}", flush=True)

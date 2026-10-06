@@ -23,7 +23,7 @@ import numpy as np
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from zarrswarm import codec  # noqa: E402
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.store import http, wait_job  # noqa: E402
@@ -77,7 +77,7 @@ def run_case(w: Path, mode: str, holders: list[str], trusted_a=False):
     ctl = lambda n: f"http://127.0.0.1:{nodes[n].ctl_port}"
     src = {"A": w / "arco.zarr", "B": w / "ncar.zarr", "C": w / "arco.zarr"}
     links = {h: http(ctl(h), "POST", "/api/seed", {"path": str(src[h])})["link"] for h in holders}
-    grid = links[holders[0]].removeprefix("zt://")
+    grid = links[holders[0]].removeprefix("zs://")
     v = http(ctl("client"), "GET", f"/api/view/{grid}?refresh=1")
     view = run(nodes["client"].view(grid, refresh=True))
     keys = [k for k in view["best"] if k.startswith(VAR + "@")]
@@ -91,7 +91,7 @@ def run_case(w: Path, mode: str, holders: list[str], trusted_a=False):
            "usable_holders_per_chunk": round(float(np.mean(usable)), 2) if usable else 0, "contested": contested,
            "done": job["done"], "missing": job["missing"], "per_peer_MB": {p[:6]: round(b / 1e6, 1) for p, b in job["per_peer"].items()}}
     if job["done"]:
-        got = zt.open_dataset(links[holders[0]], ctl=ctl("client"))[VAR].values.astype("f8")
+        got = zs.open_dataset(links[holders[0]], ctl=ctl("client"))[VAR].values.astype("f8")
         for name, path in (("arco", w / "arco.zarr"), ("ncar", w / "ncar.zarr")):
             ref = xr.open_zarr(path, consolidated=False)[VAR].values.astype("f8")
             ok = np.isfinite(got)

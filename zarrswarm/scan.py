@@ -2,7 +2,7 @@
 
 Identities produced:
   grid_id  - DHT key of a *sub-grid*: one variable's non-time dims + their coordinate values + time step
-             and phase. A dataset announces all its sub-grids (link zt://g1+g2). Independent of time
+             and phase. A dataset announces all its sub-grids (link zs://g1+g2). Independent of time
              extent, variable set, chunk layout, codecs, zarr format and CF time units.
   vfid     - per variable "value family": name, dims, dtype, fill, non-time shape.
   layout   - chunk shape + time phase, e.g. "24x4x6+0". Several layouts may coexist in a swarm.
@@ -26,7 +26,7 @@ import numpy as np
 import zarr
 
 from . import codec
-from .common import check_signed, cid_of, cjson, h160
+from .common import check_signed, cid_of, cjson, env, h160
 
 UNIT_SECONDS = {"second": 1, "seconds": 1, "sec": 1, "secs": 1, "s": 1,
                 "minute": 60, "minutes": 60, "min": 60, "mins": 60,
@@ -113,7 +113,7 @@ def _time_axis(g, arrays: dict) -> dict | None:
 QUANTA = (86400, 3600, 60, 1)  # time quanta of grid identity, coarsest first
 # Ablation for the evaluation: identity by stored bytes (what IPFS/BitTorrent/HTTP mirrors offer). Replicas then
 # share a swarm only with the same time step AND the same encoding (chunks, codecs, format) of every variable.
-BYTE_IDENTITY = __import__("os").environ.get("ZT_IDENTITY") == "bytes"
+BYTE_IDENTITY = env("ZS_IDENTITY") == "bytes"
 
 
 def tstride(li: dict) -> tuple[int, int]:
@@ -338,7 +338,7 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
         dims, cs = _dims(a), _chunks(a)
         taxis = dims.index(tname) if tname in dims else None
         shape_nt = [s for i, s in enumerate(a.shape) if i != taxis]
-        spec = (packing or {}).get(n, a.attrs.get("zt_packing"))
+        spec = (packing or {}).get(n, a.attrs.get("zs_packing", a.attrs.get("zt_packing")))
         contract = None
         if spec is not None:
             if a.dtype.kind != "f":
@@ -364,7 +364,7 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
         fid = h160(cjson({"vfid": vfid, "lay": lay, "fmt": fmt, "docs": hdocs}))
         ainfo[n] = {"vfid": vfid, "dims": dims, "taxis": taxis, "fmt": fmt,
                     "attrs": {k: v for k, v in (a.attrs.asdict() if hasattr(a.attrs, "asdict") else dict(a.attrs)).items()
-                              if not k.startswith("_") and k != "zt_packing"},
+                              if not k.startswith("_") and k not in ("zs_packing", "zt_packing")},
                     "layouts": {lay: {"fid": fid, "docs": docs, "chunks": list(cs), "phase": phase}
                                 | ({"stride": a_s, "soff": a_o} if taxis is not None and a_s > 1 else {})}}
         if contract:
@@ -387,7 +387,7 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
 
     # optional cache shared by every node on a host, keyed by file identity: hard-linked replicas (experiments, a site
     # serving one archive under several paths) hash each chunk file once instead of once per node and run
-    shared = Path(os.environ["ZT_HASH_CACHE"]) if os.environ.get("ZT_HASH_CACHE") else None
+    shared = Path(env("ZS_HASH_CACHE")) if env("ZS_HASH_CACHE") else None
     dkey = {n: h160(cjson([a["layouts"], a["taxis"], a.get("packing"), t, subgrid_of(n)])) for n, a in ainfo.items()}
 
     def one(item):
@@ -417,7 +417,7 @@ def scan(path: str | Path, cache_dir: Path | None = None, workers: int | None = 
 
     chunks, files, newhc = {}, {}, {}
     # one decoding thread per core (was 16): peak memory scales with the threads, a 1-vCPU station gains nothing
-    with ThreadPoolExecutor(workers or int(os.environ.get("ZT_SCAN_WORKERS", 0)) or min(16, len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 4)) as ex:
+    with ThreadPoolExecutor(workers or int(env("ZS_SCAN_WORKERS", 0)) or min(16, len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 4)) as ex:
         for ckey, rel, cid, vc, size, mt, nvalid in ex.map(one, todo):
             chunks[ckey] = [cid, vc, size, nvalid]
             files[ckey] = str(root / rel)

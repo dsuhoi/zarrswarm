@@ -1,6 +1,6 @@
-"""Download the union of the ERA5-like replicas through a local zt node and verify every value.
+"""Download the union of the ERA5-like replicas through a local zs node and verify every value.
 
-python bench/verify_real.py zt://<grid> --ctl http://127.0.0.1:17902 [--vars t2m,u10,v10] [--time A:B]
+python bench/verify_real.py zs://<grid> --ctl http://127.0.0.1:17902 [--vars t2m,u10,v10] [--time A:B]
 """
 import argparse
 import json
@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from make_era5like import field  # noqa: E402
 from zarrswarm.store import http, keys_for, open_view, wait_job  # noqa: E402
 
@@ -43,7 +43,7 @@ def main():
                   "per_peer_MB": {p[:8]: round(b / 1e6, 1) for p, b in job["per_peer"].items()},
                   "cover": job.get("cover")}
         print(v, json.dumps(out[v]), flush=True)
-    ds = zt.open_dataset(a.link, ctl=a.ctl)
+    ds = zs.open_dataset(a.link, ctl=a.ctl)
     if t0 or t1:
         ds = ds.sel(time=slice(t0, t1))
     times = pd.DatetimeIndex(ds.time.values)

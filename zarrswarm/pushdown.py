@@ -1,4 +1,4 @@
-"""Optimistic pushdown (ZTP-OP): the holder cuts the requested hyperslab out of a chunk and signs a receipt;
+"""Optimistic pushdown: the holder cuts the requested hyperslab out of a chunk and signs a receipt;
 the requester accepts optimistically and audits a random fraction by re-deriving the slice from the full,
 vcid-verified chunk. A mismatching signed receipt is a transferable fraud proof.
 

@@ -2,7 +2,7 @@
 
 Start a local node with `zarrswarm node`; see the [operator guide](operator.md).
 Commands and Python clients contact its control API at `127.0.0.1:7882`.
-Set `ZT_CTL` to use another local port.
+Set `ZS_CTL` to use another local port.
 
 ## Local checks
 
@@ -24,7 +24,7 @@ local Dask, prefetch, search and NetCDF/Zarr export. It contains 18 tests.
 Run the full suite with `.venv/bin/python -m pytest -q tests`.
 
 To try your own store, start a node, run
-`.venv/bin/zarrswarm seed /path/to/data.zarr` and pass its `zt://...` link to
+`.venv/bin/zarrswarm seed /path/to/data.zarr` and pass its `zs://...` link to
 `zarrswarm.open_dataset`.
 
 ## Terminal interface
@@ -57,9 +57,9 @@ The piece map marks chunks held locally, by several peers, by one peer or by non
 
 | Kind | Example | Meaning |
 |---|---|---|
-| Grid | `zt://8df9...` | Copies with compatible dimensions, coordinates and a common time grid |
-| Multiple grids | `zt://8df9...+41aa...` | Variables on different grids, such as surface and pressure-level fields |
-| Publisher name | `zt://era5@<pubkey>` | A signed, updateable name published with `zarrswarm name` |
+| Grid | `zs://8df9...` | Copies with compatible dimensions, coordinates and a common time grid |
+| Multiple grids | `zs://8df9...+41aa...` | Variables on different grids, such as surface and pressure-level fields |
+| Publisher name | `zs://era5@<pubkey>` | A signed, updateable name published with `zarrswarm name` |
 
 A grid link identifies compatible array coordinates. Time ranges, variable sets,
 chunk shapes, codecs and Zarr v2/v3 encoding may differ between its holders.
@@ -69,7 +69,7 @@ Availability and agreement of values are checked separately.
 
 ```bash
 zarrswarm search 2m_temperature
-zarrswarm peers 'zt://<grid>'
+zarrswarm peers 'zs://<grid>'
 ```
 
 Search uses variable names, `standard_name` and `long_name`.
@@ -78,10 +78,10 @@ Replace `<grid>` with an actual result or the link printed by `seed`.
 ## Download a subset
 
 ```bash
-zarrswarm get 'zt://<grid>' --vars t2m --time 2020-01-01:2020-03-01 --out t2m.zarr
-zarrswarm get 'zt://<grid>' --vars t2m --sel lat=40:60,lon=0:30 --out eu.nc
-zarrswarm get 'zt://<grid>' --vars t2m --chunking time=8760,lat=1,lon=1 --out ts.zarr
-zarrswarm get 'zt://<grid>' --vars t2m --progressive
+zarrswarm get 'zs://<grid>' --vars t2m --time 2020-01-01:2020-03-01 --out t2m.zarr
+zarrswarm get 'zs://<grid>' --vars t2m --sel lat=40:60,lon=0:30 --out eu.nc
+zarrswarm get 'zs://<grid>' --vars t2m --chunking time=8760,lat=1,lon=1 --out ts.zarr
+zarrswarm get 'zs://<grid>' --vars t2m --progressive
 ```
 
 Use your store's variable names, coordinates and dates. NetCDF output needs the
@@ -96,7 +96,7 @@ Received whole chunks are checked against their byte and value identities.
 ## Follow a stream
 
 ```bash
-zarrswarm follow 'zt://era5@<pubkey>' --vars t2m,tp --last 7d --sel lat=40:70,lon=20:60
+zarrswarm follow 'zs://era5@<pubkey>' --vars t2m,tp --last 7d --sel lat=40:70,lon=20:60
 zarrswarm follows
 zarrswarm unfollow <id>
 ```
@@ -118,13 +118,13 @@ Resuming restarts the same job and uses its cached data.
 ```python
 import zarrswarm as zs
 
-ds = zs.open_dataset("zt://<grid>", chunks={}, pushdown=False)
+ds = zs.open_dataset("zs://<grid>", chunks={}, pushdown=False)
 subset = ds["t2m"].sel(time=slice("2020-01", "2020-02"))
 zs.prefetch(subset)
 result = subset.mean("time").compute()
 
 series = zs.open_dataset(
-    "zt://<grid>", chunking={"time": -1, "lat": 1, "lon": 1},
+    "zs://<grid>", chunking={"time": -1, "lat": 1, "lon": 1},
     pushdown=False,
 )
 ```
@@ -141,18 +141,18 @@ whole-chunk validation.
 
 `prefetch` performs a dry read to identify chunks and may allocate memory the
 size of its input. Call it on the selected subset. Sequential time reads can
-prefetch upcoming view chunks with `ZT_READAHEAD`.
+prefetch upcoming view chunks with `ZS_READAHEAD`.
 
 The view is read-only. Save results separately with `to_zarr` or `to_netcdf`.
 An open Dataset contains a metadata snapshot; reopen it after source metadata
 changes. Use `zs.open_dataset` for these links: a native
-`xr.open_dataset("zt://...")` backend is not registered.
+`xr.open_dataset("zs://...")` backend is not registered.
 Multi-machine Dask execution has not been validated.
 
 ## Approximate means
 
 ```bash
-zarrswarm mean 'zt://<grid>' t2m --time 2020-01-01:2020-12-31 --rel-err 0.001
+zarrswarm mean 'zs://<grid>' t2m --time 2020-01-01:2020-12-31 --rel-err 0.001
 ```
 
 ```python
@@ -169,7 +169,7 @@ sampling assumptions.
 
 ```bash
 zarrswarm seed /data/my_run.zarr
-zarrswarm name my-run 'zt://<grid>'
+zarrswarm name my-run 'zs://<grid>'
 ```
 
 Seeding reads the original store without copying it. Compatible replicas can

@@ -15,7 +15,7 @@ import pandas as pd
 import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import zarrswarm as zt  # noqa: E402
+import zarrswarm as zs  # noqa: E402
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.store import http  # noqa: E402
 
@@ -67,7 +67,7 @@ def main():
             run(c.start())
             ctl = f"http://127.0.0.1:{c.ctl_port}"
             chunking = {"time": -1, "lat": 1, "lon": 1} if sel is not None else None
-            ds = zt.open_dataset(link, ctl=ctl, chunking=chunking, pushdown=mode.startswith("pushdown"))
+            ds = zs.open_dataset(link, ctl=ctl, chunking=chunking, pushdown=mode.startswith("pushdown"))
             t0 = time.perf_counter()
             if sel is None:
                 v = ds.t2m.sel(time="2020-02-01").values

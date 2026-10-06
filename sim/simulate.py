@@ -32,9 +32,10 @@ import xarray as xr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 # many nodes share one process here: keep per-node caches small
-os.environ.setdefault("ZT_DECODED_MB", "32")
-os.environ.setdefault("ZT_PAGE_CACHE_MB", "32")
-import zarrswarm as zt  # noqa: E402
+os.environ.setdefault("ZS_DECODED_MB", os.environ.get("ZT_DECODED_MB", "32"))
+os.environ.setdefault("ZS_PAGE_CACHE_MB", os.environ.get("ZT_PAGE_CACHE_MB", "32"))
+import zarrswarm as zs  # noqa: E402
+from zarrswarm.common import env
 from zarrswarm.node import Node  # noqa: E402
 from zarrswarm.store import http, keys_for, open_view, wait_job  # noqa: E402
 
@@ -193,7 +194,7 @@ def e1_strategies(args, root):
                 contrib = [b for b in up.values() if b > 0]
                 tot = sum(up.values())
                 # correctness: whole union equals the generator where covered
-                ds = zt.open_dataset(link, ctl=sw.ctl(c))
+                ds = zs.open_dataset(link, ctl=sw.ctl(c))
                 got = ds.t2m.values
                 ref = field(pd.DatetimeIndex(ds.time.values))
                 ok = bool(np.array_equal(got[~np.isnan(got)], ref[~np.isnan(got)]))
@@ -225,7 +226,7 @@ def e2_availability(args, root):
             sw = Swarm(root / f"e2_{f}_{rep}", args.peers, args.boot, args.nat, seed=300 + rep)
             try:
                 link, times, holders = make_replicas(sw, args.days, args.replica_frac, seed=400 + rep)
-                grid = link.removeprefix("zt://")
+                grid = link.removeprefix("zs://")
                 full_view = http(sw.ctl(next(iter(holders))), "GET", f"/api/view/{grid}?refresh=1")
                 n_total = sum(li["n"] for li in full_view["arrays"]["t2m"]["layouts"].values())
                 victims = sw.rng.sample(list(sw.nodes), int(f * len(sw.nodes)))
@@ -298,7 +299,7 @@ def e4_dht_load(args, root):
         found = 0
         for n in sw.alive():
             try:
-                v = http(sw.ctl(n), "GET", f"/api/peers/{link.removeprefix('zt://')}", timeout=60)
+                v = http(sw.ctl(n), "GET", f"/api/peers/{link.removeprefix('zs://')}", timeout=60)
                 found += bool(v["peers"])
             except Exception:
                 pass
@@ -332,7 +333,7 @@ def e5_jlps(args, root):
                     xr.Dataset({"t2m": (("time", "lat", "lon"), data)}, coords={"time": times, "lat": LAT, "lon": LON}
                                ).to_zarr(p, encoding={"t2m": {"chunks": layout}}, consolidated=False)
                     link = http(sw.ctl(n), "POST", "/api/seed", {"path": str(p)})["link"]
-            grid = link.removeprefix("zt://")
+            grid = link.removeprefix("zs://")
             rng = random.Random(rep)
             windows = [(d, d + 1) for d in rng.sample(range(1, 26), 4)] + [(2, 21)]
             for d0, d1 in windows:
@@ -345,7 +346,7 @@ def e5_jlps(args, root):
                     jid = http(sw.ctl(c), "POST", "/api/download", {"grid": grid, "cover": cover,
                                                                      "region": {"var": "t2m", "t0": t0, "t1": t1}})["job"]
                     job = wait_job(sw.ctl(c), jid, every=0.1)
-                    ds = zt.open_dataset(link, ctl=sw.ctl(c))
+                    ds = zs.open_dataset(link, ctl=sw.ctl(c))
                     sub = ds.t2m.sel(time=slice(t0, t1)).values
                     ref = field(pd.date_range(t0, pd.Timestamp(t1) + pd.Timedelta("23h"), freq="h"))
                     res[cover] = {"s": round(job["t1"] - job["t0"], 2), "MB": round(job["bytes"] / 1e6, 1),
@@ -372,7 +373,7 @@ def e6_loss(args, root):
                 c = fresh_client(sw, "e6", "maxflow")
                 t0 = time.perf_counter()
                 job, secs, nkeys = download(sw, c, link)
-                ds = zt.open_dataset(link, ctl=sw.ctl(c))
+                ds = zs.open_dataset(link, ctl=sw.ctl(c))
                 got = ds.t2m.values
                 ok = bool(np.array_equal(got[~np.isnan(got)], field(pd.DatetimeIndex(ds.time.values))[~np.isnan(got)]))
                 rows.append({"loss": loss, "rep": rep, "state": job["state"], "done": job["done"], "total": job["total"],
@@ -397,7 +398,7 @@ def e9_parity(args, root):
                 try:
                     link, times, holders = make_replicas(sw, args.days, args.replica_frac * 0.6, seed=1300 + rep,
                                                          layouts=((24, 91, 180),))  # isolate the coding effect
-                    grid = link.removeprefix("zt://")
+                    grid = link.removeprefix("zs://")
                     vols = [n for n in sw.nodes if not n.startswith("boot") and n not in holders]
                     if mode == "replicas":
                         for n in vols[:B]:
@@ -427,7 +428,7 @@ def e9_parity(args, root):
                     jid = http(sw.ctl(c), "POST", "/api/download", {"grid": grid, "region": {"var": "t2m"}})["job"]
                     job = wait_job(sw.ctl(c), jid)
                     print(f"  download {time.time() - t_:.1f}s restored={job.get('restored')}", flush=True)
-                    ds = zt.open_dataset(link, ctl=sw.ctl(c))
+                    ds = zs.open_dataset(link, ctl=sw.ctl(c))
                     t0h = times.values[0].astype("datetime64[h]").astype("int64")
                     got = set()
                     for d0 in range(0, len(times), 24):  # per day: an unrecoverable chunk only costs its own day
@@ -465,7 +466,7 @@ def main():
     ap.add_argument("--e9-modes", nargs="*", default=["none", "replicas", "rs_consecutive", "rs_interleaved"])
     ap.add_argument("--out", default="sim/results.json")
     a = ap.parse_args()
-    base = Path(os.environ.get("ZT_SIM_DIR", "~/.cache/zt_sim")).expanduser()
+    base = Path(env("ZS_SIM_DIR", "~/.cache/zs_sim")).expanduser()
     base.mkdir(parents=True, exist_ok=True)
     root = Path(tempfile.mkdtemp(prefix="ztsim", dir=base))
     res = {"config": vars(a)}

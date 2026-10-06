@@ -10,7 +10,7 @@ import pytest
 import xarray as xr
 import zarr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm.node import Node
 from zarrswarm.store import http
 
@@ -76,7 +76,7 @@ def test_swarm_union_transcode_relay_progressive(swarm):
     assert len(links) == 1, links  # same grid family despite different extent/vars/codecs/time units
     link = links.pop()
 
-    ds = zt.open_dataset(link, ctl=ctl(nodes["client"]))
+    ds = zs.open_dataset(link, ctl=ctl(nodes["client"]))
     times = pd.date_range("2020-01-01", "2020-01-25 23:00", freq="h")
     assert ds.sizes["time"] == len(times)
     assert (ds.time.values == times.values).all()
@@ -99,22 +99,22 @@ def test_swarm_union_transcode_relay_progressive(swarm):
 
     # sliced prefetch + reopened dataset served from cache
     sub = ds.t2m.sel(time=slice("2020-01-03", "2020-01-04"))
-    zt.prefetch(sub)
+    zs.prefetch(sub)
     np.testing.assert_array_equal(sub.values, field("t2m", pd.date_range("2020-01-03", "2020-01-04 23:00", freq="h")))
 
     # progressive error-bounded mean on a fresh client that has nothing cached
     fresh = Node(tmp / "h_fresh", port=port(), ctl_port=port(), bootstrap=[f"http://127.0.0.1:{nodes['boot'].port}"])
     run(fresh.start())
     try:
-        ds2 = zt.open_dataset(link, ctl=ctl(fresh))
-        r = zt.progressive_mean(ds2, "u10", rel_err=0.5, min_chunks=4)
+        ds2 = zs.open_dataset(link, ctl=ctl(fresh))
+        r = zs.progressive_mean(ds2, "u10", rel_err=0.5, min_chunks=4)
         true = float(np.nanmean(field("u10", pd.date_range("2020-01-01", "2020-01-10 23:00", freq="h"))))
         assert r["mean"] is not None and abs(r["mean"] - true) <= max(3 * r["ci95"], 1e-6), f"{r} {true}"
-        r2 = zt.progressive_mean_vas(ds2, "u10", rel_err=0.5)
+        r2 = zs.progressive_mean_vas(ds2, "u10", rel_err=0.5)
         assert abs(r2["mean"] - true) <= max(3 * r2["ci95"], 1e-6), f"{r2} {true}"
     finally:
         run(fresh.stop())
 
     # signed mutable name in the DHT
     named = http(ctl(nodes["a"]), "POST", "/api/name", {"name": "era5-test", "target": link})["link"]
-    assert http(ctl(nodes["client"]), "GET", "/api/resolve?link=" + named)["grid"] == link.removeprefix("zt://")
+    assert http(ctl(nodes["client"]), "GET", "/api/resolve?link=" + named)["grid"] == link.removeprefix("zs://")

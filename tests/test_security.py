@@ -13,7 +13,7 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm.node import Node
 from zarrswarm.store import http, wait_job
 _ports = iter(range(10000, 30000))
@@ -86,7 +86,7 @@ def test_legacy_cached_ids_are_recomputed_without_removing_data(net):
     times = pd.date_range("2020-01-01", periods=24, freq="h")
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": make(tmp / "migration.zarr", values, times)})["link"]
     client = nodes["client"]
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(client)).sec.values, values)
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(client)).sec.values, values)
     run(client.stop())
     blobs = {}
     for path in (client.home / "cache").glob("*.json"):
@@ -137,7 +137,7 @@ def test_majority_beats_conflicting_replica_and_tampered_bytes_are_rejected(net)
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": p1})["link"]
     http(ctl(nodes["h2"]), "POST", "/api/seed", {"path": p2})
     http(ctl(nodes["evil"]), "POST", "/api/seed", {"path": pe})
-    ds = zt.open_dataset(link, ctl=ctl(nodes["client"]))
+    ds = zs.open_dataset(link, ctl=ctl(nodes["client"]))
     np.testing.assert_array_equal(ds.sec.values, good)
     # the conflicting holder may serve the (identical) coordinate chunks, never a data chunk (960 B each)
     assert nodes["evil"].served["bytes"] < 500, nodes["evil"].served
@@ -153,13 +153,13 @@ def test_one_liar_against_one_honest_holder_is_not_served(net):
     pe = make(tmp / "liar.zarr", good + 1000, times)
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": p1})["link"]
     http(ctl(nodes["evil"]), "POST", "/api/seed", {"path": pe})
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     jid = http(ctl(nodes["client"]), "POST", "/api/download", {"grid": grid, "region": {"var": "sec"}})["job"]
     job = wait_job(ctl(nodes["client"]), jid)
     assert job["done"] == 0 and job["missing"] == job["total"] == 2, job  # both chunks contested, none accepted
     nodes["client"].trusted.add(nodes["h1"].ident.id)
     nodes["client"].views.clear()
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(nodes["client"])).sec.values, good)
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(nodes["client"])).sec.values, good)
 
 
 def test_tampered_seed_file_is_dropped_not_retried_forever(net):
@@ -172,7 +172,7 @@ def test_tampered_seed_file_is_dropped_not_retried_forever(net):
         if f.is_file() and f.name != "zarr.json":
             f.write_bytes(b"\x00" * f.stat().st_size)
     t0 = time.time()
-    ds = zt.open_dataset(link, ctl=ctl(nodes["client"]))
+    ds = zs.open_dataset(link, ctl=ctl(nodes["client"]))
     with pytest.raises(Exception, match="download failed"):
         ds.sec.values
     assert time.time() - t0 < 30
@@ -180,11 +180,21 @@ def test_tampered_seed_file_is_dropped_not_retried_forever(net):
 
 def test_control_api_requires_local_client_header(net):
     nodes, _, _ = net
-    req = urllib.request.Request(ctl(nodes["h1"]) + "/api/status")  # no X-Zt-Client (what a web page sends)
+    req = urllib.request.Request(ctl(nodes["h1"]) + "/api/status")  # no X-Zs-Client (what a web page sends)
     with pytest.raises(urllib.error.HTTPError) as e:
         urllib.request.urlopen(req, timeout=5)
     assert e.value.code == 403
-    req = urllib.request.Request(ctl(nodes["h1"]) + "/api/status", headers={"X-Zt-Client": "1", "Host": "evil.com"})
+    for prefix in ("Zs", "Zt"):
+        req = urllib.request.Request(ctl(nodes["h1"]) + "/api/status", headers={f"X-{prefix}-Client": "1"})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            assert response.status == 200
+    # A legacy credential cannot override a supplied, invalid canonical header.
+    req = urllib.request.Request(ctl(nodes["h1"]) + "/api/status",
+                                 headers={"X-Zs-Client": "0", "X-Zt-Client": "1"})
+    with pytest.raises(urllib.error.HTTPError) as e:
+        urllib.request.urlopen(req, timeout=5)
+    assert e.value.code == 403
+    req = urllib.request.Request(ctl(nodes["h1"]) + "/api/status", headers={"X-Zs-Client": "1", "Host": "evil.com"})
     with pytest.raises(urllib.error.HTTPError) as e:
         urllib.request.urlopen(req, timeout=5)
     assert e.value.code == 403
@@ -219,13 +229,13 @@ def test_trusted_publisher_beats_sybil_majority(net, tmp_path):
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": make(tmp / "t_h1.zarr", good, times)})["link"]
     for n in ("h2", "evil"):  # Sybil pair with forged values
         http(ctl(nodes[n]), "POST", "/api/seed", {"path": make(tmp / f"t_{n}.zarr", good + 7, times)})
-    plain = zt.open_dataset(link, ctl=ctl(nodes["client"]))
+    plain = zs.open_dataset(link, ctl=ctl(nodes["client"]))
     assert np.array_equal(plain.sec.values, good + 7)  # majority wins without a trust anchor
     trusting = Node(tmp_path / "trusting", port=port(), ctl_port=port(), trust=[nodes["h1"].ident.pk],
                     bootstrap=[f"http://127.0.0.1:{nodes['boot'].port}"])
     run(trusting.start())
     try:
-        ds = zt.open_dataset(link, ctl=ctl(trusting))
+        ds = zs.open_dataset(link, ctl=ctl(trusting))
         np.testing.assert_array_equal(ds.sec.values, good)
     finally:
         run(trusting.stop())
@@ -236,11 +246,11 @@ def test_pushdown_point_series_is_exact_and_cheaper(net):
     times = pd.date_range("2024-01-01", periods=96, freq="h")
     vals = np.random.default_rng(5).random((96, 4, 5)).astype("float32")
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": make(tmp / "pd.zarr", vals, times)})["link"]
-    ds = zt.open_dataset(link, ctl=ctl(nodes["client"]), chunking={"time": -1, "y": 1, "x": 1})
+    ds = zs.open_dataset(link, ctl=ctl(nodes["client"]), chunking={"time": -1, "y": 1, "x": 1})
     np.testing.assert_array_equal(ds.sec.isel(y=2, x=3).values, vals[:, 2, 3])
     st = http(ctl(nodes["client"]), "GET", "/api/status")["pushdown"]
     assert st["remote"] >= 1 and st["bytes"] <= 96 * 4 * 2  # a few hundred bytes instead of whole chunks
-    assert zt.store_of(ds).stats["pushdown"] >= 1
+    assert zs.store_of(ds).stats["pushdown"] >= 1
 
 
 def test_optimistic_pushdown_catches_a_lying_holder(net):
@@ -249,7 +259,7 @@ def test_optimistic_pushdown_catches_a_lying_holder(net):
     vals = np.random.default_rng(6).random((48, 4, 5)).astype("float32") + 1
     link = http(ctl(nodes["evil"]), "POST", "/api/seed", {"path": make(tmp / "lie.zarr", vals, times)})["link"]
     nodes["evil"].cheat = True                     # signs zeros instead of the real slice
-    ds = zt.open_dataset(link, ctl=ctl(nodes["client"]), chunking={"time": -1, "y": 1, "x": 1})
+    ds = zs.open_dataset(link, ctl=ctl(nodes["client"]), chunking={"time": -1, "y": 1, "x": 1})
     np.testing.assert_array_equal(ds.sec.isel(y=1, x=1).values, vals[:, 1, 1])  # audit replaced the lie
     st = http(ctl(nodes["client"]), "GET", "/api/status")
     assert nodes["evil"].ident.id in st["blacklist"]
@@ -257,16 +267,23 @@ def test_optimistic_pushdown_catches_a_lying_holder(net):
     assert f["peer"] == nodes["evil"].ident.id and f["claimed_h"] != f["true_h"]
     # the stored receipt is a transferable proof: anyone can check the holder signed the wrong hash
     from zarrswarm.common import verify, cjson
-    body = cjson({"g": link.removeprefix("zt://"), "k": f["key"], "cid": f["cid"], "sel": f["sel"], "h": f["claimed_h"]})
+    body = cjson({"g": link.removeprefix("zs://"), "k": f["key"], "cid": f["cid"], "sel": f["sel"], "h": f["claimed_h"]})
     assert verify(f["pk"], f["sig"], body)
 
 
-def test_closed_network_key(tmp_path):
+@pytest.mark.parametrize("legacy_headers", [False, True])
+def test_closed_network_key(tmp_path, monkeypatch, legacy_headers):
     """Private network: members with the key see and download everything; a node or a plain HTTP client
     without it (or with a wrong key) gets 403 on every data-port path, DHT included."""
     import urllib.error
     import urllib.request
     from zarrswarm import cli
+    if legacy_headers:
+        # Simulate peers that emit only the old headers, including signed replies and relay frames.
+        from zarrswarm import node
+        emit = node.protocol_headers
+        monkeypatch.setattr(node, "protocol_headers", lambda **kw: {k: v for k, v in emit(**kw).items()
+                                                                    if k.startswith("X-Zt-")})
     loop = asyncio.new_event_loop()
     threading.Thread(target=loop.run_forever, daemon=True).start()
     run = lambda c: asyncio.run_coroutine_threadsafe(c, loop).result(60)
@@ -275,7 +292,7 @@ def test_closed_network_key(tmp_path):
     cli.main(["init", "--home", str(boot_home), "--bootstrap-node", "--public-host", "127.0.0.1", "--port", str(bp),
               "--private"])
     invite = cli._config(boot_home)["network"]
-    _, burl, key = cli.parse_ztnet(invite)
+    _, burl, key = cli.parse_zsnet(invite)
     assert key and invite.endswith("?k=" + key) and burl == f"http://127.0.0.1:{bp}"
     assert (boot_home / "config.toml").stat().st_mode & 0o077 == 0  # secret: owner-only
     boot = Node(boot_home, port=bp, ctl_port=port(), network_key=key, relay_server=True)
@@ -292,14 +309,14 @@ def test_closed_network_key(tmp_path):
                                                           "y": [0.0, 1.0], "x": [0.0, 1.0, 2.0]}).to_zarr(p_, consolidated=False)
     link = http(ctl(a), "POST", "/api/seed", {"path": p_})["link"]
     assert "/r/" in a.addr
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(member)).v.values, vals)
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(member)).v.values, vals)
     for n in (outsider, wrong):
-        assert run(n.find_peers(link.removeprefix("zt://"))) == {}  # cannot even look it up in the DHT
-    grid = link.removeprefix("zt://")
+        assert run(n.find_peers(link.removeprefix("zs://"))) == {}  # cannot even look it up in the DHT
+    grid = link.removeprefix("zs://")
     for path, body in (("/whoami", None), (f"/m/{grid}", None), (f"/mh/{grid}", None), ("/dht", b"{}"),
                        (f"/cb/{grid}", b"{}"), ("/relay/attach", None),
                        (f"/r/{a.ident.id}/m/{grid}", None)):
-        for hdr in ({}, {"X-Zt-Net": "nope"}):
+        for hdr in ({}, {"X-Zs-Net": "nope"}):
             req = urllib.request.Request(f"http://127.0.0.1:{bp}{path}",
                                          data=body, headers=hdr, method="POST" if body else "GET")
             try:
@@ -315,13 +332,17 @@ def test_closed_network_key(tmp_path):
         except urllib.error.HTTPError as e:
             return e.code
     now = int(time.time())
-    captured = {"X-Zt-Net": f"{now}:{member._net_mac(now, 'GET', '/whoami')}"}
-    assert key not in captured["X-Zt-Net"]
+    captured = {"X-Zs-Net": f"{now}:{member._net_mac(now, 'GET', '/whoami')}"}
+    assert key not in captured["X-Zs-Net"]
     assert get("/whoami", captured) == 200
+    legacy = {"X-Zt-Net": captured["X-Zs-Net"]}
+    assert get("/whoami", legacy) == 200
+    assert get("/whoami", {**legacy, "X-Zs-Net": "nope"}) == 403
+    assert get("/whoami", {**captured, "X-Zt-Net": "nope"}) == 200
     assert get(f"/mh/{grid}", captured) == 403  # replayed on another path
     old = now - 10 * 60
-    assert get("/whoami", {"X-Zt-Net": f"{old}:{member._net_mac(old, 'GET', '/whoami')}"}) == 403  # expired
-    assert get("/whoami", {"X-Zt-Net": key}) == 403  # the bare key is no longer a credential
+    assert get("/whoami", {"X-Zs-Net": f"{old}:{member._net_mac(old, 'GET', '/whoami')}"}) == 403  # expired
+    assert get("/whoami", {"X-Zs-Net": key}) == 403  # the bare key is no longer a credential
     for n in (a, member, outsider, wrong, boot):
         run(n.stop())
 
@@ -366,7 +387,7 @@ def test_a_longer_fake_array_does_not_win_a_tie(net):
     pe = make(tmp / "longer.zarr", good + 1000, times)
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": p1})["link"]
     http(ctl(nodes["evil"]), "POST", "/api/seed", {"path": pe})
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     job = wait_job(ctl(nodes["client"]), http(ctl(nodes["client"]), "POST", "/api/download",
                                               {"grid": grid, "region": {"var": "sec"}})["job"])
     assert job["done"] == 0, {kk: job.get(kk) for kk in ("total", "done", "missing", "failed")}  # chunk 0: plain tie; chunk 1: longer but inconsistent
@@ -380,11 +401,11 @@ def test_growing_copy_wins_over_its_older_prefix(net):
     p_old, p_new = make(tmp / "old.zarr", new[:18], times[:18]), make(tmp / "new.zarr", new, times)
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": p_old})["link"]
     http(ctl(nodes["h2"]), "POST", "/api/seed", {"path": p_new})
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     job = wait_job(ctl(nodes["client"]), http(ctl(nodes["client"]), "POST", "/api/download",
                                               {"grid": grid, "region": {"var": "sec"}})["job"])
     assert job["done"] == 2 and job["missing"] == 0, job
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(nodes["client"])).sec.values, new)
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(nodes["client"])).sec.values, new)
 
 
 def test_manifest_heads_reject_rollback_and_expose_equivocation(tmp_path):
@@ -407,7 +428,7 @@ def test_publisher_equivocation_is_detected_end_to_end(net):
     vals = np.random.default_rng(9).random((24, 4, 5)).astype("float32")
     p = make(tmp / "eq.zarr", vals, times)
     link = http(ctl(nodes["h1"]), "POST", "/api/seed", {"path": p})["link"]
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     http(ctl(nodes["client"]), "GET", f"/api/view/{grid}?refresh=1")
     seen = nodes["client"].seen_heads[(nodes["h1"].ident.id, grid)]
     h1 = nodes["h1"]

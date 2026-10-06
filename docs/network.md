@@ -19,8 +19,8 @@ Dataset-specific permissions and per-user quotas are not implemented.
 
 All networks verify signed announcements and chunk identities. DHT addresses,
 metadata index records and publisher names are signed with Ed25519 keys.
-Only the key owner can update `zt://name@<pubkey>`.
-The control API is local and checks `X-Zt-Client` and `Host`.
+Only the key owner can update `zs://name@<pubkey>`.
+The control API is local and checks `X-Zs-Client` and `Host`.
 
 Private-network requests carry timestamped HMAC authentication. HTTP payloads
 and metadata are unencrypted, and anyone who obtains the network key can join.
@@ -34,16 +34,16 @@ zarrswarm init --bootstrap-node --public-host data.example.org --private
 ```
 
 Initialization prints an invitation:
-`ztnet://<id>@<host>:<port>`, with `?k=<network-key>` for a private network.
+`zsnet://<id>@<host>:<port>`, with `?k=<network-key>` for a private network.
 Share a private invitation only with its participants.
 
 ```bash
-zarrswarm init --join 'ztnet://<id>@data.example.org:7881?k=<network-key>'
+zarrswarm init --join 'zsnet://<id>@data.example.org:7881?k=<network-key>'
 zarrswarm node
 ```
 
-The key is saved as `network_key` in `~/.zt/config.toml`, created with mode
-`0600`. `ZT_NETWORK_KEY` can supply it instead. Check that `zarrswarm status`
+The key is saved as `network_key` in `~/.zs/config.toml`, created with mode
+`0600`. `ZS_NETWORK_KEY` can supply it instead. Check that `zarrswarm status`
 reports DHT contacts.
 
 Any reachable public node can provide entry to the DHT. To add one, join with
@@ -68,12 +68,12 @@ changes so it announces the new address.
 Run a separate node with its own state directory and ports for each network:
 
 ```bash
-ZT_HOME="$HOME/.zt-project" zarrswarm init --join 'ztnet://<id>@HOST:7881?k=<network-key>' --port 7891
-ZT_HOME="$HOME/.zt-project" zarrswarm node
+ZS_HOME="$HOME/.zs-project" zarrswarm init --join 'zsnet://<id>@HOST:7881?k=<network-key>' --port 7891
+ZS_HOME="$HOME/.zs-project" zarrswarm node
 ```
 
 In another terminal, select it with
-`ZT_CTL=http://127.0.0.1:7892 zarrswarm search t2m`.
+`ZS_CTL=http://127.0.0.1:7892 zarrswarm search t2m`.
 
 ## Register stores
 
@@ -99,15 +99,15 @@ stores in place without copying or rewriting them.
 
 Compatible stores can differ in time coverage, variables, chunking, codecs,
 Zarr version and aligned sample strides. Variables on different coordinate
-grids produce multiple links, joined as `zt://g1+g2`.
+grids produce multiple links, joined as `zs://g1+g2`.
 
 ### Publisher names
 
 ```bash
-zarrswarm name era5 'zt://<grid>'
+zarrswarm name era5 'zs://<grid>'
 ```
 
-The resulting `zt://era5@<pubkey>` name can be updated to another grid.
+The resulting `zs://era5@<pubkey>` name can be updated to another grid.
 The node republishes it while running. Publishers can use the same short name;
 their public keys distinguish the links.
 

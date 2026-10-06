@@ -1,10 +1,10 @@
 """xarray / zarr integration.
 
-    import zarrswarm as zt
-    ds = zt.open_dataset("zt://<grid_id>")                          # union view, native chunks
-    ts = zt.open_dataset("zt://<grid_id>", chunking={"time": 8760, "lat": 1, "lon": 1})  # re-chunked view
+    import zarrswarm as zs
+    ds = zs.open_dataset("zs://<grid_id>")                          # union view, native chunks
+    ts = zs.open_dataset("zs://<grid_id>", chunking={"time": 8760, "lat": 1, "lon": 1})  # re-chunked view
     sub = ds.t2m.sel(time=slice("2020-01-05", "2020-01-20"))
-    zt.prefetch(sub)                                                  # one plan for the whole slice
+    zs.prefetch(sub)                                                  # one plan for the whole slice
     sub.mean().compute()
 
 Chunk access modes (chosen per view chunk from swarm metadata only, no data is read to decide):
@@ -14,7 +14,7 @@ Chunk access modes (chosen per view chunk from swarm metadata only, no data is r
             and handed to zarr uncompressed (it never leaves the process).
   progressive  see progressive_mean(): low-discrepancy download order + anytime estimate.
 
-ZtStore is a read-only zarr v3 Store. Chunk reads are coalesced (5 ms window) into batched
+ZsStore is a read-only zarr v3 Store. Chunk reads are coalesced (5 ms window) into batched
 /api/fetch calls to the local node, which plans them across peers (max-flow) and returns paths
 into its content-addressed cache.
 """
@@ -43,25 +43,26 @@ from zarr.abc.store import OffsetByteRequest, RangeByteRequest, SuffixByteReques
 from zarr.core.buffer import cpu, default_buffer_prototype
 from zarr.storage import MemoryStore
 
+from .common import env, protocol_headers
 from . import codec
 from .jlps import complete_for
 from .scan import available_layouts, chunk_g, chunks_for, natural_stride, sample_of, split_key, tstride
 
-CTL = os.environ.get("ZT_CTL", "http://127.0.0.1:7882")
+CTL = env("ZS_CTL", "http://127.0.0.1:7882")
 BATCH_WINDOW = 0.005
-DECODED_CACHE_BYTES = int(os.environ.get("ZT_DECODED_CACHE_MB", "512")) << 20
-PUSHDOWN_FRAC = float(os.environ.get("ZT_PUSHDOWN_FRAC", "0.25"))
-READAHEAD = int(os.environ.get("ZT_READAHEAD", "4"))  # chunks prefetched ahead of a sequential time scan  # below: ask holders for the hyperslab only
-_STORES: "weakref.WeakValueDictionary[str, ZtStore]" = weakref.WeakValueDictionary()
+DECODED_CACHE_BYTES = int(env("ZS_DECODED_CACHE_MB", "512")) << 20
+PUSHDOWN_FRAC = float(env("ZS_PUSHDOWN_FRAC", "0.25"))
+READAHEAD = int(env("ZS_READAHEAD", "4"))  # chunks prefetched ahead of a sequential time scan  # below: ask holders for the hyperslab only
+_STORES: "weakref.WeakValueDictionary[str, ZsStore]" = weakref.WeakValueDictionary()
 # Assembly calls synchronous zarr (codec decode/encode) which needs zarr's own event loop *and* its default
 # executor; running it in that same executor starves it (deadlock). Use a dedicated pool.
-_POOL = ThreadPoolExecutor(max_workers=min(32, (os.cpu_count() or 4) + 4), thread_name_prefix="zt-assemble")
+_POOL = ThreadPoolExecutor(max_workers=min(32, (os.cpu_count() or 4) + 4), thread_name_prefix="zs-assemble")
 
 
 def http(ctl: str, method: str, path: str, body=None, timeout: float = 3600, raw: bool = False):
     req = urllib.request.Request(ctl.rstrip("/") + path, method=method,
                                  data=None if body is None else json.dumps(body).encode(),
-                                 headers={"Content-Type": "application/json", "X-Zt-Client": "1"})
+                                 headers={"Content-Type": "application/json", **protocol_headers(Client="1")})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read() if raw else json.loads(r.read())
@@ -433,7 +434,7 @@ def _slice(data: bytes, br) -> bytes:
     raise TypeError(br)
 
 
-class ZtStore(MemoryStore):
+class ZsStore(MemoryStore):
     __hash__ = object.__hash__  # MemoryStore defines __eq__ -> unhashable; we need weak references
 
     def __init__(self, ctl: str, grid: str, view: View):
@@ -578,7 +579,7 @@ class ZtStore(MemoryStore):
 
     async def _post_download(self, keys):
         try:
-            async with aiohttp.ClientSession(headers={"X-Zt-Client": "1"}) as session:
+            async with aiohttp.ClientSession(headers=protocol_headers(Client="1")) as session:
                 async with session.post(f"{self.ctl}/api/download", json={"grid": self.grid, "keys": keys,
                                                                            "label": "readahead"}) as r:
                     await r.read()
@@ -596,7 +597,7 @@ class ZtStore(MemoryStore):
     async def _sflush(self):
         await asyncio.sleep(BATCH_WINDOW)
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=None),
-                                         headers={"X-Zt-Client": "1"}) as session:
+                                         headers=protocol_headers(Client="1")) as session:
             while self._spending:
                 batch, self._spending = self._spending, []
                 try:
@@ -609,7 +610,7 @@ class ZtStore(MemoryStore):
                         n = int.from_bytes(body[off:off + 4], "big")
                         off += 4
                         if n == 0xFFFFFFFF:
-                            f.set_exception(OSError("zt: pushdown slice unavailable")) if not f.done() else None
+                            f.set_exception(OSError("zs: pushdown slice unavailable")) if not f.done() else None
                             continue
                         if not f.done():
                             f.set_result(body[off:off + n])
@@ -624,7 +625,7 @@ class ZtStore(MemoryStore):
         if path is None:
             return None  # no replica holds this chunk -> fill_value
         if path == "!":
-            raise OSError(f"zt: replicas exist for {ck} but download failed")
+            raise OSError(f"zs: replicas exist for {ck} but download failed")
         return await asyncio.to_thread(read_chunk, self.ctl, self.grid, ck, path)
 
     async def exists(self, key):
@@ -641,7 +642,7 @@ class ZtStore(MemoryStore):
     async def _flush(self):
         await asyncio.sleep(BATCH_WINDOW)
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=None),
-                                         headers={"X-Zt-Client": "1"}) as session:  # no leaked sessions
+                                         headers=protocol_headers(Client="1")) as session:  # no leaked sessions
             await self._drain(session)
 
     async def _drain(self, session):
@@ -672,7 +673,7 @@ class ZtStore(MemoryStore):
 
 
 def resolve(link: str, ctl: str | None = None) -> list[str]:
-    """zt://g1+g2 or zt://name@pk -> list of sub-grid ids."""
+    """zs://g1+g2 or zs://name@pk -> list of sub-grid ids."""
     return http(ctl or CTL, "GET", "/api/resolve?link=" + urllib.parse.quote(link))["grid"].split("+")
 
 
@@ -714,26 +715,29 @@ def open_dataset(link: str, ctl: str | None = None, chunking: dict | None = None
     if zarr.config.get("async.concurrency") < 256:
         zarr.config.set({"async.concurrency": 256})  # let zarr issue whole slices at once -> big batches
     # lazy numpy-backed arrays by default: one zarr read per selection -> one big batch -> one optimal plan.
-    # Pass chunks={} / "auto" for dask (then zt.prefetch() first to keep planning global).
+    # Pass chunks={} / "auto" for dask (then zs.prefetch() first to keep planning global).
     kw.setdefault("chunks", None)
     kw.setdefault("consolidated", False)
     parts, owners = [], {}
     for grid, view in open_views(link, ctl, chunking, step):  # one store per sub-grid, merged on shared coords
-        store = ZtStore(ctl, grid, view)
+        store = ZsStore(ctl, grid, view)
         store.pushdown = pushdown
         d = xr.open_zarr(store, **dict(kw, zarr_format=kw.get("zarr_format", view.fmt)))
         owners.update({v: store.token for v in d.data_vars})
         parts.append(d)
     ds = parts[0] if len(parts) == 1 else xr.merge(parts, join="outer", compat="override", combine_attrs="override")
-    ds.attrs["zt_grid"] = "+".join(s.grid for s in (_STORES[t] for t in dict.fromkeys(owners.values())))
-    ds.attrs["zt_store"] = next(iter(owners.values()), "")
-    ds.attrs["zt_stores"] = json.dumps(owners)
+    ds.attrs["zs_grid"] = "+".join(s.grid for s in (_STORES[t] for t in dict.fromkeys(owners.values())))
+    ds.attrs["zs_store"] = next(iter(owners.values()), "")
+    ds.attrs["zs_stores"] = json.dumps(owners)
     return ds
 
 
-def store_of(ds, var: str | None = None) -> ZtStore:
-    tok = json.loads(ds.attrs.get("zt_stores", "{}")).get(var) if var else None
-    s = _STORES.get(tok or ds.attrs.get("zt_store", ""))
+ZtStore = ZsStore  # compatibility for existing callers
+
+
+def store_of(ds, var: str | None = None) -> ZsStore:
+    tok = json.loads(ds.attrs.get("zs_stores", ds.attrs.get("zt_stores", "{}"))).get(var) if var else None
+    s = _STORES.get(tok or ds.attrs.get("zs_store", ds.attrs.get("zt_store", "")))
     if s is None:
         raise ValueError("dataset was not opened with zarrswarm.open_dataset")
     return s

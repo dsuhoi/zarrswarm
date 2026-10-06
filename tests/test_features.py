@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm import node as nodemod
 from zarrswarm.node import Node
 from zarrswarm.scan import split_key
@@ -78,7 +78,7 @@ def test_region_holes_and_outside_extent_are_partial(tmp_path):
     a = zarr.open_array(str(p / "t2m"), mode="r")
     (p / "t2m" / a.metadata.encode_chunk_key((1, 0, 0))).unlink()
     try:
-        grid = http(ctl(seed), "POST", "/api/seed", {"path": str(p)})["link"].removeprefix("zt://")
+        grid = http(ctl(seed), "POST", "/api/seed", {"path": str(p)})["link"].removeprefix("zs://")
         for cover in ("jlps", "bytes"):
             jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "cover": cover,
                 "region": {"var": "t2m", "t0": "2023-12-31T23", "t1": "2024-01-02T00", "step": 3600}})["job"]
@@ -101,13 +101,13 @@ def test_appended_time_steps_are_picked_up(tmp_path, monkeypatch):
     day1 = feed(pd.date_range("2024-01-01", periods=24, freq="h"), 1)
     day1.to_zarr(p, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
     link = http(ctl(seed), "POST", "/api/seed", {"path": str(p)})["link"]
-    assert zt.open_dataset(link, ctl=ctl(cli)).sizes["time"] == 24
+    assert zs.open_dataset(link, ctl=ctl(cli)).sizes["time"] == 24
     day2 = feed(pd.date_range("2024-01-02", periods=24, freq="h"), 2)
     day2.to_zarr(p, append_dim="time", consolidated=False)  # the operational feed grows
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     assert wait(lambda: http(ctl(cli), "GET", f"/api/view/{grid}?refresh=1")["gmax"] -
                 http(ctl(cli), "GET", f"/api/view/{grid}")["gmin"] == 48)
-    got = zt.open_dataset(link, ctl=ctl(cli)).t2m.values
+    got = zs.open_dataset(link, ctl=ctl(cli)).t2m.values
     np.testing.assert_array_equal(got, np.concatenate([day1.t2m.values, day2.t2m.values]))
     # a chunk rewritten in place (preliminary -> final values), metadata untouched: the periodic full rescan
     grid_chunks = lambda: next(sd["chunks"] for (pp, _), sd in seed.seeds.items() if pp == str(p.resolve()))
@@ -135,7 +135,7 @@ def test_follow_keeps_newest_window_of_a_growing_feed(tmp_path, monkeypatch):
     d1.to_zarr(p, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
     link = http(ctl(seed), "POST", "/api/seed", {"path": str(p)})["link"]
     name = http(ctl(seed), "POST", "/api/name", {"name": "feed", "target": link})["link"]
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     r = http(ctl(cli), "POST", "/api/follow", {"link": name, "vars": ["t2m"], "last_s": 12 * 3600})
     assert r["jobs"]
     have = lambda: {k for k in cli.local.get(grid, {"files": {}})["files"] if k.startswith("t2m@")}
@@ -145,7 +145,7 @@ def test_follow_keeps_newest_window_of_a_growing_feed(tmp_path, monkeypatch):
     d2.to_zarr(p, append_dim="time", consolidated=False)
     assert wait(lambda: len(have()) == 4, 30)  # the new 12 h arrive; nothing older is fetched
     assert first < have()
-    got = zt.open_dataset(link, ctl=ctl(cli)).t2m.sel(time=slice("2024-01-03", None)).values
+    got = zs.open_dataset(link, ctl=ctl(cli)).t2m.sel(time=slice("2024-01-03", None)).values
     np.testing.assert_array_equal(got, d2.t2m.values)
     assert [s["id"] for s in http(ctl(cli), "GET", "/api/follows")] == [r["id"]]
     run(cli.stop())  # subscriptions survive a restart
@@ -167,7 +167,7 @@ def test_follow_updates_an_existing_partial_chunk(tmp_path, monkeypatch):
     initial.to_zarr(path, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
     try:
         link = http(ctl(seed), "POST", "/api/seed", {"path": str(path)})["link"]
-        grid = link.removeprefix("zt://")
+        grid = link.removeprefix("zs://")
         http(ctl(cli), "POST", "/api/follow", {"link": link, "vars": ["t2m"], "last_s": 6 * 3600})
         assert wait(lambda: bool(cli.caches.get(grid, {}).get("chunks")))
         key = next(k for k in cli.caches[grid]["chunks"] if k.startswith("t2m@"))
@@ -175,7 +175,7 @@ def test_follow_updates_an_existing_partial_chunk(tmp_path, monkeypatch):
         added = feed(pd.date_range("2024-01-01T02", periods=2, freq="h"), 4)
         added.to_zarr(path, append_dim="time", consolidated=False)
         assert wait(lambda: cli.caches[grid]["chunks"][key][0] != old_cid), "same chunk key remained stale"
-        got = zt.open_dataset(link, ctl=ctl(cli)).t2m.values
+        got = zs.open_dataset(link, ctl=ctl(cli)).t2m.values
         np.testing.assert_array_equal(got, np.concatenate([initial.t2m.values, added.t2m.values]))
     finally:
         for n in (cli, seed):
@@ -198,7 +198,7 @@ def test_transport_cache_follows_rewritten_chunk(tmp_path, monkeypatch):
         encoding={"t2m": {"chunks": (4, 64, 64), "compressors": [ZstdCodec(level=3)]}})
     try:
         link = http(ctl(seed), "POST", "/api/seed", {"path": str(path)})["link"]
-        grid = link.removeprefix("zt://")
+        grid = link.removeprefix("zs://")
         http(ctl(cli), "POST", "/api/follow", {"link": link, "vars": ["t2m"], "last_s": 4 * 3600})
         assert wait(lambda: bool(cli.caches.get(grid, {}).get("chunks")))
         assert seed.decoded.d, "transport must exercise the decoded cache"
@@ -206,7 +206,7 @@ def test_transport_cache_follows_rewritten_chunk(tmp_path, monkeypatch):
         old_cid = cli.caches[grid]["chunks"][key][0]
         data.isel(time=slice(2, 3)).to_zarr(path, append_dim="time", consolidated=False)
         assert wait(lambda: cli.caches[grid]["chunks"][key][0] != old_cid), "transport returned cached old values"
-        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, values)
+        np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, values)
     finally:
         for n in (cli, seed):
             run(n.stop())
@@ -220,8 +220,8 @@ def test_refreshed_reader_and_download_reject_old_values_in_same_encoding(tmp_pa
     initial.to_zarr(path, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
     try:
         link = http(ctl(seed), "POST", "/api/seed", {"path": str(path)})["link"]
-        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, initial.t2m.values)
-        grid = link.removeprefix("zt://")
+        np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, initial.t2m.values)
+        grid = link.removeprefix("zs://")
         key = next(k for k in cli.local[grid]["chunks"] if k.startswith("t2m@"))
         request = [{"key": key, "sel": [[0, 6], [0, 3], [0, 4]]}]
         np.testing.assert_array_equal(np.frombuffer(run(cli.slices(grid, request))[0], dtype="<f4"),
@@ -230,7 +230,7 @@ def test_refreshed_reader_and_download_reject_old_values_in_same_encoding(tmp_pa
         corrected.to_zarr(path, mode="w", encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
         for n in (seed, mirror):
             http(ctl(n), "POST", "/api/seed", {"path": str(path)})
-        grid = link.removeprefix("zt://")
+        grid = link.removeprefix("zs://")
         http(ctl(cli), "GET", f"/api/view/{grid}?refresh=1")
         np.testing.assert_array_equal(np.frombuffer(run(cli.slices(grid, request))[0], dtype="<f4"),
                                       corrected.t2m.values.ravel())
@@ -238,7 +238,7 @@ def test_refreshed_reader_and_download_reject_old_values_in_same_encoding(tmp_pa
         # must not count that cache as completed before fetch validates its identity.
         jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "t2m"}})["job"]
         assert wait_job(ctl(cli), jid)["state"] == "done"
-        got = zt.open_dataset(link, ctl=ctl(cli)).t2m.values
+        got = zs.open_dataset(link, ctl=ctl(cli)).t2m.values
         np.testing.assert_array_equal(got, corrected.t2m.values)
         newest = corrected.assign(t2m=corrected.t2m + np.float32(100))
         newest.to_zarr(path, mode="w", encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
@@ -246,7 +246,7 @@ def test_refreshed_reader_and_download_reject_old_values_in_same_encoding(tmp_pa
             http(ctl(n), "POST", "/api/seed", {"path": str(path)})
         http(ctl(cli), "GET", f"/api/view/{grid}?refresh=1")
         # This revision uses the ordinary reader, without a download job first.
-        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, newest.t2m.values)
+        np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, newest.t2m.values)
         own = tmp_path / "own.zarr"
         initial.to_zarr(own, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
         http(ctl(cli), "POST", "/api/seed", {"path": str(own)})
@@ -268,8 +268,8 @@ def test_cache_limit_evicts_least_recently_used(tmp_path):
     d = feed(pd.date_range("2024-01-01", periods=96, freq="h"), 3)
     d.to_zarr(p, encoding={"t2m": {"chunks": (12, 3, 4)}}, consolidated=False)
     link = http(ctl(seed), "POST", "/api/seed", {"path": str(p)})["link"]
-    grid = link.removeprefix("zt://")
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, d.t2m.values)  # all 8 chunks
+    grid = link.removeprefix("zs://")
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, d.t2m.values)  # all 8 chunks
     keys = sorted((k for k in cli.caches[grid]["chunks"] if k.startswith("t2m@")),
                   key=lambda k: split_key(k)[2])
     size = sum(e[2] for e in cli.caches[grid]["chunks"].values())
@@ -285,7 +285,7 @@ def test_cache_limit_evicts_least_recently_used(tmp_path):
     assert all(cli._cas(cli.local[grid]["chunks"][k][0]).exists() for k in left)
     assert not any(k in cli.local[grid]["files"] for k in keys if k not in left)
     assert run(on_loop(seed.evict, 0)) == 0 and p.exists()  # the seeder's own files are not a cache
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, d.t2m.values)  # re-downloaded
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, d.t2m.values)  # re-downloaded
     for n in (cli, seed):
         run(n.stop())
 
@@ -309,7 +309,7 @@ def test_pause_and_resume_download(tmp_path):
     ds.to_zarr(tmp_path / "d.zarr", encoding={"t2m": {"chunks": (24, 32, 32), "compressors": None}},
                consolidated=False)
     link = http(ctl(seed), "POST", "/api/seed", {"path": str(tmp_path / "d.zarr")})["link"]
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "t2m"}})["job"]
     job = lambda: http(ctl(cli), "GET", f"/api/job/{jid}")
     assert wait(lambda: job()["done"] >= 2)
@@ -322,7 +322,7 @@ def test_pause_and_resume_download(tmp_path):
     assert wait(lambda: job()["state"] == "done", 60), job()
     j = job()
     assert j["done"] == j["total"] == 16 and j["bytes"] < 16 * 24 * 32 * 32 * 4 * 1.5  # no full re-download
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, v)
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, v)
     for n in (cli, seed):
         run(n.stop())
 
@@ -343,11 +343,11 @@ def test_replicas_with_different_time_steps_form_one_swarm(tmp_path):
     l1 = http(ctl(seed), "POST", "/api/seed", {"path": str(tmp_path / "h.zarr")})["link"]
     l2 = http(ctl(b), "POST", "/api/seed", {"path": str(tmp_path / "s.zarr")})["link"]
     assert l1 == l2  # one identity: time step is a layout property
-    six = zt.open_dataset(l1, ctl=ctl(cli), step="6h")
+    six = zs.open_dataset(l1, ctl=ctl(cli), step="6h")
     want6 = truth.isel(time=slice(None, None, 6))
     np.testing.assert_array_equal(six.time.values, want6.time.values)
     np.testing.assert_array_equal(six.t2m.values, want6.t2m.values)
-    hourly = zt.open_dataset(l1, ctl=ctl(cli))
+    hourly = zs.open_dataset(l1, ctl=ctl(cli))
     np.testing.assert_array_equal(hourly.time.values, truth.time.values[:len(hourly.time)])
     got = hourly.t2m.sel(time=slice("2024-01-01", "2024-01-03")).values
     np.testing.assert_array_equal(got, r1.t2m.values)
@@ -356,7 +356,7 @@ def test_replicas_with_different_time_steps_form_one_swarm(tmp_path):
     np.testing.assert_array_equal(have.time.values, r2.time.values[r2.time.values >= np.datetime64("2024-01-04")])
     np.testing.assert_array_equal(have.values, truth.t2m.sel(time=have.time).values)
     # region download at 6 h over the union: the planner may use both replicas
-    grid = l1.removeprefix("zt://")
+    grid = l1.removeprefix("zs://")
     j = http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "t2m", "step": 21600}})["job"]
     assert wait(lambda: http(ctl(cli), "GET", f"/api/job/{j}")["state"] == "done")
     job = http(ctl(cli), "GET", f"/api/job/{j}")
@@ -397,7 +397,7 @@ def test_int_replicas_v2_v3_merge_without_masking_zeros(tmp_path):
     l1 = http(ctl(seed), "POST", "/api/seed", {"path": str(tmp_path / "a.zarr")})["link"]
     l2 = http(ctl(b), "POST", "/api/seed", {"path": str(tmp_path / "b.zarr")})["link"]
     assert l1 == l2
-    got = zt.open_dataset(l1, ctl=ctl(cli)).bold
+    got = zs.open_dataset(l1, ctl=ctl(cli)).bold
     assert got.sizes["time"] == 20  # 2 s step recovered from single-volume chunks, not the 1 s quantum
     np.testing.assert_array_equal(got.values, v)
     for n in (cli, b, seed):
@@ -416,7 +416,7 @@ def test_stale_cached_family_is_not_served_for_a_new_view(tmp_path):
     p1 = tmp_path / "old.zarr"
     old.to_zarr(p1, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
     link = http(ctl(seed), "POST", "/api/seed", {"path": str(p1)})["link"]
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).t2m.values, old.t2m.values)  # now cached
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).t2m.values, old.t2m.values)  # now cached
     new = feed(times, 2)  # same grid, other values, float32
     p2 = tmp_path / "new.zarr"
     new.to_zarr(p2, encoding={"t2m": {"chunks": (6, 3, 4)}}, consolidated=False)
@@ -424,10 +424,10 @@ def test_stale_cached_family_is_not_served_for_a_new_view(tmp_path):
     link2 = http(ctl(seed), "POST", "/api/seed", {"path": str(p2)})["link"]
     assert link2 == link
     http(ctl(s2), "POST", "/api/seed", {"path": str(p2)})  # two holders of the new family outvote the stale cache
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     assert wait(lambda: http(ctl(cli), "GET", f"/api/view/{grid}?refresh=1")["arrays"]["t2m"]["vfid"]
                 != next(iter(cli.caches.values()))["arrays"]["t2m"]["vfid"])
-    got = zt.open_dataset(link, ctl=ctl(cli)).t2m.values
+    got = zs.open_dataset(link, ctl=ctl(cli)).t2m.values
     np.testing.assert_array_equal(got, new.t2m.values)
     for n in (cli, seed, s2):
         run(n.stop())

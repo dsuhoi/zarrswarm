@@ -1,4 +1,4 @@
-"""config.toml: `zt init` writes a commented, parseable file; re-init keeps [[seed]]/[tuning]; a node seeds the
+"""config.toml: `zs init` writes a commented, parseable file; re-init keeps [[seed]]/[tuning]; a node seeds the
 config's globs at start."""
 import asyncio
 
@@ -12,17 +12,17 @@ from zarrswarm.node import Node
 
 def test_init_writes_toml_and_keeps_user_sections(tmp_path):
     home = tmp_path / "h"
-    cli.main(["init", "--home", str(home), "--bootstrap-node", "--public-host", "zt.example.org", "--port", "7990"])
+    cli.main(["init", "--home", str(home), "--bootstrap-node", "--public-host", "zs.example.org", "--port", "7990"])
     cfg = cli._config(home)
-    assert cfg["network"].endswith("@zt.example.org:7990") and cfg["port"] == 7990 and cfg["relay_server"] is True
-    assert cfg["public"] == "http://zt.example.org:7990" and cfg["bootstrap"] == [] and cfg["upload_mbps"] == 0
+    assert cfg["network"].endswith("@zs.example.org:7990") and cfg["port"] == 7990 and cfg["relay_server"] is True
+    assert cfg["public"] == "http://zs.example.org:7990" and cfg["bootstrap"] == [] and cfg["upload_mbps"] == 0
     text = (home / "config.toml").read_text()
     (home / "config.toml").write_text(text.replace("# ctl_port = 7991", "ctl_port = 7999").replace("[tuning]\n", '[[seed]]\npath = "/d/*.zarr"\n\n[tuning]\n'
                                                    "audit_rate = 0.1\n"))
     cli.main(["init", "--home", str(home), "--join", cfg["network"], "--listen-public"])  # switch role
     cfg = cli._config(home)
     assert cfg["ctl_port"] == 7999 and cfg["seed"] == [{"path": "/d/*.zarr"}] and cfg["tuning"] == {"audit_rate": 0.1}
-    assert cfg["bootstrap"] == ["http://zt.example.org:7990"] and cfg["auto"] is True and cfg["host"] == "0.0.0.0"
+    assert cfg["bootstrap"] == ["http://zs.example.org:7990"] and cfg["auto"] is True and cfg["host"] == "0.0.0.0"
     assert set(cli.TUNING) >= set(cfg["tuning"])
 
 
@@ -57,7 +57,7 @@ def test_client_reads_through_api_when_node_paths_are_invisible(tmp_path, monkey
     import threading
     from pathlib import Path
 
-    import zarrswarm as zt
+    import zarrswarm as zs
     from zarrswarm import store
     from zarrswarm.store import http
     vals = np.arange(240 * 12, dtype="f4").reshape(240, 3, 4)
@@ -77,11 +77,20 @@ def test_client_reads_through_api_when_node_paths_are_invisible(tmp_path, monkey
             raise FileNotFoundError(self)
     monkeypatch.setattr(store, "Path", Elsewhere)
     try:
-        np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl).t2m.values, vals)
-        r = store.progressive_mean_vas(zt.open_dataset(link, ctl=ctl), "t2m", rel_err=1e-9)
+        ds = zs.open_dataset(link, ctl=ctl)
+        assert set(ds.attrs) >= {"zs_grid", "zs_store", "zs_stores"}
+        assert not any(k.startswith("zt_") for k in ds.attrs)
+        np.testing.assert_array_equal(ds.t2m.values, vals)
+        legacy = zs.open_dataset(link.replace("zs://", "zt://", 1), ctl=ctl)
+        np.testing.assert_array_equal(legacy.t2m.values, vals)
+        owner = zs.store_of(legacy, "t2m")
+        legacy.attrs = {k.replace("zs_", "zt_", 1): v for k, v in legacy.attrs.items()}
+        assert zs.store_of(legacy, "t2m") is owner
+        assert zs.store_of(legacy) is owner
+        r = store.progressive_mean_vas(zs.open_dataset(link, ctl=ctl), "t2m", rel_err=1e-9)
         assert abs(r["mean"] - vals.mean()) < 1e-6 * abs(vals.mean()), r
         try:  # /api/read serves only indexed chunks, never an arbitrary path
-            http(ctl, "POST", "/api/read", {"grid": link.removeprefix("zt://").split("+")[0], "key": "../../etc"})
+            http(ctl, "POST", "/api/read", {"grid": link.removeprefix("zs://").split("+")[0], "key": "../../etc"})
             raise AssertionError("arbitrary key served")
         except RuntimeError as e:
             assert "404" in str(e)

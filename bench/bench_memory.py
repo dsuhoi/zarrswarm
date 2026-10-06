@@ -1,4 +1,4 @@
-"""Memory and disk overhead of a node: resident memory (VmRSS, peak VmHWM) of real `zt node` processes when idle,
+"""Memory and disk overhead of a node: resident memory (VmRSS, peak VmHWM) of real `zs node` processes when idle,
 after seeding a replica, and while a client downloads from it; on-disk state besides the data itself.
 
 python bench/bench_memory.py REPLICA.zarr [--out bench/memory.json]
@@ -30,7 +30,7 @@ def main():
     ap.add_argument("replica")
     ap.add_argument("--out", default="bench/memory.json")
     a = ap.parse_args()
-    root = Path("~/.cache/zt_mem").expanduser()
+    root = Path("~/.cache/zs_mem").expanduser()
     sw = ProcSwarm(root, 2, 1, 0.0, seed=1, relay_rate=None)  # boot0 + p00
     seeder = sw.nodes["p00"].proc.pid
     time.sleep(3)
@@ -46,7 +46,7 @@ def main():
     client = S.fresh_client(sw, "mem", "maxflow")
     cpid = sw.nodes[client].proc.pid
     res["client_idle_MB"] = mem(cpid)[0]
-    grid = link.removeprefix("zt://").split("+")[0]
+    grid = link.removeprefix("zs://").split("+")[0]
     for q, reg in (("day_of_maps", {"t0": "2020-01-02", "t1": "2020-01-02", "step": 3600}),
                    ("month_6h", {"t0": "2020-01-01", "t1": "2020-01-31", "step": 21600})):
         t = time.time()

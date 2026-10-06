@@ -36,7 +36,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, nargs="+", default=[1000, 10000, 100000])
     ap.add_argument("--out", default="bench/metadata.json")
-    ap.add_argument("--work", default="~/.cache/zt_meta")
+    ap.add_argument("--work", default="~/.cache/zs_meta")
     a = ap.parse_args()
     root = Path(a.work).expanduser()
     import shutil

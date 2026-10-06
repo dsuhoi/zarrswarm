@@ -17,7 +17,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / "sim"), str(ROOT / "bench")]
 from gfs_native_precision import native_field
 from procswarm import ProcSwarm
 from simulate import port
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm.common import h160, verify
 from zarrswarm.node import merge_view
 from zarrswarm.scan import scan
@@ -28,7 +28,7 @@ def manifest(swarm, name, grid):
     status = http(swarm.ctl(name), "GET", "/api/status")
     with urllib.request.urlopen(f"{status['addr']}/m/{grid}", timeout=30) as r:
         body = zlib.decompress(r.read())
-        pk, sig = r.headers["X-Zt-Pk"], r.headers["X-Zt-Sig"]
+        pk, sig = r.headers["X-Zs-Pk"], r.headers["X-Zs-Sig"]
     assert h160(bytes.fromhex(pk)) == status["id"] and verify(pk, sig, body)
     return status["id"], json.loads(body)
 
@@ -84,9 +84,9 @@ def main():
     try:
         swarm._start("publisher", kw())
         authority = http(swarm.ctl("publisher"), "GET", "/api/status")
-        swarm.env["ZT_TRUST"] = authority["pk"]
+        swarm.env["ZS_TRUST"] = authority["pk"]
         seeded = http(swarm.ctl("publisher"), "POST", "/api/seed", {"path": paths["publisher"], "packing": params})
-        grid, contract = seeded["link"].removeprefix("zt://"), seeded["packing"]
+        grid, contract = seeded["link"].removeprefix("zs://"), seeded["packing"]
         out.update(grid_id=grid, publisher_pk=authority["pk"], signed_contracts=contract)
         for name in ("mirror", "alternate", "changed", "client"):
             swarm._start(name, kw())
@@ -104,7 +104,7 @@ def main():
         assert out["paired_chunks"] == out["pooled_native_pairs"] == 64 and out["accepted_source_count_changes"] == 0
         save()
         swarm.kill("publisher")
-        got = zt.open_dataset(seeded["link"], ctl=swarm.ctl("client")).load()
+        got = zs.open_dataset(seeded["link"], ctl=swarm.ctl("client")).load()
         out["publisher_offline"] = {}
         for name in source:
             assert got[name].shape == source[name].shape
@@ -125,7 +125,7 @@ def main():
         assert cache_files and all(json.loads(p.read_text())["arrays"][n]["packing"] == contract[n]
                                    for p in cache_files for n in source)
         swarm._start("client", kw())
-        cached = zt.open_dataset(seeded["link"], ctl=swarm.ctl("client")).load()
+        cached = zs.open_dataset(seeded["link"], ctl=swarm.ctl("client")).load()
         assert all(np.array_equal(cached[n].values, got[n].values) for n in source)
         out.update(cache_only_restart=True, completed_utc=datetime.now(timezone.utc).isoformat())
         save()

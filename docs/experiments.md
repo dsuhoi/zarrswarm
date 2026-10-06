@@ -6,8 +6,11 @@ Large provider datasets live outside the checkout and are fetched separately.
 
 The current package uses `zarrswarm`. Frozen archives retain the original paths and hashes of the code that
 was actually measured. Running today's driver does not recreate that earlier source version.
+Current drivers use `zs://` links and `ZS_*` settings. Recorded JSON files, source archives and the measured
+`bench/revalidation/*.toml` configurations retain their historical names and remote paths; these are evidence
+of the measured version, rather than configuration examples for a new installation.
 
-## Results used by the manuscript
+## Measured results
 
 The [result inventory](https://github.com/dsuhoi/zarrswarm/blob/main/bench/revalidation/README.md) distinguishes
 completed runs, diagnostic records and measured source snapshots.
@@ -92,7 +95,7 @@ It is separate from running a network of real ground stations.
 ### Processes with application shaping
 
 `sim/procswarm.py` starts one real `python -m zarrswarm.cli node` process per peer, with independent sockets
-on loopback. A node token bucket sets upload rate; `ZT_EMU_LATENCY_MS` injects delay in the application.
+on loopback. A node token bucket sets upload rate; `ZS_EMU_LATENCY_MS` injects delay in the application.
 This exercises the implementation but does not reproduce kernel packet queues and losses.
 
 ### Kernel network emulation
@@ -159,7 +162,7 @@ python sim/e_hetero.py VARIANTS_DIR [options]
 | `--out` | `sim/results_ehet.json` | JSON output; explicitly choose a new path |
 
 The repetition index fixes the random placement. Use the same index and fixture when comparing execution
-environments. The work directory is `ZT_SIM_ROOT`, defaulting to `~/.cache/zt_sim`; `ZT_KEEP_LOGS=1` retains
+environments. The work directory is `ZS_SIM_ROOT`, defaulting to `~/.cache/zs_sim`; `ZS_KEEP_LOGS=1` retains
 node logs. Each completed row is written as the run progresses.
 
 ```bash

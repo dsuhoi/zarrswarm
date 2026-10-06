@@ -77,9 +77,9 @@ class Remote:
         r = random.Random(name + str(time.time()))
         port, ctl = (r.randint(20000, 60000) for _ in range(2))
         tport = boot_port  # the site's tunnel
-        py, src = site["python"], site.get("src", "~/zt_src")
+        py, src = site["python"], site.get("src", "~/zs_src")
         exports = " ".join(f"{k}={v}" for k, v in dict(env, PYTHONPATH=site.get("pythonpath", src)).items())
-        work = site.get('work', '~/zt_ms')
+        work = site.get('work', '~/zs_ms')
         home = f"{work}/h_{name}"
         q = (f"from zarrswarm.store import http; import json; "
              f"print('GRIDS', json.dumps([s['grid'] for s in http('http://127.0.0.1:{ctl}','GET','/api/status')['seeds']]))")
@@ -220,7 +220,7 @@ def main():
     ap.add_argument("--phases", default="cloud,mirror,swarm,bytes")
     ap.add_argument("--out", default="sim/results_multisite.json")
     ap.add_argument("--queries", help="comma-separated subset of the configured queries")
-    ap.add_argument("--work", default="~/.cache/zt_ms")
+    ap.add_argument("--work", default="~/.cache/zs_ms")
     a = ap.parse_args()
     cfg = tomllib.load(open(a.config, "rb"))
     queries = {q: r for q, r in cfg["queries"].items() if not a.queries or q in a.queries.split(",")}
@@ -263,7 +263,7 @@ def main():
         names = [n for n in names if n in phases]
         if not names:
             continue
-        env = {"ZT_IDENTITY": mode, "ZT_NETWORK_KEY": key}
+        env = {"ZS_IDENTITY": mode, "ZS_NETWORK_KEY": key}
         side = LocalSide(root / f"local_{mode}", 1, 1, 0.0, seed=7, env=env, relay_rate=None)
         side.truth_path = truth_src
         boot_port = side.nodes["boot0"].port
@@ -274,7 +274,7 @@ def main():
                 if i == 1 and "mirror" in names:  # mirror phase: the first holder alone
                     for rep in range(a.reps):
                         for qn, reg in queries.items():
-                            emit(dict(query(side, "zt://" + remotes[0].grids[0], reg, "jlps", truths[qn],
+                            emit(dict(query(side, "zs://" + remotes[0].grids[0], reg, "jlps", truths[qn],
                                             f"m{rep}{qn[:3]}"), phase="mirror", query=qn, rep=rep, holders=1))
                 site = cfg["sites"][h["site"]]
                 if h["site"] not in tunnels:
@@ -296,7 +296,7 @@ def main():
                     for cover in (covers if rep % 2 == 0 else covers[::-1]):  # neither always runs first
                         best = None
                         for g in sorted(grids, key=lambda g: -len(grids[g])):
-                            r = dict(query(side, "zt://" + g, reg, cover, truths[qn], f"{mode[0]}{rep}{qn[:3]}{cover[:2]}"),
+                            r = dict(query(side, "zs://" + g, reg, cover, truths[qn], f"{mode[0]}{rep}{qn[:3]}{cover[:2]}"),
                                      swarm_holders=len(grids[g]), swarms=len(grids))
                             if best is None or (r["coverage"], -r["seconds"]) > (best["coverage"], -best["seconds"]):
                                 best = r

@@ -8,6 +8,32 @@ from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 
 
+def env(name: str, default=None):
+    """Read a ZS_* setting, falling back to its legacy ZT_* name."""
+    if name in os.environ:
+        return os.environ[name]
+    return os.environ.get(name.replace("ZS_", "ZT_", 1), default)
+
+
+def state_home(home: str | Path | None = None) -> Path:
+    """Use ~/.zs for new nodes; reuse existing ~/.zt state unless a home is supplied."""
+    home = home if home is not None else env("ZS_HOME")
+    if home:
+        return Path(home).expanduser()
+    current, legacy = Path("~/.zs").expanduser(), Path("~/.zt").expanduser()
+    return legacy if not current.exists() and legacy.is_dir() else current
+
+
+def protocol_headers(**values) -> dict[str, str]:
+    """Emit ZS headers with legacy aliases so older peers can still verify replies."""
+    return {f"X-{prefix}-{name}": value for name, value in values.items() for prefix in ("Zs", "Zt")}
+
+
+def protocol_header(headers, name: str, default: str = "") -> str:
+    """Prefer the canonical header even if its value is empty or invalid."""
+    return headers.get(f"X-Zs-{name}", headers.get(f"X-Zt-{name}", default))
+
+
 def cjson(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()
 

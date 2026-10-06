@@ -34,7 +34,7 @@ def unxor_time(u: np.ndarray, dtype) -> np.ndarray:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("zarr", nargs="?", default="~/.cache/zt_real/wb2/wb2_oracle.zarr")
+    ap.add_argument("zarr", nargs="?", default="~/.cache/zs_real/wb2/wb2_oracle.zarr")
     ap.add_argument("--chunk", type=int, default=100)
     a = ap.parse_args()
     ds = xr.open_zarr(Path(a.zarr).expanduser(), consolidated=False)

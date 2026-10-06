@@ -38,6 +38,7 @@ jobs:
           .venv/bin/python -c "import zarrswarm; assert zarrswarm.open_dataset.__module__ == 'zarrswarm.store'"
           .venv/bin/python -m zarrswarm --help
           .venv/bin/zarrswarm --help
+          .venv/bin/zs --help
       - name: Run tests
         run: .venv/bin/python -m pytest -q tests
       - name: Build distribution
@@ -45,5 +46,6 @@ jobs:
       - name: Check installed wheel outside the checkout
         run: |
           cd "$RUNNER_TEMP"
-          uv run --no-project --python 3.12 --with "$GITHUB_WORKSPACE"/dist/*.whl python -c "import zarrswarm; from importlib.metadata import distribution; assert zarrswarm.open_dataset.__module__ == 'zarrswarm.store'; expected = {'zarrswarm': 'zarrswarm.cli:main', 'zarrswarm-tui': 'zarrswarm.tui:main', 'zt': 'zarrswarm.cli:main', 'zt-tui': 'zarrswarm.tui:main'}; assert {e.name: e.value for e in distribution('zarrswarm').entry_points} == expected"
+          uv run --no-project --python 3.12 --with "$GITHUB_WORKSPACE"/dist/*.whl python -c "import zarrswarm; from importlib.metadata import distribution; assert zarrswarm.open_dataset.__module__ == 'zarrswarm.store'; expected = {'zarrswarm': 'zarrswarm.cli:main', 'zarrswarm-tui': 'zarrswarm.tui:main', 'zs': 'zarrswarm.cli:main', 'zs-tui': 'zarrswarm.tui:main', 'zt': 'zarrswarm.cli:main', 'zt-tui': 'zarrswarm.tui:main'}; assert {e.name: e.value for e in distribution('zarrswarm').entry_points} == expected"
           uv run --no-project --python 3.12 --with "$GITHUB_WORKSPACE"/dist/*.whl zarrswarm --help
+          uv run --no-project --python 3.12 --with "$GITHUB_WORKSPACE"/dist/*.whl zs --help

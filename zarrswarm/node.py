@@ -1,4 +1,4 @@
-"""zt node: DHT participant, chunk server, optional relay, download engine, local control API.
+"""zs node: DHT participant, chunk server, optional relay, download engine, local control API.
 
 Ports:
   data  (--port)     : /dht, /m/<grid>, /cb/<grid>, /pex/<grid>, relay endpoints. May be public.
@@ -25,12 +25,12 @@ from aiohttp import web
 import numpy as np
 
 from . import capt, codec, jlps as jlpsmod, parity as par, plan as planmod, pushdown as pd
-from .common import Identity, check_signed, cid_of, cjson, h160, verify
+from .common import Identity, check_signed, cid_of, cjson, env, h160, protocol_header, protocol_headers, state_home, verify
 from .dht import DHT
 from .scan import (available_layouts, chunk_extent, chunk_g, chunks_for, grid_id_of, natural_stride, packing_contract,
                    scan, split_key, tstride, value_codes, value_family, value_id)
 
-ANNOUNCE_EVERY = float(os.environ.get("ZT_ANNOUNCE_EVERY", "600"))
+ANNOUNCE_EVERY = float(env("ZS_ANNOUNCE_EVERY", "600"))
 VIEW_TTL = 30
 CONC_PER_PEER = 4
 BATCH_CHUNKS = 64
@@ -38,16 +38,16 @@ BATCH_BYTES = 32 << 20
 BATCH_SECONDS = 1.0
 DEFAULT_BW = 20e6
 RELAY_PATHS = ("dht", "m/", "mh/", "mp/", "cb/", "pex/", "whoami", "qb/")
-PAGE_CACHE_BYTES = int(os.environ.get("ZT_PAGE_CACHE_MB", "256")) << 20
+PAGE_CACHE_BYTES = int(env("ZS_PAGE_CACHE_MB", "256")) << 20
 CAPT_MIN_INTERVAL = 2.0  # s between manifest-tree rebuilds of one grid (heads may lag the index by this much)
-AUDIT_RATE = float(os.environ.get("ZT_AUDIT", "0.05"))
+AUDIT_RATE = float(env("ZS_AUDIT", "0.05"))
 PD_MIN_AUDITS = 3
-PD_WHOLE_FRAC = float(os.environ.get("ZT_PD_WHOLE_FRAC", "0.25"))  # every untrusted peer is audited on its first results (no free first strike)  # optimistic pushdown: fraction of results re-derived
+PD_WHOLE_FRAC = float(env("ZS_PD_WHOLE_FRAC", "0.25"))  # every untrusted peer is audited on its first results (no free first strike)  # optimistic pushdown: fraction of results re-derived
 RELAY_MAX_PEERS = 2000
 RELAY_MAX_INFLIGHT = 512
 RELAY_MAX_INFLIGHT_PER_PEER = 32
 RELAY_MAX_MSG = 72 << 20          # > BATCH_BYTES + framing (legacy single-frame responses)
-RELAY_FRAME = int(os.environ.get("ZT_RELAY_FRAME_KB", "4096")) << 10  # cut-through relay: body frame size
+RELAY_FRAME = int(env("ZS_RELAY_FRAME_KB", "4096")) << 10  # cut-through relay: body frame size
 MAX_MANIFEST = 1 << 30            # decompressed manifest bound (~2e7 chunks)
 MISSING = 0xFFFFFFFF
 # lossy WAN links (seen on real clusters: ~50% of connections to one host stalled): fail fast per attempt, retry
@@ -56,16 +56,16 @@ T_DATA = aiohttp.ClientTimeout(total=None, sock_connect=10, sock_read=60)
 META_TRIES = 3
 PEER_MAX_ERRORS = 3
 FETCH_ROUNDS = 4
-XT1_BELOW = float(os.environ.get("ZT_XT1_BELOW", str(30e6)))  # ask for the xt1 transport codec below this link rate
+XT1_BELOW = float(env("ZS_XT1_BELOW", str(30e6)))  # ask for the xt1 transport codec below this link rate
 VIEW_WAIT = 8.0
 STALL_FIRST = 30.0  # s: read timeout for a peer we have not measured yet
 HINT_EFF = 0.8  # announced link rates vs achieved goodput (measured ~0.77 in the simulator): calibrate first contact
-FOLLOW_EVERY = float(os.environ.get("ZT_FOLLOW_EVERY", "300"))  # s between subscription catch-ups
-ANNOUNCE_BW = float(os.environ.get("ZT_ANNOUNCE_MBPS", 0)) * 1e6 or None  # uplink hint without app-level shaping (the link is shaped elsewhere, e.g. by the kernel)
-COVER_DEADLINE = float(os.environ.get("ZT_COVER_DEADLINE", "300"))  # s for choosing a cover (the first view + JLPS; probes have their own deadline)
+FOLLOW_EVERY = float(env("ZS_FOLLOW_EVERY", "300"))  # s between subscription catch-ups
+ANNOUNCE_BW = float(env("ZS_ANNOUNCE_MBPS", 0)) * 1e6 or None  # uplink hint without app-level shaping (the link is shaped elsewhere, e.g. by the kernel)
+COVER_DEADLINE = float(env("ZS_COVER_DEADLINE", "300"))  # s for choosing a cover (the first view + JLPS; probes have their own deadline)
 NET_SKEW = 120  # s: tolerated clock difference for closed-network request MACs
-RESCAN_EVERY = float(os.environ.get("ZT_RESCAN_EVERY", "60"))  # s between checks of seeded datasets for appends
-STALL_MIN = float(os.environ.get("ZT_STALL_MIN", "5.0"))  # s without a byte before a batch counts as stalled
+RESCAN_EVERY = float(env("ZS_RESCAN_EVERY", "60"))  # s between checks of seeded datasets for appends
+STALL_MIN = float(env("ZS_STALL_MIN", "5.0"))  # s without a byte before a batch counts as stalled
 
 
 def _frame(hdr: dict, body: bytes = b"") -> bytes:
@@ -78,7 +78,7 @@ def _unframe(b: bytes) -> tuple[dict, bytes]:
     return json.loads(b[4:4 + n]), b[4 + n:]
 
 
-CTL_BIND = os.environ.get("ZT_CTL_HOST", "127.0.0.1")  # emulation testbeds drive nodes over their own address
+CTL_BIND = env("ZS_CTL_HOST", "127.0.0.1")  # emulation testbeds drive nodes over their own address
 CTL_HOSTS = ("127.0.0.1", "localhost", "[::1]") + ((CTL_BIND,) if CTL_BIND != "127.0.0.1" else ())
 
 
@@ -88,14 +88,17 @@ async def _ctl_guard(request, handler):
     cross-origin request without a CORS preflight (which this server never approves), and the Host check
     defeats DNS rebinding."""
     host = request.headers.get("Host", "").rsplit(":", 1)[0]
-    if host not in CTL_HOSTS or request.headers.get("X-Zt-Client") != "1":
-        raise web.HTTPForbidden(text="zt control API: local clients only (X-Zt-Client header required)")
+    if host not in CTL_HOSTS or protocol_header(request.headers, "Client") != "1":
+        raise web.HTTPForbidden(text="zs control API: local clients only (X-Zs-Client header required)")
     return await handler(request)
 
 
 def parse_link(link: str) -> tuple[str, str | None]:
-    """zt://<grid_id>  or  zt://<name>@<pubkey>  ->  (grid_or_name, pubkey|None)."""
-    s = link.removeprefix("zt://").strip("/")
+    """zs://<grid_id>  or  zs://<name>@<pubkey>  ->  (grid_or_name, pubkey|None)."""
+    scheme, sep, rest = link.partition("://")
+    if sep and scheme not in ("zs", "zt"):
+        raise ValueError("dataset link must use zs://")
+    s = (rest if sep else link).strip("/")
     if "@" in s:
         name, pk = s.rsplit("@", 1)
         return name, pk
@@ -112,14 +115,14 @@ def _trim():
 
 
 class Node:
-    def __init__(self, home: str | Path = "~/.zt", host: str = "127.0.0.1", port: int = 7881,
+    def __init__(self, home: str | Path | None = None, host: str = "127.0.0.1", port: int = 7881,
                  ctl_port: int | None = None, public: str | None = None, bootstrap: list[str] = (),
                  relay: str | None = None, relay_server: bool = False, auto: bool = False,
                  rate: float | None = None, latency: float = 0.0, strategy: str = "maxflow",
                  trust: list[str] = (), loss: float = 0.0, seeds: list[str] = (), network_key: str | None = None,
                  cache_max: int = 0):
-        self.home = Path(home).expanduser()
-        self.net_key = network_key or None  # closed network: every data-port request must carry it (X-Zt-Net)
+        self.home = state_home(home)
+        self.net_key = network_key or None  # closed network: every data-port request must carry it (X-Zs-Net)
         self.cfg_seeds = list(seeds)  # config [[seed]] paths/globs: re-read on every start, not persisted
         self.host, self.port, self.ctl_port = host, port, ctl_port or port + 1
         bound = {"0.0.0.0": "127.0.0.1", "::": "::1"}.get(host, host)
@@ -142,7 +145,7 @@ class Node:
         self.xt1 = True     # negotiate the value-level transport codec on slow links
         self.cheat = False  # fault injection (tests/simulator): sign deliberately wrong pushdown results
         # trusted publisher pubkeys (hex): their vcid wins over any number of other holders (anti-Sybil anchor)
-        self.trusted = {h160(bytes.fromhex(pk)) for pk in (list(trust) + os.environ.get("ZT_TRUST", "").split(",")) if pk}
+        self.trusted = {h160(bytes.fromhex(pk)) for pk in (list(trust) + env("ZS_TRUST", "").split(",")) if pk}
         self._up_next = 0.0
         self._t_start = time.time()
         self.hints: dict[str, float] = {}
@@ -154,7 +157,7 @@ class Node:
         self.page_cache: OrderedDict[str, bytes] = OrderedDict()
         self._page_bytes = 0
         self.page_fetched = 0
-        self.decoded = pd.DecodedLRU(int(os.environ.get("ZT_DECODED_MB", "256")) << 20)
+        self.decoded = pd.DecodedLRU(int(env("ZS_DECODED_MB", "256")) << 20)
         self.bad: set[str] = set()                # peers caught cheating (local blacklist)
         self.seen_heads: dict[tuple[str, str], dict] = {}  # (peer, grid) -> newest verified manifest head
         try:
@@ -257,7 +260,7 @@ class Node:
             try:
                 await self.add_seed(p, persist=False, announce=False)
             except Exception as e:  # dataset moved/removed: keep node running
-                print(f"[zt] cannot reseed {p}: {e}")
+                print(f"[zs] cannot reseed {p}: {e}")
         self._rebuild()
         if self.auto:
             await self._auto_address()
@@ -396,13 +399,13 @@ class Node:
             if self.cache_max:
                 freed = self.evict(self.cache_max)  # on the loop: it mutates caches/local (no thread races)
                 if freed:
-                    print(f"[zt] cache over {self.cache_max / 1e9:g} GB: evicted {freed / 1e6:,.1f} MB (LRU)")
+                    print(f"[zs] cache over {self.cache_max / 1e9:g} GB: evicted {freed / 1e6:,.1f} MB (LRU)")
                     for g in list(self.caches):
                         await self.announce(g)
 
     async def _rescan_loop(self):
         """Growing datasets (operational feeds appending time steps) are re-scanned and re-announced without a
-        manual `zt seed`: metadata signature every RESCAN_EVERY s; a full (stat-cached) rescan every 10th round
+        manual `zs seed`: metadata signature every RESCAN_EVERY s; a full (stat-cached) rescan every 10th round
         also catches chunks rewritten in place (e.g. preliminary -> final values)."""
         sigs: dict[str, tuple] = {}
         n = 0
@@ -421,7 +424,7 @@ class Node:
                 try:
                     await self.add_seed(path, persist=False, announce=False)
                 except Exception as e:
-                    print(f"[zt] rescan {path}: {e}")
+                    print(f"[zs] rescan {path}: {e}")
                     sigs.pop(path, None)  # retry a temporarily incomplete producer write next round
                     continue
                 after = {k: e[:2] for (p_, _), sd in self.seeds.items() if p_ == path for k, e in sd["chunks"].items()}
@@ -429,7 +432,7 @@ class Node:
                 if after != before or after_arrays != before_arrays:
                     for g in {g for p_, g in self.seeds if p_ == path}:
                         await self.announce(g)
-                    print(f"[zt] {path}: {len(set(after) - set(before))} new, "
+                    print(f"[zs] {path}: {len(set(after) - set(before))} new, "
                           f"{sum(1 for k in after if k in before and after[k] != before[k])} changed chunks")
 
     def _save_heads(self):
@@ -535,7 +538,7 @@ class Node:
                                              timeout=aiohttp.ClientTimeout(total=15)) as r:
                     pr = await r.json()
             except Exception as e:
-                print(f"[zt] auto-address via {b} failed: {e}")
+                print(f"[zs] auto-address via {b} failed: {e}")
                 continue
             if pr.get("id") == self.ident.id:
                 self.addr, self.ro = cand, False
@@ -544,7 +547,7 @@ class Node:
             else:
                 continue
             self.dht.contact.update(addr=self.addr, ro=self.ro)
-            print(f"[zt] auto address: {self.addr} ({'relay' if self.ro else 'public'})")
+            print(f"[zs] auto address: {self.addr} ({'relay' if self.ro else 'public'})")
             return
 
     async def _rejoin_loop(self):
@@ -565,12 +568,12 @@ class Node:
                 try:
                     await self.announce(g)
                 except Exception as e:
-                    print(f"[zt] announce {g[:8]} failed: {e}")
+                    print(f"[zs] announce {g[:8]} failed: {e}")
             for name, (target, seq) in list(self.names.items()):
                 try:
                     await self.publish_name(name, target, seq)
                 except Exception as e:
-                    print(f"[zt] republish name {name} failed: {e}")
+                    print(f"[zs] republish name {name} failed: {e}")
             self._prune()
             await asyncio.sleep(ANNOUNCE_EVERY)
 
@@ -614,7 +617,7 @@ class Node:
         """Client side of a closed network: the key never travels. Each request carries a MAC of its method, path and
         time (it used to carry the key itself, in clear, on every HTTP request)."""
         ts = int(time.time())
-        req.headers["X-Zt-Net"] = f"{ts}:{self._net_mac(ts, req.method, req.url.raw_path_qs)}"
+        req.headers.update(protocol_headers(Net=f"{ts}:{self._net_mac(ts, req.method, req.url.raw_path_qs)}"))
         return await handler(req)
 
     @web.middleware
@@ -623,11 +626,11 @@ class Node:
         relay or probe. A MAC binds method, path and a timestamp (+-NET_SKEW s), so a captured header opens nothing
         else and expires."""
         if self.net_key:
-            ts, _, mac = request.headers.get("X-Zt-Net", "").partition(":")
+            ts, _, mac = protocol_header(request.headers, "Net").partition(":")
             ok = ts.isdigit() and abs(time.time() - int(ts)) <= NET_SKEW and hmac.compare_digest(
                 mac.encode(), self._net_mac(int(ts), request.method, request.raw_path).encode())
             if not ok:
-                raise web.HTTPForbidden(text="zt: network key required")
+                raise web.HTTPForbidden(text="zs: network key required")
         return await handler(request)
 
     @web.middleware
@@ -637,7 +640,7 @@ class Node:
         try:
             return await handler(request)
         except (ValueError, KeyError, TypeError, IndexError, AttributeError) as e:  # JSONDecodeError is a ValueError
-            raise web.HTTPBadRequest(text=f"zt: bad request ({type(e).__name__})") from None
+            raise web.HTTPBadRequest(text=f"zs: bad request ({type(e).__name__})") from None
 
     @web.middleware
     async def _lossy(self, request, handler):
@@ -691,7 +694,7 @@ class Node:
         if req.headers.get("If-None-Match") == etag:
             return web.Response(status=304, headers={"ETag": etag})
         return web.Response(body=comp, content_type="application/octet-stream",
-                            headers={"X-Zt-Pk": self.ident.pk, "X-Zt-Sig": sig, "ETag": etag})
+                            headers=dict(protocol_headers(Pk=self.ident.pk, Sig=sig), ETag=etag))
 
     async def _capt_for(self, g: str):
         """Signed manifest head + CAPT pages for grid g (rebuilt lazily when the local index changes)."""
@@ -754,7 +757,7 @@ class Node:
             return web.Response(status=304, headers={"ETag": root})
         self.served["manifest_bytes"] = self.served.get("manifest_bytes", 0) + len(head)
         return web.Response(body=head, content_type="application/octet-stream",
-                            headers={"X-Zt-Pk": self.ident.pk, "X-Zt-Sig": sig, "ETag": root})
+                            headers=dict(protocol_headers(Pk=self.ident.pk, Sig=sig), ETag=root))
 
     async def h_mpage(self, req):
         c = self._capt.get(req.match_info["grid"])
@@ -815,7 +818,7 @@ class Node:
         keys = (await req.json())["keys"][:BATCH_CHUNKS * 4]
         if not all(isinstance(k, str) for k in keys):  # validate before the stream starts (no 500 mid-body)
             raise web.HTTPBadRequest(text="keys: list of strings")
-        xt = "xt1" in req.headers.get("X-Zt-Accept", "")
+        xt = "xt1" in protocol_header(req.headers, "Accept")
         resp = web.StreamResponse(headers={"Content-Type": "application/octet-stream"})
         if self.latency:
             await asyncio.sleep(self.latency)
@@ -860,7 +863,7 @@ class Node:
             raise web.HTTPBadRequest(text="items: list of {key, sel}")
         if self.latency:
             await asyncio.sleep(self.latency)
-        resp = web.StreamResponse(headers={"Content-Type": "application/octet-stream", "X-Zt-Pk": self.ident.pk})
+        resp = web.StreamResponse(headers={"Content-Type": "application/octet-stream", **protocol_headers(Pk=self.ident.pk)})
         await resp.prepare(req)
         for it in items:
             k, sel = it["key"], it["sel"]
@@ -954,7 +957,7 @@ class Node:
             try:
                 req = {"items": [{"key": items[i]["key"], "sel": items[i]["sel"]} for i in idxs]}
                 async with self.session.post(f"{v['addrs'][p]}/qb/{grid}", json=req, timeout=T_DATA) as r:
-                    pk = r.headers.get("X-Zt-Pk", "")
+                    pk = protocol_header(r.headers, "Pk")
                     body = await r.read()
                 if h160(bytes.fromhex(pk)) != p:
                     return
@@ -997,7 +1000,7 @@ class Node:
                     for i in idxs:
                         out[i] = None
             except Exception as e:
-                print(f"[zt] pushdown via {p[:8]} failed: {type(e).__name__} {e}")
+                print(f"[zs] pushdown via {p[:8]} failed: {type(e).__name__} {e}")
 
         calls = [(p, idxs[i:i + pd.MAX_ITEMS]) for p, idxs in by_peer.items() for i in range(0, len(idxs), pd.MAX_ITEMS)]
         await asyncio.gather(*(ask(p, part) for p, part in calls))
@@ -1038,7 +1041,7 @@ class Node:
                            "sig": rc["sig"], "claimed_h": hashlib.blake2b(res, digest_size=16).hexdigest(),
                            "true_h": hashlib.blake2b(truth, digest_size=16).hexdigest(), "ts": time.time()})
         out[i] = truth
-        print(f"[zt] FRAUD: peer {p[:8]} signed a wrong slice of {k}; blacklisted (proof stored)")
+        print(f"[zs] FRAUD: peer {p[:8]} signed a wrong slice of {k}; blacklisted (proof stored)")
 
     async def a_slices(self, req):
         d = await req.json()
@@ -1186,7 +1189,7 @@ class Node:
             except asyncio.CancelledError:
                 raise
             except Exception as e:
-                print(f"[zt] relay connection lost: {e}")
+                print(f"[zs] relay connection lost: {e}")
             self.relay_up = False
             await asyncio.sleep(3)
 
@@ -1202,7 +1205,7 @@ class Node:
                                                 data=body) as r:
                     rb = await r.read()
                     out.update(status=r.status, ctype=r.content_type,
-                               headers={k: v for k, v in r.headers.items() if k.startswith("X-Zt-")})
+                               headers={k: v for k, v in r.headers.items() if k.lower().startswith(("x-zs-", "x-zt-"))})
             except Exception:
                 out["status"] = 502
         try:
@@ -1221,7 +1224,7 @@ class Node:
             async with self.session.request(hdr["method"], self._local_data_url + hdr["path"],
                                             data=body) as r:
                 await send({"rid": rid, "status": r.status, "ctype": r.content_type, "stream": 1,
-                            "headers": {k: v for k, v in r.headers.items() if k.startswith("X-Zt-")}})
+                            "headers": {k: v for k, v in r.headers.items() if k.lower().startswith(("x-zs-", "x-zt-"))}})
                 started = True
                 # read our own local response fully (cheap, loopback), then ship it over the WAN leg in large
                 # frames: the relay forwards frame by frame (pipelined), without many tiny frames that stalled
@@ -1272,7 +1275,7 @@ class Node:
                             return hit[1]
                         if r.status != 200:
                             return None
-                        comp, pk, sig = await r.read(), r.headers.get("X-Zt-Pk", ""), r.headers.get("X-Zt-Sig", "")
+                        comp, pk, sig = await r.read(), protocol_header(r.headers, "Pk"), protocol_header(r.headers, "Sig")
                         etag = r.headers.get("ETag", "")
                     break
                 except (aiohttp.ClientError, asyncio.TimeoutError):
@@ -1309,8 +1312,8 @@ class Node:
                             return hit[1]
                         if r.status != 200:
                             return None
-                        comp, pk, sig, root = await r.read(), r.headers.get("X-Zt-Pk", ""), \
-                            r.headers.get("X-Zt-Sig", ""), r.headers.get("ETag", "")
+                        comp, pk, sig, root = await r.read(), protocol_header(r.headers, "Pk"), \
+                            protocol_header(r.headers, "Sig"), r.headers.get("ETag", "")
                     break
                 except (aiohttp.ClientError, asyncio.TimeoutError):
                     if attempt == META_TRIES - 1:
@@ -1713,7 +1716,7 @@ class Node:
                     known = p in self.bw or p in self.hints or span.get(p, [0, 0, 0])[2]
                     floor = STALL_MIN if known else STALL_FIRST
                     tmo = aiohttp.ClientTimeout(total=None, sock_connect=5, sock_read=max(floor, 4 * expect))
-                    hdrs = {"X-Zt-Accept": "xt1"} if self.xt1 and link_bw < XT1_BELOW else {}
+                    hdrs = protocol_headers(Accept="xt1") if self.xt1 and link_bw < XT1_BELOW else {}
                     async with self.session.post(f"{v['addrs'][p]}/cb/{grid}", json={"keys": batch},
                                                  timeout=tmo, headers=hdrs) as r:
                         if r.status != 200:
@@ -1756,7 +1759,7 @@ class Node:
                     perr[p] = perr.get(p, 0) + 1
                     if perr[p] >= PEER_MAX_ERRORS:  # transient WAN errors are retried; persistent ones drop the peer
                         failed.add(p)
-                    print(f"[zt] peer {p[:8]} error {perr[p]}/{PEER_MAX_ERRORS}: {type(e).__name__} {e}")
+                    print(f"[zs] peer {p[:8]} error {perr[p]}/{PEER_MAX_ERRORS}: {type(e).__name__} {e}")
                 else:
                     perr[p] = 0
                 finally:
@@ -2266,8 +2269,8 @@ class Node:
                 async with self.session.get(f"{addr}/mh/{grid}", timeout=T_META) as r:
                     if r.status != 200:
                         return None
-                    comp, pk, sig, root = await r.read(), r.headers.get("X-Zt-Pk", ""), \
-                        r.headers.get("X-Zt-Sig", ""), r.headers.get("ETag", "")
+                    comp, pk, sig, root = await r.read(), protocol_header(r.headers, "Pk"), \
+                        protocol_header(r.headers, "Sig"), r.headers.get("ETag", "")
                 body = zlib.decompressobj().decompress(comp, MAX_MANIFEST)
                 if h160(bytes.fromhex(pk)) != nid or not verify(pk, sig, body):
                     return None
@@ -2375,7 +2378,7 @@ class Node:
     async def _cover(self, v, var, g_lo, g_hi, isel, cover, lattice=(1, 0), *, refresh_missing=True):
         keys, info = await self._cover_core(v, var, g_lo, g_hi, isel, cover, lattice)
         info = dict(info, lattice=list(lattice), request={"var": var, "g_lo": g_lo, "g_hi": g_hi, "isel": isel})
-        # chunks nobody holds any more but a stripe parity can restore (ZTP-EC) join the request as-is
+        # chunks nobody holds any more but a stripe parity can restore join the request as-is
         a = v["arrays"][var]
         extra = []
         for k, b in v["best"].items():  # restorable (parity) and contested (no majority) keys join as-is: the job
@@ -2535,7 +2538,7 @@ class Node:
         return web.json_response({"grids": sorted(sgs), "chunks": sum(len(g["chunks"]) for g in sgs.values()),
                                   "arrays": sorted({n for g in sgs.values() for n in g["arrays"]}),
                                   "packing": {n: a["packing"] for g in sgs.values() for n, a in g["arrays"].items() if "packing" in a},
-                                  "link": "zt://" + "+".join(sorted(sgs))})
+                                  "link": "zs://" + "+".join(sorted(sgs))})
 
     async def a_unseed(self, req):
         p = str(Path((await req.json())["path"]).resolve())
@@ -2614,7 +2617,7 @@ class Node:
                 for t in asyncio.all_tasks():
                     buf = io.StringIO()
                     t.print_stack(limit=8, file=buf)
-                    print("[zt] cover stalled; task:", buf.getvalue(), flush=True)
+                    print("[zs] cover stalled; task:", buf.getvalue(), flush=True)
                 raise
             rview = info.pop("_view", None)
             if d.get("cover", "jlps") == "jlps" and self.strategy == "maxflow":
@@ -2727,7 +2730,7 @@ class Node:
                 try:
                     await self.follow_once(sub)
                 except Exception as e:
-                    print(f"[zt] follow {sub['link']}: {e}")
+                    print(f"[zs] follow {sub['link']}: {e}")
             await asyncio.sleep(FOLLOW_EVERY)
 
     async def a_follow(self, req):
@@ -2821,7 +2824,7 @@ class Node:
         self.names[d["name"]] = [d["target"], seq]  # persisted and republished (records expire after TTL)
         self._save_state()
         n = await self.publish_name(d["name"], d["target"], seq)
-        return web.json_response({"link": f"zt://{d['name']}@{self.ident.pk}", "stored_on": n})
+        return web.json_response({"link": f"zs://{d['name']}@{self.ident.pk}", "stored_on": n})
 
 
 def progressive_order(keys: list[str]) -> list[str]:
@@ -3035,7 +3038,7 @@ def merge_view(grid: str, mans: dict[str, dict], me: str, trusted: set = frozens
             best[k]["rival"] = {"vcid": rv, "nv": score[rv][2],
                                 "src": [(c[4], c[2], c[3]) for c in cs if rep[c[1]] == rv]}
     # chunks whose holders are all gone but whose stripe survives (RS rows from different volunteers +
-    # surviving members) are restorable (ZTP-EC). Rows of one stripe form a family.
+    # surviving members) are restorable. Rows of one stripe form a family.
     fams: dict[str, dict] = {}
     for pk, pc in pcoll.items():
         pname, lay, co = split_key(pk)

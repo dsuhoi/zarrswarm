@@ -1,4 +1,4 @@
-"""ZTP-EC: a volunteer keeps only XOR parity (1/k storage); after the only full seeder dies, chunks that no
+"""Value-level parity: a volunteer keeps only XOR parity (1/k storage); after the only full seeder dies, chunks that no
 live peer holds are restored from parity + surviving stripe members, verified and exact."""
 import asyncio
 import socket
@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-import zarrswarm as zt
+import zarrswarm as zs
 from zarrswarm.node import Node
 from zarrswarm.store import http, open_views, wait_job
 _ports = iter(range(10000, 30000))
@@ -52,7 +52,7 @@ def test_parity_restores_chunks_nobody_holds(tmp_path):
         (Path(pb) / "pv" / zb.metadata.encode_chunk_key((day, 0, 0))).unlink()
     link = http(ctl(a), "POST", "/api/seed", {"path": pa})["link"]
     http(ctl(b), "POST", "/api/seed", {"path": pb})
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     r = http(ctl(vol), "POST", "/api/parity", {"grid": grid, "var": "pv", "k": 5, "drop": True})
     assert 2 <= r["stripes"] <= 4  # absolute alignment + interleaving (D = ceil(10/k)) may split into 3-4
     st = http(ctl(vol), "GET", "/api/status")["grids"][grid]
@@ -61,7 +61,7 @@ def test_parity_restores_chunks_nobody_holds(tmp_path):
     jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "pv"}})["job"]
     job = wait_job(ctl(cli), jid)
     assert job.get("restored") == 2 and job["state"] == "done", job
-    got = zt.open_dataset(link, ctl=ctl(cli)).pv.values
+    got = zs.open_dataset(link, ctl=ctl(cli)).pv.values
     np.testing.assert_array_equal(got, vals)
     for n in (b, vol, cli, boot):
         run(n.stop())
@@ -92,14 +92,14 @@ def test_two_losses_in_one_stripe_need_two_volunteers_rows(tmp_path):
         (Path(pb) / "rs" / zb.metadata.encode_chunk_key((day, 0, 0))).unlink()
     link = http(ctl(a), "POST", "/api/seed", {"path": pa})["link"]
     http(ctl(b), "POST", "/api/seed", {"path": pb})
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     for row, vol in enumerate((v1, v2)):
         http(ctl(vol), "POST", "/api/parity", {"grid": grid, "var": "rs", "k": 4, "d": 1, "row": row, "drop": True})
     run(a.stop())
     jid = http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "rs"}})["job"]
     job = wait_job(ctl(cli), jid)
     assert job.get("restored") == 2 and job["state"] == "done", job
-    np.testing.assert_array_equal(zt.open_dataset(link, ctl=ctl(cli)).rs.values, vals)
+    np.testing.assert_array_equal(zs.open_dataset(link, ctl=ctl(cli)).rs.values, vals)
     for n in (b, v1, v2, cli, boot):
         run(n.stop())
 
@@ -124,13 +124,13 @@ def test_eight_rs_volunteers_rebuild_everything_after_the_only_seeder_dies(tmp_p
     xr.Dataset({"x": (("time", "y", "z"), vals)}, coords={"time": times, "y": np.arange(6.0), "z": np.arange(8.0)}
                ).to_zarr(p, encoding={"x": {"chunks": (24, 6, 8)}}, consolidated=False)
     link = http(ctl(seed), "POST", "/api/seed", {"path": p})["link"]
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     for j, v in enumerate(vols):
         http(ctl(v), "POST", "/api/parity", {"grid": grid, "var": "x", "k": 8, "row": j, "drop": True})
     run(seed.stop())
     job = wait_job(ctl(cli), http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "x"}})["job"])
     assert job["state"] == "done" and job.get("restored") == 30, job
-    got = zt.open_dataset(link, ctl=ctl(cli)).x.sel(time=slice(times[0], times[-1])).values
+    got = zs.open_dataset(link, ctl=ctl(cli)).x.sel(time=slice(times[0], times[-1])).values
     np.testing.assert_array_equal(got, vals)
     for n in [cli, boot] + vols:
         run(n.stop())
@@ -162,7 +162,7 @@ def test_value_parity_spans_heterogeneous_layouts(tmp_path):
     (Path(pb) / "hv" / zb.metadata.encode_chunk_key((2, 0, 0))).unlink()  # days 4-5 only in A
     link = http(ctl(a), "POST", "/api/seed", {"path": pa})["link"]
     http(ctl(b), "POST", "/api/seed", {"path": pb})
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     rows = set()
     for vol in vols:  # no explicit row: each volunteer must pick one the swarm does not publish yet
         r = http(ctl(vol), "POST", "/api/parity", {"grid": grid, "var": "hv", "k": 5, "drop": True})
@@ -172,7 +172,7 @@ def test_value_parity_spans_heterogeneous_layouts(tmp_path):
     run(a.stop())
     job = wait_job(ctl(cli), http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "hv"}})["job"])
     assert job["state"] == "done" and job.get("restored", 0) >= 2, job
-    got = zt.open_dataset(link, ctl=ctl(cli)).hv.sel(time=slice(times[0], times[-1])).values
+    got = zs.open_dataset(link, ctl=ctl(cli)).hv.sel(time=slice(times[0], times[-1])).values
     np.testing.assert_array_equal(got, vals)
     for n in [b, cli, boot] + vols:
         run(n.stop())
@@ -210,14 +210,14 @@ def test_value_parity_repairs_with_members_from_another_decoder(tmp_path):
     (Path(pb) / "hv" / zb.metadata.encode_chunk_key((2, 0, 0))).unlink()  # days 4-5 only at A
     link = http(ctl(a), "POST", "/api/seed", {"path": pa})["link"]
     assert http(ctl(b), "POST", "/api/seed", {"path": pb})["link"] == link
-    grid = link.removeprefix("zt://")
+    grid = link.removeprefix("zs://")
     for vol in vols:
         r = http(ctl(vol), "POST", "/api/parity", {"grid": grid, "var": "hv", "k": 5, "drop": True})
         assert r["code_stripes"] == r["stripes"] > 0, r
     run(a.stop())
     job = wait_job(ctl(cli), http(ctl(cli), "POST", "/api/download", {"grid": grid, "region": {"var": "hv"}})["job"])
     assert job["state"] == "done" and job.get("restored", 0) >= 2, repr({kk: job.get(kk) for kk in ("state", "total", "done", "missing", "failed", "restored")}) + repr(cli.pd_stats.get("restore_fail"))
-    got = zt.open_dataset(link, ctl=ctl(cli)).hv.sel(time=slice(times[0], times[-1])).values
+    got = zs.open_dataset(link, ctl=ctl(cli)).hv.sel(time=slice(times[0], times[-1])).values
     assert np.all(np.abs(got.astype("f8") - va) < step / 2)  # one faithful decoding of the same codes
     for n in [b, cli, boot] + vols:
         run(n.stop())

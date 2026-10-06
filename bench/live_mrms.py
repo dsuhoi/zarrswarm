@@ -180,7 +180,7 @@ async def main(args):
                  ((a, "maps.zarr"), (b, "series.zarr"))]
         assert list(grids[0]) == list(grids[1])
         grid = next(iter(grids[0]))
-        sub = {"id": "live", "link": "zt://" + grid, "vars": [VAR], "last_s": 240}
+        sub = {"id": "live", "link": "zs://" + grid, "vars": [VAR], "last_s": 240}
         client.subs[sub["id"]] = sub
         await client.follow_once(sub)
         last_time = data.time.values[-1].astype("datetime64[s]").astype("i8")
