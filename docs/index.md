@@ -5,6 +5,11 @@ ZarrSwarm shares Zarr arrays between sites and opens compatible replicas as one
 codecs or Zarr versions. The system discovers holders, chooses sources for a
 request and verifies received chunks.
 
+The command line is available as `zarrswarm` or `zs`; the terminal interface is
+`zarrswarm-tui` or `zs-tui`. Dataset links use `zs://`, network invitations use
+`zsnet://`, and environment settings use `ZS_*`. See
+[legacy compatibility](config.md#legacy-compatibility) when updating an existing node.
+
 For example, one node may store hourly temperature maps, another may store
 chunks suited to time series, and a third may extend the archive into the next
 month. Clients use one `zs://...` link. Coordinates, sample times and value

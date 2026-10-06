@@ -43,6 +43,19 @@ jobs:
         run: .venv/bin/python -m pytest -q tests
       - name: Build distribution
         run: uv build
+      - name: Keep manuscript assets out of distributions
+        run: |
+          .venv/bin/python - <<'PY'
+          import tarfile
+          from pathlib import Path
+          from zipfile import ZipFile
+          with ZipFile(next(Path('dist').glob('*.whl'))) as archive:
+              entries = archive.namelist()
+          with tarfile.open(next(Path('dist').glob('*.tar.gz'))) as archive:
+              entries += archive.getnames()
+          manuscript_assets = {'.pdf', '.tex', '.cls', '.bst', '.pfb', '.tfm'}
+          assert all('paper' not in Path(n).parts and Path(n).suffix not in manuscript_assets for n in entries)
+          PY
       - name: Check installed wheel outside the checkout
         run: |
           cd "$RUNNER_TEMP"
